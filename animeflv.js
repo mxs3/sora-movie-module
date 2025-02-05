@@ -1,81 +1,98 @@
-function cleanText(text) {
-    return text
-        .replace(/&#8217;/g, "'")
-        .replace(/&#8211;/g, "-")
-        .replace(/&#[0-9]+;/g, "")
-        .trim();
+async function searchResults(keyword) {
+    try {
+        const encodedKeyword = encodeURIComponent(keyword);
+        const response = await fetch(`https://www3.animeflv.net/browse?q=${encodedKeyword}`);
+        const html = await response.text();
+
+        const results = [];
+        const baseUrl = "https://www3.animeflv.net/";
+
+        const animeBlocks = html.match(/<article class="Anime">[\s\S]*?<\/article>/g) || [];
+
+        animeBlocks.forEach(block => {
+            const titleMatch = block.match(/<a href="([^"]+)" title="([^"]+)"/);
+            const imageMatch = block.match(/<img src="([^"]+)"/);
+            
+            if (titleMatch) {
+                results.push({
+                    title: titleMatch[2].trim(),
+                    image: imageMatch ? imageMatch[1] : "",
+                    href: baseUrl + titleMatch[1],
+                });
+            }
+        });
+
+        return results.length > 0 ? results : [{ title: "No results found", image: "", href: "" }];
+    } catch (error) {
+        console.error("Search Error:", error);
+        return [{ title: "Error", image: "", href: "" }];
+    }
 }
 
-// 📌 **Function to Search Anime**
-function searchResults(html) {
-    const results = [];
-    const baseUrl = "https://www3.animeflv.net/";
-
-    const animeBlocks = html.match(/<article class="Anime">[\s\S]*?<\/article>/g) || [];
-
-    animeBlocks.forEach(block => {
-        const titleMatch = block.match(/<a href="([^"]+)" title="([^"]+)"/);
-        const imageMatch = block.match(/<img src="([^"]+)"/);
-        const synopsisMatch = block.match(/<div class="Description">([^<]+)<\/div>/);
+async function extractDetails(url) {
+    try {
+        const response = await fetch(url);
+        const html = await response.text();
         
-        if (titleMatch) {
-            results.push({
-                title: cleanText(titleMatch[2]),
-                image: imageMatch ? imageMatch[1] : "",
-                href: baseUrl + titleMatch[1],
-                synopsis: synopsisMatch ? cleanText(synopsisMatch[1]) : "No description available",
-            });
-        }
-    });
+        const titleMatch = html.match(/<h1 class="Title">([^<]+)<\/h1>/);
+        const coverMatch = html.match(/<div class="Image"><img src="([^"]+)"/);
+        const synopsisMatch = html.match(/<div class="Description">([^<]+)<\/div>/);
+        const typeMatch = html.match(/<span class="Type">([^<]+)<\/span>/);
+        const genreMatch = html.match(/<span class="generos">([^<]+)<\/span>/);
+        const statusMatch = html.match(/<span class="fa-play-circle">([^<]+)<\/span>/);
 
-    return results.length > 0 ? results : [{ title: "No results found", image: "", href: "" }];
+        return {
+            title: titleMatch ? titleMatch[1].trim() : "Unknown Title",
+            cover: coverMatch ? coverMatch[1] : "",
+            synopsis: synopsisMatch ? synopsisMatch[1].trim() : "No description available",
+            type: typeMatch ? typeMatch[1].trim() : "Unknown",
+            genres: genreMatch ? genreMatch[1].trim() : "Unknown",
+            status: statusMatch ? statusMatch[1].trim() : "Unknown",
+        };
+    } catch (error) {
+        console.error("Details Error:", error);
+        return { title: "Error", cover: "", synopsis: "Error loading details" };
+    }
 }
 
-// 📌 **Function to Extract Anime Details**
-function extractDetails(html) {
-    const details = {};
+async function extractEpisodes(url) {
+    try {
+        const response = await fetch(url);
+        const html = await response.text();
 
-    const titleMatch = html.match(/<h1 class="Title">([^<]+)<\/h1>/);
-    const coverMatch = html.match(/<div class="Image"><img src="([^"]+)"/);
-    const synopsisMatch = html.match(/<div class="Description">([^<]+)<\/div>/);
-    const typeMatch = html.match(/<span class="Type">([^<]+)<\/span>/);
-    const genreMatch = html.match(/<span class="generos">([^<]+)<\/span>/);
-    const statusMatch = html.match(/<span class="fa-play-circle">([^<]+)<\/span>/);
+        const episodes = [];
+        const baseUrl = "https://www3.animeflv.net/";
 
-    details.title = titleMatch ? cleanText(titleMatch[1]) : "Unknown Title";
-    details.cover = coverMatch ? coverMatch[1] : "";
-    details.synopsis = synopsisMatch ? cleanText(synopsisMatch[1]) : "No description available";
-    details.type = typeMatch ? cleanText(typeMatch[1]) : "Unknown";
-    details.genres = genreMatch ? cleanText(genreMatch[1]) : "Unknown";
-    details.status = statusMatch ? cleanText(statusMatch[1]) : "Unknown";
+        const episodeBlocks = html.match(/<li><a href="([^"]+)">([^<]+)<\/a><\/li>/g) || [];
 
-    return details;
+        episodeBlocks.forEach(block => {
+            const match = block.match(/href="([^"]+)">([^<]+)<\/a>/);
+            if (match) {
+                episodes.push({
+                    href: baseUrl + match[1],
+                    number: match[2],
+                });
+            }
+        });
+
+        return episodes.reverse();
+    } catch (error) {
+        console.error("Episodes Error:", error);
+        return [];
+    }
 }
 
-// 📌 **Function to Extract Episodes List**
-function extractEpisodes(html) {
-    const episodes = [];
-    const baseUrl = "https://www3.animeflv.net/";
+async function extractStreamUrl(url) {
+    try {
+        const response = await fetch(url);
+        const html = await response.text();
 
-    const episodeBlocks = html.match(/<li><a href="([^"]+)">([^<]+)<\/a><\/li>/g) || [];
-
-    episodeBlocks.forEach(block => {
-        const match = block.match(/href="([^"]+)">([^<]+)<\/a>/);
-        if (match) {
-            episodes.push({
-                href: baseUrl + match[1],
-                number: match[2],
-            });
-        }
-    });
-
-    return episodes.reverse();
-}
-
-// 📌 **Function to Extract Streaming URL**
-function extractStreamUrl(html) {
-    const match = html.match(/<source src="([^"]+)" type="application\/x-mpegURL"/);
-    return match ? match[1] : null;
+        const match = html.match(/<source src="([^"]+)" type="application\/x-mpegURL"/);
+        return match ? match[1] : null;
+    } catch (error) {
+        console.error("Stream URL Error:", error);
+        return null;
+    }
 }
 
 export { searchResults, extractDetails, extractEpisodes, extractStreamUrl };
