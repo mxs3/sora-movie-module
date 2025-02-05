@@ -2,8 +2,10 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const response = await fetch(`https://animeflv.ahmedrangel.com/api/search?search=${encodedKeyword}`);
+        const response = await fetch(`https://animeflv.ahmedrangel.com/api/search?query=${encodedKeyword}`);
         const data = await response.json();
+        
+        console.log(data); // Log the full response for debugging
         
         const transformedResults = data.animes.map(anime => ({
             title: anime.title,
@@ -18,6 +20,7 @@ async function searchResults(keyword) {
         return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
     }
 }
+
 
 // Extract detailed information about the anime
 async function extractDetails(id) {
