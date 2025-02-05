@@ -8,8 +8,11 @@ async function searchResults(keyword) {
         }
       });
       
+      console.log("Response Status:", response.status); // Log the status
+      console.log("Response Headers:", response.headers); // Log the headers for more context
+      
       if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
+        throw new Error(`HTTP error: ${response.status} - ${response.statusText}`);
       }
       
       const data = await response.json();
@@ -41,7 +44,6 @@ async function searchResults(keyword) {
   // 2. Extract Details
   async function extractDetails(url) {
     try {
-      // Expecting a URL like: https://www3.animeflv.net/anime/{slug}
       const match = url.match(/https:\/\/www3\.animeflv\.net\/anime\/(.+)$/);
       if (!match) {
         throw new Error("Invalid URL format");
@@ -51,8 +53,12 @@ async function searchResults(keyword) {
       const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}`, {
         headers: { "Accept": "application/json" }
       });
+      
+      console.log("Response Status:", response.status);
+      console.log("Response Headers:", response.headers);
+      
       if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
+        throw new Error(`HTTP error: ${response.status} - ${response.statusText}`);
       }
       
       const data = await response.json();
@@ -79,19 +85,21 @@ async function searchResults(keyword) {
   // 3. Extract Episodes
   async function extractEpisodes(url) {
     try {
-      // Expecting a URL like: https://www3.animeflv.net/anime/{slug}
       const match = url.match(/https:\/\/www3\.animeflv\.net\/anime\/(.+)$/);
       if (!match) {
         throw new Error("Invalid URL format");
       }
       const slug = match[1];
       
-      // According to the docs, use the endpoint: /api/anime/episode/{slug}
       const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/episode/${slug}`, {
         headers: { "Accept": "application/json" }
       });
+      
+      console.log("Response Status:", response.status);
+      console.log("Response Headers:", response.headers);
+      
       if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
+        throw new Error(`HTTP error: ${response.status} - ${response.statusText}`);
       }
       
       const data = await response.json();
@@ -117,7 +125,6 @@ async function searchResults(keyword) {
   // 4. Extract Stream URL
   async function extractStreamUrl(url) {
     try {
-      // Expecting a URL like: https://www3.animeflv.net/anime/{slug}/episode/{number}
       const match = url.match(/https:\/\/www3\.animeflv\.net\/anime\/(.+)\/episode\/(\d+)$/);
       if (!match) {
         throw new Error("Invalid URL format");
@@ -125,12 +132,15 @@ async function searchResults(keyword) {
       const slug = match[1];
       const episodeNumber = match[2];
       
-      // Use the endpoint: /api/anime/{slug}/episode/{number}
       const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}/episode/${episodeNumber}`, {
         headers: { "Accept": "application/json" }
       });
+      
+      console.log("Response Status:", response.status);
+      console.log("Response Headers:", response.headers);
+      
       if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
+        throw new Error(`HTTP error: ${response.status} - ${response.statusText}`);
       }
       
       const data = await response.json();
@@ -140,7 +150,6 @@ async function searchResults(keyword) {
         throw new Error("Unexpected stream response structure");
       }
       
-      // Find an HLS source (adjust the source type if needed)
       const hlsSource = data.data.sources.find(source => source.type === 'hls');
       return hlsSource ? hlsSource.url : null;
     } catch (error) {
