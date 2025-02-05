@@ -1,4 +1,20 @@
-// AnimeFLV.js
+// Helper function to parse the fetch response.
+async function parseResponse(response) {
+    // If response.json exists, use it.
+    if (typeof response.json === 'function') {
+        try {
+            return await response.json();
+        } catch (e) {
+            // Fall back to text if json() fails.
+            const text = await response.text();
+            return JSON.parse(text);
+        }
+    } else {
+        // Otherwise, use response.text() and then JSON.parse.
+        const text = await response.text();
+        return JSON.parse(text);
+    }
+}
 
 // 1. Search Results
 // Input: search keyword (string)
@@ -9,9 +25,8 @@ async function searchResults(keyword) {
         const response = await fetch(`https://animeflv.ahmedrangel.com/api/search?query=${encodedKeyword}`, {
             headers: { "Accept": "application/json" }
         });
-        // Instead of response.json(), use response.text() then JSON.parse()
-        const text = await response.text();
-        const data = JSON.parse(text);
+        
+        const data = await parseResponse(response);
         
         // Expected response structure:
         // { success: true, data: { currentPage, hasNextPage, ..., media: [ { title, cover, synopsis, rating, slug, type, url }, ... ] } }
@@ -43,8 +58,7 @@ async function extractDetails(url) {
         const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}`, {
             headers: { "Accept": "application/json" }
         });
-        const text = await response.text();
-        const data = JSON.parse(text);
+        const data = await parseResponse(response);
         
         // Expected details response structure:
         // { success: true, data: { anime: { description, aliases, airdate, ... } } }
@@ -78,8 +92,7 @@ async function extractEpisodes(url) {
         const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/episode/${slug}`, {
             headers: { "Accept": "application/json" }
         });
-        const text = await response.text();
-        const data = JSON.parse(text);
+        const data = await parseResponse(response);
         
         // Expected episodes response structure:
         // { success: true, data: { episodes: [ { number, ... }, ... ] } }
@@ -112,8 +125,7 @@ async function extractStreamUrl(url) {
         const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}/episode/${episodeNumber}`, {
             headers: { "Accept": "application/json" }
         });
-        const text = await response.text();
-        const data = JSON.parse(text);
+        const data = await parseResponse(response);
         
         // Expected stream response structure:
         // { success: true, data: { sources: [ { type, url, ... }, ... ] } }
