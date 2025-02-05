@@ -11,6 +11,6 @@
     "quality": "720p",
     "baseUrl": "https://animeflv.ahmedrangel.com/api/",
     "searchBaseUrl": "https://animeflv.ahmedrangel.com/api/search?q=%s",
-    "scriptUrl": "",
+    "scriptUrl": "https://raw.githubusercontent.com/xibrox/testing-something-for-anime-modules/refs/heads/main/animeflv.js",
     "asyncJS": true
 }
