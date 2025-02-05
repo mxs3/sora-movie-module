@@ -3,32 +3,34 @@ async function searchResults(keyword) {
     try {
       const encodedKeyword = encodeURIComponent(keyword);
       const response = await fetch(`https://animeflv.ahmedrangel.com/api/search?query=${encodedKeyword}`);
+      
       if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
       }
-      const data = await response.json();
-      console.log("Search API response:", data);
   
-      // Check if the response has valid data
-      if (!data.success || !data.data || !Array.isArray(data.data.media)) {
-        throw new Error("No media found in the response");
+      const data = await response.json();
+      console.log("API Response:", data); // Check the structure of the response
+  
+      if (!data || !data.data || !Array.isArray(data.data.media)) {
+        throw new Error("No media data found or incorrect response structure");
       }
   
-      // Transform results
       const transformedResults = data.data.media.map(anime => ({
         title: anime.title || "Unknown Title",
         image: anime.cover || "",
         href: anime.url || "#"
       }));
   
-      // Return transformed results
+      console.log("Transformed Results:", transformedResults); // Log transformed results
       return JSON.stringify(transformedResults);
+  
     } catch (error) {
       console.error("Search error:", error.message);
-      // Return a fallback value in case of failure
+      // Return an empty object with error message for visibility
       return JSON.stringify([{ title: "Error", image: "", href: "" }]);
     }
   }
+  
   
   
   // 2. Extract Details
