@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const response = await fetch(`https://www3.animeflv.net/browse?q=${encodedKeyword}`);
+        const response = await fetch(`https://animeflv.ahmedrangel.com/search?q=${encodedKeyword}`);
         const html = await response.text();
 
         const results = [];
