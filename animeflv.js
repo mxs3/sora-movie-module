@@ -2,7 +2,6 @@
 async function searchResults(keyword) {
     try {
       const encodedKeyword = encodeURIComponent(keyword);
-      // Using the search endpoint with query parameter "query"
       const response = await fetch(`https://animeflv.ahmedrangel.com/api/search?query=${encodedKeyword}`);
       if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
@@ -10,24 +9,27 @@ async function searchResults(keyword) {
       const data = await response.json();
       console.log("Search API response:", data);
   
-      // Expecting the search response to have:
-      // { success: true, data: { media: [ { title, cover, url, ... }, ... ] } }
+      // Check if the response has valid data
       if (!data.success || !data.data || !Array.isArray(data.data.media)) {
-        throw new Error("Unexpected response structure: data.data.media missing");
+        throw new Error("No media found in the response");
       }
   
+      // Transform results
       const transformedResults = data.data.media.map(anime => ({
-        title: anime.title,
-        image: anime.cover,
-        href: anime.url // This URL (e.g., "https://www3.animeflv.net/anime/isekai-quartet-2nd-season") is provided by the API
+        title: anime.title || "Unknown Title",
+        image: anime.cover || "",
+        href: anime.url || "#"
       }));
   
+      // Return transformed results
       return JSON.stringify(transformedResults);
     } catch (error) {
       console.error("Search error:", error.message);
+      // Return a fallback value in case of failure
       return JSON.stringify([{ title: "Error", image: "", href: "" }]);
     }
   }
+  
   
   // 2. Extract Details
   async function extractDetails(url) {
