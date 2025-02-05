@@ -9,7 +9,9 @@ async function searchResults(keyword) {
         const response = await fetch(`https://animeflv.ahmedrangel.com/api/search?query=${encodedKeyword}`, {
             headers: { "Accept": "application/json" }
         });
-        const data = await response.json();
+        // Instead of response.json(), use response.text() then JSON.parse()
+        const text = await response.text();
+        const data = JSON.parse(text);
         
         // Expected response structure:
         // { success: true, data: { currentPage, hasNextPage, ..., media: [ { title, cover, synopsis, rating, slug, type, url }, ... ] } }
@@ -41,7 +43,8 @@ async function extractDetails(url) {
         const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}`, {
             headers: { "Accept": "application/json" }
         });
-        const data = await response.json();
+        const text = await response.text();
+        const data = JSON.parse(text);
         
         // Expected details response structure:
         // { success: true, data: { anime: { description, aliases, airdate, ... } } }
@@ -75,7 +78,8 @@ async function extractEpisodes(url) {
         const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/episode/${slug}`, {
             headers: { "Accept": "application/json" }
         });
-        const data = await response.json();
+        const text = await response.text();
+        const data = JSON.parse(text);
         
         // Expected episodes response structure:
         // { success: true, data: { episodes: [ { number, ... }, ... ] } }
@@ -108,7 +112,8 @@ async function extractStreamUrl(url) {
         const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}/episode/${episodeNumber}`, {
             headers: { "Accept": "application/json" }
         });
-        const data = await response.json();
+        const text = await response.text();
+        const data = JSON.parse(text);
         
         // Expected stream response structure:
         // { success: true, data: { sources: [ { type, url, ... }, ... ] } }
