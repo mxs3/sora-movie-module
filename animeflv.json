@@ -1,0 +1,16 @@
+{
+    "sourceName": "AnimeFLV",
+    "iconUrl": "",
+    "author": {
+        "name": "AnimeFLV Team",
+        "icon": ""
+    },
+    "version": "1.0.0",
+    "language": "Spanish (LATAM)",
+    "streamType": "MP4",
+    "quality": "720p",
+    "baseUrl": "https://animeflv.ahmedrangel.com/api/",
+    "searchBaseUrl": "https://animeflv.ahmedrangel.com/api/search?q=%s",
+    "scriptUrl": "",
+    "asyncJS": true
+}
