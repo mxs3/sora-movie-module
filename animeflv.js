@@ -2,31 +2,29 @@
 async function searchResults(keyword) {
     try {
       const encodedKeyword = encodeURIComponent(keyword);
-      // Use the API search endpoint (without v1)
-      const response = await fetch(`https://animeflv.ahmedrangel.com/api/search?query=${encodedKeyword}`);
+      const response = await fetch(`https://animeflv.ahmedrangel.com/api/search?query=${encodedKeyword}`, {
+        headers: {
+          "Accept": "application/json"
+        }
+      });
       
-      // Check for HTTP errors
       if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
       }
       
       const data = await response.json();
-      console.log("API Response:", data); // Debug: inspect the raw API response
+      console.log("Search API Response:", data); // Debug log
       
-      // Verify that the response structure is as expected
       if (!data.success || !data.data || !Array.isArray(data.data.media)) {
-        console.error("Unexpected response structure:", data);
-        throw new Error("No media data found or incorrect response structure");
+        throw new Error("Unexpected response structure");
       }
       
-      // Map the media items to the desired output format
       const transformedResults = data.data.media.map(anime => ({
         title: anime.title || "Unknown Title",
         image: anime.cover || "",
         href: anime.url || "#"
       }));
       
-      // If no results, return a fallback value
       if (transformedResults.length === 0) {
         return JSON.stringify([{ title: "No results found", image: "", href: "" }]);
       }
@@ -34,8 +32,9 @@ async function searchResults(keyword) {
       return JSON.stringify(transformedResults);
       
     } catch (error) {
-      console.error("Search error:", error.message);
-      return JSON.stringify([{ title: "Error", image: "", href: "" }]);
+      console.error("Search error:", error);
+      // Return the error message as the title so you can see what's failing.
+      return JSON.stringify([{ title: error.message, image: "", href: "" }]);
     }
   }
   
@@ -49,12 +48,15 @@ async function searchResults(keyword) {
       }
       const slug = match[1];
       
-      const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}`);
+      const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}`, {
+        headers: { "Accept": "application/json" }
+      });
       if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
       }
+      
       const data = await response.json();
-      console.log("Details API Response:", data); // Debug output
+      console.log("Details API Response:", data);
       
       if (!data.success || !data.data || !data.data.anime) {
         throw new Error("Unexpected details response structure");
@@ -69,8 +71,8 @@ async function searchResults(keyword) {
       
       return JSON.stringify([details]);
     } catch (error) {
-      console.error("Details error:", error.message);
-      return JSON.stringify([{ description: "Error loading description", aliases: "N/A", airdate: "Unknown" }]);
+      console.error("Details error:", error);
+      return JSON.stringify([{ description: error.message, aliases: "N/A", airdate: "Unknown" }]);
     }
   }
   
@@ -85,12 +87,15 @@ async function searchResults(keyword) {
       const slug = match[1];
       
       // According to the docs, use the endpoint: /api/anime/episode/{slug}
-      const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/episode/${slug}`);
+      const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/episode/${slug}`, {
+        headers: { "Accept": "application/json" }
+      });
       if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
       }
+      
       const data = await response.json();
-      console.log("Episodes API Response:", data); // Debug output
+      console.log("Episodes API Response:", data);
       
       if (!data.success || !data.data || !Array.isArray(data.data.episodes)) {
         throw new Error("Unexpected episodes response structure");
@@ -104,7 +109,7 @@ async function searchResults(keyword) {
       return JSON.stringify(transformedResults);
       
     } catch (error) {
-      console.error("Episodes error:", error.message);
+      console.error("Episodes error:", error);
       return JSON.stringify([]);
     }
   }
@@ -121,12 +126,15 @@ async function searchResults(keyword) {
       const episodeNumber = match[2];
       
       // Use the endpoint: /api/anime/{slug}/episode/{number}
-      const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}/episode/${episodeNumber}`);
+      const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}/episode/${episodeNumber}`, {
+        headers: { "Accept": "application/json" }
+      });
       if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
       }
+      
       const data = await response.json();
-      console.log("Stream API Response:", data); // Debug output
+      console.log("Stream API Response:", data);
       
       if (!data.success || !data.data || !Array.isArray(data.data.sources)) {
         throw new Error("Unexpected stream response structure");
@@ -136,7 +144,7 @@ async function searchResults(keyword) {
       const hlsSource = data.data.sources.find(source => source.type === 'hls');
       return hlsSource ? hlsSource.url : null;
     } catch (error) {
-      console.error("Stream URL error:", error.message);
+      console.error("Stream URL error:", error);
       return null;
     }
   }
