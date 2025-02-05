@@ -4,11 +4,15 @@ async function searchResults(keyword) {
         const response = await fetch(`https://animeflv.ahmedrangel.com/api/search?query=${encodedKeyword}`);
         const data = await response.json();
 
-        if (data.success && Array.isArray(data.result) && data.result.length > 0) {
-            const transformedResults = data.result.map(anime => ({
+        console.log("Raw API Response:", data); // Debugging output
+
+        if (data.success && data.data && Array.isArray(data.data.media) && data.data.media.length > 0) {
+            const transformedResults = data.data.media.map(anime => ({
                 title: anime.title,
-                image: anime.image,
-                href: `https://animeflv.net/anime/${anime.slug}`
+                image: anime.cover,
+                synopsis: anime.synopsis || "No description available",
+                rating: anime.rating || "N/A",
+                href: anime.url  // Using direct animeflv URL
             }));
             return JSON.stringify(transformedResults);
         } else {
@@ -20,76 +24,70 @@ async function searchResults(keyword) {
     }
 }
 
-async function extractDetails(url) {
+async function extractDetails(slug) {
     try {
-        const match = url.match(/https:\/\/animeflv\.net\/anime\/(.+)$/);
-        if (!match) throw new Error("Invalid URL format");
-        
-        const slug = match[1];
         const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}`);
         const data = await response.json();
 
-        if (data.success && data.anime) {
-            const animeInfo = data.anime;
+        console.log("Raw Anime Details:", data);
 
-            return JSON.stringify([{
-                description: animeInfo.description || 'No description available',
-                aliases: `Duration: ${animeInfo.duration || 'Unknown'}`,
-                airdate: `Aired: ${animeInfo.airdate || 'Unknown'}`
-            }]);
+        if (data.success && data.data) {
+            const animeInfo = data.data;
+            return JSON.stringify({
+                title: animeInfo.title,
+                cover: animeInfo.cover,
+                synopsis: animeInfo.synopsis || "No description available",
+                type: animeInfo.type || "Unknown",
+                genres: animeInfo.genres ? animeInfo.genres.join(", ") : "Unknown",
+                status: animeInfo.status || "Unknown",
+                episodes: animeInfo.episodes.length
+            });
         } else {
-            return JSON.stringify([{ description: 'No details found', aliases: 'Unknown', airdate: 'Unknown' }]);
+            return JSON.stringify({ title: "Anime not found", cover: "", synopsis: "", type: "", genres: "", status: "", episodes: 0 });
         }
     } catch (error) {
         console.log('Details error:', error);
-        return JSON.stringify([{ description: 'Error loading details', aliases: 'Unknown', airdate: 'Unknown' }]);
+        return JSON.stringify({ title: "Error occurred", cover: "", synopsis: "", type: "", genres: "", status: "", episodes: 0 });
     }
 }
 
-async function extractEpisodes(url) {
+async function extractEpisodes(slug) {
     try {
-        const match = url.match(/https:\/\/animeflv\.net\/anime\/(.+)$/);
-        if (!match) throw new Error("Invalid URL format");
-
-        const slug = match[1];
-        const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}/episodes`);
+        const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}`);
         const data = await response.json();
 
-        if (data.success && Array.isArray(data.episodes) && data.episodes.length > 0) {
-            const transformedResults = data.episodes.map(episode => ({
-                href: `https://animeflv.net/anime/${slug}/episode/${episode.number}`,
-                number: episode.number
-            }));
+        console.log("Raw Episodes Data:", data);
 
+        if (data.success && data.data && Array.isArray(data.data.episodes)) {
+            const transformedResults = data.data.episodes.map(episode => ({
+                number: episode.number,
+                href: `https://animeflv.net/anime/${slug}/episode/${episode.number}`
+            }));
             return JSON.stringify(transformedResults);
         } else {
-            return JSON.stringify([]);
+            return JSON.stringify([{ number: "No episodes found", href: "" }]);
         }
     } catch (error) {
-        console.log('Episodes error:', error);
-        return JSON.stringify([]);
+        console.log('Fetch error:', error);
+        return JSON.stringify([{ number: "Error occurred", href: "" }]);
     }
 }
 
-async function extractStreamUrl(url) {
+async function extractStreamUrl(slug, episodeNumber) {
     try {
-        const match = url.match(/https:\/\/animeflv\.net\/anime\/(.+)\/episode\/(\d+)$/);
-        if (!match) throw new Error("Invalid URL format");
-
-        const slug = match[1];
-        const episodeNumber = match[2];
-        
         const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}/episode/${episodeNumber}`);
         const data = await response.json();
 
-        if (data.success && data.sources) {
-            const streamUrl = data.sources.find(source => source.type === 'video')?.url;
-            return streamUrl || null;
+        console.log("Raw Stream Data:", data);
+
+        if (data.success && data.data && Array.isArray(data.data.sources)) {
+            const hlsSource = data.data.sources.find(source => source.type === 'hls');
+            return hlsSource ? hlsSource.url : null;
         } else {
             return null;
         }
     } catch (error) {
-        console.log('Stream URL error:', error);
+        console.log('Fetch error:', error);
         return null;
     }
 }
