@@ -7,7 +7,13 @@ async function searchResults(keyword) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ query: keyword })
         });
+
         const data = await response.json();
+        console.log("API Response:", data);  // Log the response
+
+        if (!data.results || data.results.length === 0) {
+            throw new Error("No results found");
+        }
 
         const transformedResults = data.results.map(anime => ({
             title: anime.title,
@@ -21,6 +27,7 @@ async function searchResults(keyword) {
         return JSON.stringify([{ title: "Error", image: "", href: "" }]);
     }
 }
+
 
 async function extractDetails(url) {
     try {
