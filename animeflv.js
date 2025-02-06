@@ -28,24 +28,32 @@ async function searchResults(keyword) {
   }
   
   
-// Extract details for a given anime using its URL
-async function extractDetails(url) {
+  async function extractDetails(url) {
     try {
-        // Adjusted regex to match multiple subdomains of animeflv.net
         const match = url.match(/https?:\/\/(?:www\d*\.)?animeflv\.net\/anime\/(.+)$/);
         if (!match) throw new Error('Invalid URL format');
         const slug = match[1];
 
         const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}`);
-        if (!response.ok) throw new Error('Failed to fetch data');
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const data = await response.json();
-        const info = data.info || {};
+        if (!data.success) {
+            throw new Error('API response indicates failure');
+        }
+
+        // Access the nested data correctly
+        const animeData = data.data || {};
+
+        // Handle potential snake_case keys from the API
+        const synopsis = animeData.synopsis || animeData.sypnosis || 'No description available';
+        const altTitles = animeData.altTitles || animeData.alt_titles || [];
+        const releaseDate = animeData.releaseDate || animeData.release_date || 'Unknown';
 
         const transformedResults = [{
-            description: info.synopsis || 'No description available',
-            aliases: info.altTitles ? info.altTitles.join(', ') : 'No alternative titles',
-            airdate: info.releaseDate || 'Unknown'
+            description: synopsis,
+            aliases: altTitles.join(', ') || 'No alternative titles',
+            airdate: releaseDate
         }];
 
         return JSON.stringify(transformedResults);
