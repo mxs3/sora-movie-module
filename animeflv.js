@@ -32,7 +32,7 @@ async function searchResults(keyword) {
   async function extractDetails(url) {
     try {
       // Assume the anime URL follows the pattern: https://animeflv.ahmedrangel.com/anime/{slug}
-      const match = url.match(/https:\/\/animeflv\.ahmedrangel\.com\/api\/anime\/(.+)$/);
+      const match = url.match(/https:\/\/animeflv\.ahmedrangel\.com\/anime\/(.+)$/);
       if (!match) throw new Error('Invalid URL format');
       const slug = match[1];
   
