@@ -3,7 +3,7 @@ async function searchResults(keyword) {
     try {
       const encodedKeyword = encodeURIComponent(keyword);
       const response = await fetch(`https://animeflv.ahmedrangel.com/api/search?query=${encodedKeyword}`);
-      const json = await response.json();
+      const json = JSON.parse(response);
   
       // Check if the API call was successful
       if (!json.success) {
