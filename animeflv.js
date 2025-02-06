@@ -28,36 +28,37 @@ async function searchResults(keyword) {
   }
   
   
-  // Extract details for a given anime using its URL
-  async function extractDetails(url) {
+// Extract details for a given anime using its URL
+async function extractDetails(url) {
     try {
-      // Assume the anime URL follows the pattern: https://animeflv.ahmedrangel.com/anime/{slug}
-      const match = url.match(/https:\/\/(?:animeflv\.ahmedrangel\.com|www3\.animeflv\.net)\/anime\/(.+)$/);
-      if (!match) throw new Error('Invalid URL format');
-      const slug = match[1];
-  
-      const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}`);
-      const data = await response.json();
-  
-      // Assume the returned JSON has an "info" object with details.
-      const info = data.info || {};
-      const transformedResults = [{
-        description: info.synopsis || 'No description available',
-        // Here we assume that alternate titles are provided in an array property.
-        aliases: info.altTitles ? info.altTitles.join(', ') : 'No alternative titles',
-        airdate: info.releaseDate || 'Unknown'
-      }];
-  
-      return JSON.stringify(transformedResults);
+        // Adjusted regex to match multiple subdomains of animeflv.net
+        const match = url.match(/https?:\/\/(?:www\d*\.)?animeflv\.net\/anime\/(.+)$/);
+        if (!match) throw new Error('Invalid URL format');
+        const slug = match[1];
+
+        const response = await fetch(`https://animeflv.ahmedrangel.com/api/anime/${slug}`);
+        if (!response.ok) throw new Error('Failed to fetch data');
+
+        const data = await response.json();
+        const info = data.info || {};
+
+        const transformedResults = [{
+            description: info.synopsis || 'No description available',
+            aliases: info.altTitles ? info.altTitles.join(', ') : 'No alternative titles',
+            airdate: info.releaseDate || 'Unknown'
+        }];
+
+        return JSON.stringify(transformedResults);
     } catch (error) {
-      console.log('Details fetch error:', error);
-      return JSON.stringify([{
-        description: 'Error loading description',
-        aliases: 'No alternative titles',
-        airdate: 'Unknown'
-      }]);
+        console.error('Details fetch error:', error);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'No alternative titles',
+            airdate: 'Unknown'
+        }]);
     }
-  }
+}
+
   
   // Extract the list of episodes for an anime
   async function extractEpisodes(url) {
