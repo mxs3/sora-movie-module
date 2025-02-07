@@ -103,10 +103,3 @@ async function extractStreamUrl(html) {
         return null;
     }
 }
-
-module.exports = {
-    searchResults,
-    extractDetails,
-    extractEpisodes,
-    extractStreamUrl
-};
