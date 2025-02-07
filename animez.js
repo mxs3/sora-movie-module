@@ -1,34 +1,37 @@
 function searchResults(html) {
     const results = [];
-
-    // Updated regex using a positive lookahead to match the desired <a> elements
-    const itemRegex = /<a\b(?=[^>]*\bclass="sc-blHHSb tMXgB")([^>]*)>([\s\S]*?)<\/a>/g;
-    const items = html.match(itemRegex) || [];
-
-    items.forEach((itemHtml) => {
-        // Extract title from the <a> tag's title attribute
-        const titleMatch = itemHtml.match(/title="([^"]+)"/);
-        const title = titleMatch ? titleMatch[1].trim() : '';
-
-        // Extract href from the <a> tag's href attribute
-        const hrefMatch = itemHtml.match(/href="([^"]+)"/);
-        const href = hrefMatch ? hrefMatch[1].trim() : '';
-
-        // Extract image URL from the <img> tag inside the <a> tag
-        const imgMatch = itemHtml.match(/<img[^>]*src="([^"]+)"/);
+    
+    // Match each list item that contains a search result.
+    const liRegex = /<li\s+class="TPostMv">([\s\S]*?)<\/li>/g;
+    let liMatch;
+    
+    while ((liMatch = liRegex.exec(html)) !== null) {
+      const liContent = liMatch[0];
+      
+      // Extract the <a> tag inside the list item.
+      // This regex grabs the href and title from the <a> tag.
+      const aRegex = /<a\s+href="([^"]+)"\s+title="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i;
+      const aMatch = liContent.match(aRegex);
+      
+      if (aMatch) {
+        const href = aMatch[1].trim();
+        const title = aMatch[2].trim();
+        
+        // Extract image URL from the <img> tag inside the <a>.
+        const imgRegex = /<img[^>]*src="([^"]+)"[^>]*>/i;
+        const imgMatch = liContent.match(imgRegex);
         const imageUrl = imgMatch ? imgMatch[1].trim() : '';
-
-        if (title && href) {
-            results.push({
-                title: title,
-                image: imageUrl,
-                href: href
-            });
-        }
-    });
-
+        
+        results.push({
+          title: title,
+          image: imageUrl,
+          href: href
+        });
+      }
+    }
+    
     return results;
-}
+}  
   
 function extractDetails(html) {
    const details = [];
