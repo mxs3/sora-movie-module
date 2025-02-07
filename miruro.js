@@ -1,46 +1,32 @@
+const cheerio = require('cheerio');
+
 function searchResults(html) {
-    const results = [];
+  const results = [];
+  const $ = cheerio.load(html);
+
+  $('a.sc-blHHSb.tMXgB').each((i, el) => {
+    const href = $(el).attr('href') || '';
     
-    // Use lookahead assertions to ensure the <a> tag contains the class and href attributes,
-    // regardless of their order.
-    const itemRegex = /<a(?=[^>]*\bclass="sc-blHHSb tMXgB")(?=[^>]*\bhref="([^"]+)")[^>]*>([\s\S]*?)<\/a>/g;
-    let match;
-  
-    while ((match = itemRegex.exec(html)) !== null) {
-      // The first capturing group contains the href value.
-      const href = match[1].trim();
-      // The second capturing group contains the inner HTML of the <a> element.
-      const innerHtml = match[2];
-  
-      // Look for the <h5> element that has a title attribute starting with "Title:"
-      const titleRegex = /<h5[^>]*\btitle="Title:\s*([^"]+)"[^>]*>[\s\S]*?<\/h5>/;
-      const titleMatch = titleRegex.exec(innerHtml);
-      let title = '';
-      if (titleMatch) {
-        title = titleMatch[1].trim();
-      } else {
-        // Fallback: If no <h5> is found, try to extract the title from the <a> tag itself.
-        const aTitleRegex = /<a[^>]*\btitle="([^"]+)"[^>]*>/;
-        const aTitleMatch = aTitleRegex.exec(match[0]);
-        if (aTitleMatch) {
-          title = aTitleMatch[1].trim();
-        }
-      }
-  
-      // Look for an <img> element and extract its src attribute
-      const imgRegex = /<img[^>]*\bsrc="([^"]+)"[^>]*>/;
-      const imgMatch = imgRegex.exec(match[0]);
-      const image = imgMatch ? imgMatch[1].trim() : '';
-  
-      // Only add the result if both title and href exist.
-      if (title && href) {
-        results.push({ title, image, href });
-      }
+    // Try to get the title from an inner <h5> element
+    let title = $(el).find('h5[title^="Title:"]').attr('title') || '';
+    if (title.startsWith('Title:')) {
+      title = title.replace(/^Title:\s*/, '').trim();
     }
     
-    return results;
-}
-  
+    // Fallback: if no <h5>, use the <a>'s own title attribute.
+    if (!title) {
+      title = $(el).attr('title') || '';
+    }
+    
+    const image = $(el).find('img').attr('src') || '';
+    
+    if (title && href) {
+      results.push({ title, image, href });
+    }
+  });
+
+  return results;
+} 
 
 function extractDetails(html) {
    const details = [];
