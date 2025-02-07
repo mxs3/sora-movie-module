@@ -86,14 +86,15 @@ function extractEpisodes(html) {
   
 async function extractStreamUrl(html) {
     try {
-      // Look for the <source> element inside a <video> tag that points to a .m3u8 file.
-      // (If the video element is loaded dynamically, you might need a headless browser.)
+      // Look for the <source> element with a .m3u8 file
       const sourceMatch = html.match(/<source\s+src=["']([^"']+\.m3u8)["']\s+type=["']application\/x-mpegURL["']/i);
       let streamUrl = sourceMatch ? sourceMatch[1].trim() : null;
-      // Prepend the base URL if the stream URL is relative.
+      
+      // Prepend the new base URL if the streamUrl is relative.
       if (streamUrl && !/^https?:\/\//i.test(streamUrl)) {
-        streamUrl = "https://animez.org" + (streamUrl.startsWith("/") ? "" : "/") + streamUrl;
+        streamUrl = "https://anime-eu.1stkmgv1.com" + (streamUrl.startsWith("/") ? "" : "/") + streamUrl;
       }
+      
       console.log(streamUrl);
       return streamUrl;
     } catch (error) {
