@@ -44,11 +44,11 @@ function searchResults(html) {
   
 function extractDetails(html) {
     const details = [];
-    // Extract the description from the div with id "summary_shortened"
-    const descriptionMatch = html.match(/<div\s+id="summary_shortened"[^>]*>([\s\S]*?)<\/div>/i);
+    // Match the description from the div with id "summary_shortened"
+    const descriptionMatch = html.match(/<div\s+id=["']summary_shortened["'][^>]*>([\s\S]*?)<\/div>/i);
     const description = descriptionMatch ? descriptionMatch[1].trim() : '';
     
-    // AnimeZ example does not provide an airdate, so we'll use "N/A"
+    // AnimeZ pages do not provide an airdate separately – use "N/A"
     const airdate = "N/A";
     
     if (description) {
@@ -64,13 +64,13 @@ function extractDetails(html) {
   
 function extractEpisodes(html) {
     const episodes = [];
-    // Use a regex to match each <li> element for episodes.
-    // The pattern grabs the href from the <a> tag and its inner text (the episode number)
-    const liRegex = /<li\s+class="wp-manga-chapter[^"]*"[^>]*>[\s\S]*?<a\s+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>[\s\S]*?<\/li>/gi;
+    // This regex finds each episode list item.
+    // It captures the href attribute (which is relative) and the inner text (episode number)
+    const liRegex = /<li\s+class=["']wp-manga-chapter[^"']*["'][^>]*>[\s\S]*?<a\s+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>[\s\S]*?<\/li>/gi;
     let match;
     while ((match = liRegex.exec(html)) !== null) {
       let href = match[1].trim();
-      // Prepend the base URL if href is relative.
+      // Prepend base URL if href is relative
       if (!/^https?:\/\//i.test(href)) {
         href = "https://animez.org" + (href.startsWith("/") ? "" : "/") + href;
       }
@@ -84,14 +84,20 @@ function extractEpisodes(html) {
     return episodes;
 }
   
-function extractStreamUrl(html) {
-    // Look for the <source> element inside the <video> that contains a .m3u8 file.
-    const sourceMatch = html.match(/<source\s+src="([^"]+\.m3u8)"\s+type="application\/x-mpegURL"/i);
-    let streamUrl = sourceMatch ? sourceMatch[1].trim() : null;
-    // Prepend the base URL if the stream URL is relative.
-    if (streamUrl && !/^https?:\/\//i.test(streamUrl)) {
-      streamUrl = "https://animez.org" + (streamUrl.startsWith("/") ? "" : "/") + streamUrl;
+async function extractStreamUrl(html) {
+    try {
+      // Look for the <source> element inside a <video> tag that points to a .m3u8 file.
+      // (If the video element is loaded dynamically, you might need a headless browser.)
+      const sourceMatch = html.match(/<source\s+src=["']([^"']+\.m3u8)["']\s+type=["']application\/x-mpegURL["']/i);
+      let streamUrl = sourceMatch ? sourceMatch[1].trim() : null;
+      // Prepend the base URL if the stream URL is relative.
+      if (streamUrl && !/^https?:\/\//i.test(streamUrl)) {
+        streamUrl = "https://animez.org" + (streamUrl.startsWith("/") ? "" : "/") + streamUrl;
+      }
+      console.log(streamUrl);
+      return streamUrl;
+    } catch (error) {
+      console.error(error);
+      return null;
     }
-    console.log(streamUrl);
-    return streamUrl;
 }
