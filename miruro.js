@@ -1,37 +1,40 @@
 function searchResults(html) {
+    // Create a new DOMParser instance to convert the HTML string into a document
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
     const results = [];
-
-    // Updated regex patterns
-    const titleRegex = /<h5[^>]*title="Title: ([^"]+)"[^>]*>(.*?)<\/h5>/;
-    const hrefRegex = /<a[^>]*class="sc-blHHSb tMXgB"[^>]*href="([^"]+)"/;
-    const imgRegex = /<img[^>]*src="([^"]+)"[^>]*>/;
-    
-    // Find all matching <a> elements
-    const itemRegex = /<a[^>]*class="sc-blHHSb tMXgB"[^>]*href="([^"]+)"[^>]*>[\s\S]*?<\/a>/g;
-    const items = html.match(itemRegex) || [];
-
-    items.forEach((itemHtml) => {
-        const titleMatch = itemHtml.match(titleRegex);
-        const title = titleMatch ? titleMatch[1].trim() : '';
-
-        const hrefMatch = itemHtml.match(hrefRegex);
-        const href = hrefMatch ? hrefMatch[1].trim() : '';
-
-        const imgMatch = itemHtml.match(imgRegex);
-        const imageUrl = imgMatch ? imgMatch[1].trim() : '';
-
-        if (title && href) {
-            results.push({
-                title: title,
-                image: imageUrl,
-                href: href
-            });
-        }
+  
+    // Select all <a> elements with the specified classes.
+    // Note: This selector matches <a> tags that have both "sc-blHHSb" and "tMXgB" classes.
+    const items = doc.querySelectorAll('a.sc-blHHSb.tMXgB');
+  
+    items.forEach(item => {
+      // Get the href attribute from the <a> tag
+      const href = item.getAttribute('href');
+      
+      // Look for an <h5> element inside the <a> that has a title attribute starting with "Title:"
+      let title = '';
+      const h5 = item.querySelector('h5[title^="Title:"]');
+      if (h5) {
+        // Remove the "Title: " prefix from the title attribute value
+        title = h5.getAttribute('title').replace('Title: ', '').trim();
+      } else {
+        // Fallback: Use the <a> tag's own title attribute if available
+        title = item.getAttribute('title') || '';
+      }
+  
+      // Look for an <img> element inside the <a> to get the image source
+      const img = item.querySelector('img');
+      const image = img ? img.getAttribute('src') : '';
+  
+      // Only push items that have both a title and a href
+      if (title && href) {
+        results.push({ title, image, href });
+      }
     });
-
+  
     return results;
 }
-
 
 function extractDetails(html) {
    const details = [];
