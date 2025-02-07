@@ -1,38 +1,47 @@
 function searchResults(html) {
     const results = [];
-    // Use a more restrictive regex that ensures we match the <a> tag properly.
-    const itemRegex = /<a\b(?=[^>]*\bclass="sc-blHHSb tMXgB")(?=[^>]*\bhref="([^"]+)")[^>]*>([\s\S]*?)<\/a>/g;
-    let match;
   
-    while ((match = itemRegex.exec(html)) !== null) {
-      const href = match[1].trim();
-      const innerHtml = match[2];
+    // Match <a> elements with class="sc-blHHSb tMXgB" and an href attribute.
+    // We use lookahead assertions to ensure the class and href are present in any order.
+    const itemRegex = /<a(?=[^>]*\bclass="sc-blHHSb tMXgB")(?=[^>]*\bhref="([^"]+)")[^>]*>([\s\S]*?)<\/a>/g;
+    let itemMatch;
   
-      // Extract title from an inner <h5> element (if present)
-      let title = '';
+    while ((itemMatch = itemRegex.exec(html)) !== null) {
+      // Capture group 1: the href attribute value
+      const href = itemMatch[1].trim();
+      // Capture group 2: the inner HTML of the <a> element
+      const innerHtml = itemMatch[2];
+  
+      // Try to find a <h5> element with a title attribute that starts with "Title:"
       const titleRegex = /<h5\b[^>]*\btitle="Title:\s*([^"]+)"[^>]*>[\s\S]*?<\/h5>/;
+      let title = "";
       const titleMatch = titleRegex.exec(innerHtml);
       if (titleMatch) {
         title = titleMatch[1].trim();
       } else {
-        // Fallback: use the <a> tag's title attribute.
+        // Fallback: if no <h5> element is found, try to get the title from the <a> tag itself.
         const aTitleRegex = /<a\b[^>]*\btitle="([^"]+)"[^>]*>/;
-        const aTitleMatch = aTitleRegex.exec(match[0]);
+        const aTitleMatch = aTitleRegex.exec(itemMatch[0]);
         if (aTitleMatch) {
           title = aTitleMatch[1].trim();
         }
       }
   
-      // Extract image URL from an <img> tag inside the <a>
-      let image = '';
+      // Extract image URL from an <img> tag inside the <a> element.
       const imgRegex = /<img\b[^>]*\bsrc="([^"]+)"[^>]*>/;
-      const imgMatch = imgRegex.exec(match[0]);
+      let image = "";
+      const imgMatch = imgRegex.exec(itemMatch[0]);
       if (imgMatch) {
         image = imgMatch[1].trim();
       }
   
+      // Only add an entry if both a title and an href were found.
       if (title && href) {
-        results.push({ title, image, href });
+        results.push({
+          title: title,
+          image: image,
+          href: href
+        });
       }
     }
   
