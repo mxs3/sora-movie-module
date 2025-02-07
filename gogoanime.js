@@ -7,7 +7,7 @@ async function searchResults(keyword) {
       const transformedResults = data.data.map(anime => ({
           title: anime.title,
           image: anime.poster,
-          href: `https://amvstr.me/anime/${anime.id}`
+          href: `https://api.amvstr.me/api/v2/info/${anime.id}`
       }));
 
       return JSON.stringify(transformedResults);
@@ -47,7 +47,7 @@ async function extractEpisodes(url) {
       const transformedResults = data.data.episodes
           .filter(episode => episode.language === 'dub')
           .map(episode => ({
-              href: `https://amvstr.me/watch/${episode.id}`,
+              href: `https://anitaku.bz/${episode.id}`,
               number: episode.number
           }));
 
