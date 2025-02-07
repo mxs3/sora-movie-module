@@ -1,32 +1,43 @@
-const cheerio = require('cheerio');
-
 function searchResults(html) {
-  const results = [];
-  const $ = cheerio.load(html);
-
-  $('a.sc-blHHSb.tMXgB').each((i, el) => {
-    const href = $(el).attr('href') || '';
-    
-    // Try to get the title from an inner <h5> element
-    let title = $(el).find('h5[title^="Title:"]').attr('title') || '';
-    if (title.startsWith('Title:')) {
-      title = title.replace(/^Title:\s*/, '').trim();
+    const results = [];
+    // Use a more restrictive regex that ensures we match the <a> tag properly.
+    const itemRegex = /<a\b(?=[^>]*\bclass="sc-blHHSb tMXgB")(?=[^>]*\bhref="([^"]+)")[^>]*>([\s\S]*?)<\/a>/g;
+    let match;
+  
+    while ((match = itemRegex.exec(html)) !== null) {
+      const href = match[1].trim();
+      const innerHtml = match[2];
+  
+      // Extract title from an inner <h5> element (if present)
+      let title = '';
+      const titleRegex = /<h5\b[^>]*\btitle="Title:\s*([^"]+)"[^>]*>[\s\S]*?<\/h5>/;
+      const titleMatch = titleRegex.exec(innerHtml);
+      if (titleMatch) {
+        title = titleMatch[1].trim();
+      } else {
+        // Fallback: use the <a> tag's title attribute.
+        const aTitleRegex = /<a\b[^>]*\btitle="([^"]+)"[^>]*>/;
+        const aTitleMatch = aTitleRegex.exec(match[0]);
+        if (aTitleMatch) {
+          title = aTitleMatch[1].trim();
+        }
+      }
+  
+      // Extract image URL from an <img> tag inside the <a>
+      let image = '';
+      const imgRegex = /<img\b[^>]*\bsrc="([^"]+)"[^>]*>/;
+      const imgMatch = imgRegex.exec(match[0]);
+      if (imgMatch) {
+        image = imgMatch[1].trim();
+      }
+  
+      if (title && href) {
+        results.push({ title, image, href });
+      }
     }
-    
-    // Fallback: if no <h5>, use the <a>'s own title attribute.
-    if (!title) {
-      title = $(el).attr('title') || '';
-    }
-    
-    const image = $(el).find('img').attr('src') || '';
-    
-    if (title && href) {
-      results.push({ title, image, href });
-    }
-  });
-
-  return results;
-} 
+  
+    return results;
+}  
 
 function extractDetails(html) {
    const details = [];
