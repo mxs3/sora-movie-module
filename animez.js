@@ -43,74 +43,55 @@ function searchResults(html) {
 }
   
 function extractDetails(html) {
-   const details = [];
-
-   const descriptionMatch = html.match(/<p class="sm:text-\[1\.05rem\] leading-loose text-justify">([\s\S]*?)<\/p>/);
-   let description = descriptionMatch ? descriptionMatch[1].trim() : '';
-
-   const airdateMatch = html.match(/<td[^>]*title="([^"]+)">[^<]+<\/td>/);
-   let airdate = airdateMatch ? airdateMatch[1].trim() : '';
-
-   if (description && airdate) {
-       details.push({
-           description: description,
-           aliases: 'N/A',
-           airdate: airdate
-       });
-   }
-   console.log(details);
-   return details;
+    const details = [];
+    // Extract the description from the div with id "summary_shortened"
+    const descriptionMatch = html.match(/<div\s+id="summary_shortened"[^>]*>([\s\S]*?)<\/div>/i);
+    const description = descriptionMatch ? descriptionMatch[1].trim() : '';
+    
+    // AnimeZ example does not provide an airdate, so we'll use "N/A"
+    const airdate = "N/A";
+    
+    if (description) {
+      details.push({
+        description: description,
+        aliases: 'N/A',
+        airdate: airdate
+      });
+    }
+    console.log(details);
+    return details;
 }
-
+  
 function extractEpisodes(html) {
     const episodes = [];
-    const htmlRegex = /<a\s+[^>]*href="([^"]*?\/episode\/[^"]*?)"[^>]*>[\s\S]*?الحلقة\s+(\d+)[\s\S]*?<\/a>/gi;
-    const plainTextRegex = /الحلقة\s+(\d+)/g;
-
-    let matches;
-
-    if ((matches = html.match(htmlRegex))) {
-        matches.forEach(link => {
-            const hrefMatch = link.match(/href="([^"]+)"/);
-            const numberMatch = link.match(/الحلقة\s+(\d+)/);
-            if (hrefMatch && numberMatch) {
-                const href = hrefMatch[1];
-                const number = numberMatch[1];
-                episodes.push({
-                    href: href,
-                    number: number
-                });
-            }
-        });
-    } 
-    else if ((matches = html.match(plainTextRegex))) {
-        matches.forEach(match => {
-            const numberMatch = match.match(/\d+/);
-            if (numberMatch) {
-                episodes.push({
-                    href: null, 
-                    number: numberMatch[0]
-                });
-            }
-        });
+    // Use a regex to match each <li> element for episodes.
+    // The pattern grabs the href from the <a> tag and its inner text (the episode number)
+    const liRegex = /<li\s+class="wp-manga-chapter[^"]*"[^>]*>[\s\S]*?<a\s+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>[\s\S]*?<\/li>/gi;
+    let match;
+    while ((match = liRegex.exec(html)) !== null) {
+      let href = match[1].trim();
+      // Prepend the base URL if href is relative.
+      if (!/^https?:\/\//i.test(href)) {
+        href = "https://animez.org" + (href.startsWith("/") ? "" : "/") + href;
+      }
+      const number = match[2].trim();
+      episodes.push({
+        href: href,
+        number: number
+      });
     }
-
     console.log(episodes);
     return episodes;
 }
-
-async function extractStreamUrl(html) {
-    try {
-        const sourceMatch = html.match(/data-source="([^"]+)"/);
-        const embedUrl = sourceMatch?.[1]?.replace(/&amp;/g, '&');
-        if (!embedUrl) return null;
-
-        const response = await fetch(embedUrl);
-        const data = await response;
-        const videoUrl = data.match(/src:\s*'(https:\/\/[^']+\.mp4[^']*)'/)?.[1];
-        console.log(videoUrl);
-        return videoUrl || null;
-    } catch (error) {
-        return null;
+  
+function extractStreamUrl(html) {
+    // Look for the <source> element inside the <video> that contains a .m3u8 file.
+    const sourceMatch = html.match(/<source\s+src="([^"]+\.m3u8)"\s+type="application\/x-mpegURL"/i);
+    let streamUrl = sourceMatch ? sourceMatch[1].trim() : null;
+    // Prepend the base URL if the stream URL is relative.
+    if (streamUrl && !/^https?:\/\//i.test(streamUrl)) {
+      streamUrl = "https://animez.org" + (streamUrl.startsWith("/") ? "" : "/") + streamUrl;
     }
+    console.log(streamUrl);
+    return streamUrl;
 }
