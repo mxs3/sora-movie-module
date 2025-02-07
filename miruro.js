@@ -1,40 +1,46 @@
 function searchResults(html) {
-    // Create a new DOMParser instance to convert the HTML string into a document
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
     const results = [];
+    
+    // Use lookahead assertions to ensure the <a> tag contains the class and href attributes,
+    // regardless of their order.
+    const itemRegex = /<a(?=[^>]*\bclass="sc-blHHSb tMXgB")(?=[^>]*\bhref="([^"]+)")[^>]*>([\s\S]*?)<\/a>/g;
+    let match;
   
-    // Select all <a> elements with the specified classes.
-    // Note: This selector matches <a> tags that have both "sc-blHHSb" and "tMXgB" classes.
-    const items = doc.querySelectorAll('a.sc-blHHSb.tMXgB');
+    while ((match = itemRegex.exec(html)) !== null) {
+      // The first capturing group contains the href value.
+      const href = match[1].trim();
+      // The second capturing group contains the inner HTML of the <a> element.
+      const innerHtml = match[2];
   
-    items.forEach(item => {
-      // Get the href attribute from the <a> tag
-      const href = item.getAttribute('href');
-      
-      // Look for an <h5> element inside the <a> that has a title attribute starting with "Title:"
+      // Look for the <h5> element that has a title attribute starting with "Title:"
+      const titleRegex = /<h5[^>]*\btitle="Title:\s*([^"]+)"[^>]*>[\s\S]*?<\/h5>/;
+      const titleMatch = titleRegex.exec(innerHtml);
       let title = '';
-      const h5 = item.querySelector('h5[title^="Title:"]');
-      if (h5) {
-        // Remove the "Title: " prefix from the title attribute value
-        title = h5.getAttribute('title').replace('Title: ', '').trim();
+      if (titleMatch) {
+        title = titleMatch[1].trim();
       } else {
-        // Fallback: Use the <a> tag's own title attribute if available
-        title = item.getAttribute('title') || '';
+        // Fallback: If no <h5> is found, try to extract the title from the <a> tag itself.
+        const aTitleRegex = /<a[^>]*\btitle="([^"]+)"[^>]*>/;
+        const aTitleMatch = aTitleRegex.exec(match[0]);
+        if (aTitleMatch) {
+          title = aTitleMatch[1].trim();
+        }
       }
   
-      // Look for an <img> element inside the <a> to get the image source
-      const img = item.querySelector('img');
-      const image = img ? img.getAttribute('src') : '';
+      // Look for an <img> element and extract its src attribute
+      const imgRegex = /<img[^>]*\bsrc="([^"]+)"[^>]*>/;
+      const imgMatch = imgRegex.exec(match[0]);
+      const image = imgMatch ? imgMatch[1].trim() : '';
   
-      // Only push items that have both a title and a href
+      // Only add the result if both title and href exist.
       if (title && href) {
         results.push({ title, image, href });
       }
-    });
-  
+    }
+    
     return results;
 }
+  
 
 function extractDetails(html) {
    const details = [];
