@@ -1,73 +1,106 @@
-const cheerio = require('cheerio');
-
-async function searchResults(query) {
-    const url = `https://www.miruro.tv/search?query=${encodeURIComponent(query)}&sort=POPULARITY_DESC&type=ANIME`;
-    const html = await fetchHTML(url); // Use fetchHTML function from earlier
-
-    const $ = cheerio.load(html);
+function searchResults(html) {
     const results = [];
 
-    // Adjust selectors based on actual search results structure
-    $('.anime-card').each((i, el) => {
-        results.push({
-            title: $(el).find('.title').text().trim(),
-            image: $(el).find('img').attr('src'),
-            href: $(el).find('a').attr('href'),
-            id: $(el).find('a').attr('href').split('id=')[1] // Extract ID from URL
-        });
+    // Updated regex patterns based on provided HTML
+    const titleRegex = /<h5[^>]*title="Title: ([^"]+)"[^>]*>(.*?)<\/h5>/;
+    const hrefRegex = /<a[^>]*href="([^"]+)"[^>]*>/;
+    const imgRegex = /<img[^>]*src="([^"]+)"[^>]*>/;
+    const itemRegex = /<a[^>]*class="sc-blHHSb tMXgB"[^>]*href="([^"]+)"[^>]*>(?:<div[^>]*><\/div>)?<\/a>/g;
+
+    // Extract all matching items
+    const items = html.match(itemRegex) || [];
+
+    items.forEach((itemHtml) => {
+        const titleMatch = html.match(titleRegex);
+        const title = titleMatch ? titleMatch[1].trim() : '';
+
+        const hrefMatch = itemHtml.match(hrefRegex);
+        const href = hrefMatch ? hrefMatch[1].trim() : '';
+
+        const imgMatch = html.match(imgRegex);
+        const imageUrl = imgMatch ? imgMatch[1].trim() : '';
+
+        if (title && href) {
+            results.push({
+                title: title,
+                image: imageUrl,
+                href: href
+            });
+        }
     });
 
     return results;
 }
 
-async function extractDetails(id) {
-    const url = `https://www.miruro.tv/info?id=${id}`;
-    const html = await fetchHTML(url);
+function extractDetails(html) {
+   const details = [];
 
-    const $ = cheerio.load(html);
-    const details = {};
+   const descriptionMatch = html.match(/<p class="sm:text-\[1\.05rem\] leading-loose text-justify">([\s\S]*?)<\/p>/);
+   let description = descriptionMatch ? descriptionMatch[1].trim() : '';
 
-    // Extract metadata
-    details.title = $('h1.title').text().trim();
-    details.description = $('.synopsis').text().trim();
-    details.genres = $('.genre-tag').map((i, el) => $(el).text()).get();
-    details.episodes = $('.episode-list').length;
+   const airdateMatch = html.match(/<td[^>]*title="([^"]+)">[^<]+<\/td>/);
+   let airdate = airdateMatch ? airdateMatch[1].trim() : '';
 
-    return details;
+   if (description && airdate) {
+       details.push({
+           description: description,
+           aliases: 'N/A',
+           airdate: airdate
+       });
+   }
+   console.log(details);
+   return details;
 }
 
-async function extractEpisodes(id) {
-    const url = `https://www.miruro.tv/watch?id=${id}`;
-    const html = await fetchHTML(url);
-
-    const $ = cheerio.load(html);
+function extractEpisodes(html) {
     const episodes = [];
+    const htmlRegex = /<a\s+[^>]*href="([^"]*?\/episode\/[^"]*?)"[^>]*>[\s\S]*?الحلقة\s+(\d+)[\s\S]*?<\/a>/gi;
+    const plainTextRegex = /الحلقة\s+(\d+)/g;
 
-    $('.episode-item').each((i, el) => {
-        episodes.push({
-            number: $(el).find('.episode-num').text().replace('Episode', '').trim(),
-            href: $(el).find('a').attr('href'),
-            id: $(el).find('a').attr('href').split('id=')[1] // Extract episode ID
+    let matches;
+
+    if ((matches = html.match(htmlRegex))) {
+        matches.forEach(link => {
+            const hrefMatch = link.match(/href="([^"]+)"/);
+            const numberMatch = link.match(/الحلقة\s+(\d+)/);
+            if (hrefMatch && numberMatch) {
+                const href = hrefMatch[1];
+                const number = numberMatch[1];
+                episodes.push({
+                    href: href,
+                    number: number
+                });
+            }
         });
-    });
+    } 
+    else if ((matches = html.match(plainTextRegex))) {
+        matches.forEach(match => {
+            const numberMatch = match.match(/\d+/);
+            if (numberMatch) {
+                episodes.push({
+                    href: null, 
+                    number: numberMatch[0]
+                });
+            }
+        });
+    }
 
+    console.log(episodes);
     return episodes;
 }
 
-async function extractStreamUrl(episodeId) {
-    const url = `https://www.miruro.tv/watch?id=${episodeId}`;
-    const html = await fetchHTML(url);
+async function extractStreamUrl(html) {
+    try {
+        const sourceMatch = html.match(/data-source="([^"]+)"/);
+        const embedUrl = sourceMatch?.[1]?.replace(/&amp;/g, '&');
+        if (!embedUrl) return null;
 
-    const $ = cheerio.load(html);
-    const videoSrc = $('video source').attr('src');
-
-    if (!videoSrc) {
-        // Handle embedded players (e.g., iframes)
-        const iframeSrc = $('iframe.video-embed').attr('src');
-        return iframeSrc;
+        const response = await fetch(embedUrl);
+        const data = await response;
+        const videoUrl = data.match(/src:\s*'(https:\/\/[^']+\.mp4[^']*)'/)?.[1];
+        console.log(videoUrl);
+        return videoUrl || null;
+    } catch (error) {
+        return null;
     }
-
-    return videoSrc;
 }
-
-module.exports = { searchResults, extractDetails, extractEpisodes, extractStreamUrl };
