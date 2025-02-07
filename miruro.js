@@ -1,7 +1,7 @@
 const cheerio = require('cheerio');
 
 async function searchResults(query) {
-    const url = `https://www.miruro.tv/search?query=${encodeURIComponent(query)}`;
+    const url = `https://www.miruro.tv/search?query=${encodeURIComponent(query)}&sort=POPULARITY_DESC&type=ANIME`;
     const html = await fetchHTML(url); // Use fetchHTML function from earlier
 
     const $ = cheerio.load(html);
