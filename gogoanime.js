@@ -9,7 +9,7 @@ async function searchResults(keyword) {
             title: anime.title.english || anime.title.romaji || anime.title.userPreferred,
             image: anime.coverImage.large || anime.coverImage.medium,
             // Use the info endpoint to maintain consistency
-            href: `https://api.amvstr.me/api/v2/info/${anime.id}`
+            href: `https://api.amvstr.me/api/v2/episodes/${anime.id}`
         }));
 
         return JSON.stringify(transformedResults);
