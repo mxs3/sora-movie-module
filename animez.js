@@ -1,26 +1,36 @@
 function searchResults(html) {
     const results = [];
     
-    // Match each list item that contains a search result.
+    // Regex to capture each list item containing a search result.
     const liRegex = /<li\s+class="TPostMv">([\s\S]*?)<\/li>/g;
     let liMatch;
     
     while ((liMatch = liRegex.exec(html)) !== null) {
       const liContent = liMatch[0];
       
-      // Extract the <a> tag inside the list item.
-      // This regex grabs the href and title from the <a> tag.
+      // Extract the <a> tag's href and title attributes.
       const aRegex = /<a\s+href="([^"]+)"\s+title="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i;
       const aMatch = liContent.match(aRegex);
       
       if (aMatch) {
-        const href = aMatch[1].trim();
+        let href = aMatch[1].trim();
         const title = aMatch[2].trim();
         
-        // Extract image URL from the <img> tag inside the <a>.
+        // If href is relative, prepend the base URL.
+        if (!/^https?:\/\//i.test(href)) {
+          href = "https://animez.org" + href;
+        }
+        
+        // Extract image URL from the <img> tag.
         const imgRegex = /<img[^>]*src="([^"]+)"[^>]*>/i;
         const imgMatch = liContent.match(imgRegex);
-        const imageUrl = imgMatch ? imgMatch[1].trim() : '';
+        let imageUrl = imgMatch ? imgMatch[1].trim() : '';
+        
+        // If the image URL is relative, prepend the base URL.
+        if (imageUrl && !/^https?:\/\//i.test(imageUrl)) {
+          // Ensure there's exactly one slash between the base URL and the relative path.
+          imageUrl = "https://animez.org/" + imageUrl.replace(/^\/+/, '');
+        }
         
         results.push({
           title: title,
