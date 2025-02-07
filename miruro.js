@@ -1,23 +1,23 @@
 function searchResults(html) {
     const results = [];
 
-    // Updated regex patterns based on provided HTML
+    // Updated regex patterns
     const titleRegex = /<h5[^>]*title="Title: ([^"]+)"[^>]*>(.*?)<\/h5>/;
-    const hrefRegex = /<a[^>]*href="([^"]+)"[^>]*>/;
+    const hrefRegex = /<a[^>]*class="sc-blHHSb tMXgB"[^>]*href="([^"]+)"/;
     const imgRegex = /<img[^>]*src="([^"]+)"[^>]*>/;
-    const itemRegex = /<a[^>]*class="sc-blHHSb tMXgB"[^>]*href="([^"]+)"[^>]*>(?:<div[^>]*><\/div>)?<\/a>/g;
-
-    // Extract all matching items
+    
+    // Find all matching <a> elements
+    const itemRegex = /<a[^>]*class="sc-blHHSb tMXgB"[^>]*href="([^"]+)"[^>]*>[\s\S]*?<\/a>/g;
     const items = html.match(itemRegex) || [];
 
     items.forEach((itemHtml) => {
-        const titleMatch = html.match(titleRegex);
+        const titleMatch = itemHtml.match(titleRegex);
         const title = titleMatch ? titleMatch[1].trim() : '';
 
         const hrefMatch = itemHtml.match(hrefRegex);
         const href = hrefMatch ? hrefMatch[1].trim() : '';
 
-        const imgMatch = html.match(imgRegex);
+        const imgMatch = itemHtml.match(imgRegex);
         const imageUrl = imgMatch ? imgMatch[1].trim() : '';
 
         if (title && href) {
@@ -31,6 +31,7 @@ function searchResults(html) {
 
     return results;
 }
+
 
 function extractDetails(html) {
    const details = [];
