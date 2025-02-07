@@ -1,5 +1,5 @@
 {
-    "sourceName": "AnimeZ",
+    "sourceName": "AnimeOwl",
     "iconUrl": "https://raw.githubusercontent.com/xibrox/testing-something-for-anime-modules/refs/heads/main/icon.png",
     "author": {
         "name": "ibro",
@@ -9,8 +9,8 @@
     "language": "English",
     "streamType": "HLS",
     "quality": "720p",
-    "baseUrl": "https://animez.org/",
-    "searchBaseUrl": "https://animez.org/?act=search&f%5Bkeyword%5D=%s",
+    "baseUrl": "https://animeowl.live/",
+    "searchBaseUrl": "https://animeowl.live/search/%s",
     "scriptUrl": "https://raw.githubusercontent.com/xibrox/testing-something-for-anime-modules/refs/heads/main/animez.js",
     "streamAsyncJS": true
 }
