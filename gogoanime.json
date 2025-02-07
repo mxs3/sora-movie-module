@@ -1,6 +1,6 @@
 {
-    "sourceName": "AnimeOwl",
-    "iconUrl": "https://raw.githubusercontent.com/xibrox/testing-something-for-anime-modules/refs/heads/main/icon.png",
+    "sourceName": "Gogoanime",
+    "iconUrl": "https://anitaku.bz/img/icon/logo.png",
     "author": {
         "name": "ibro",
         "icon": "https://scontent.fprg6-1.fna.fbcdn.net/v/t39.30808-6/365288591_3660922007469197_6703853944233848190_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=nK-KaalkgS4Q7kNvgFtyoLf&_nc_zt=23&_nc_ht=scontent.fprg6-1.fna&_nc_gid=A-IeV-PGfNMiYR0tSEmP7D3&oh=00_AYD-4pe575IoiA_Zl269PIU-qtvZYOfX2aPl6mY8aupB5w&oe=67A9674D"
@@ -9,8 +9,8 @@
     "language": "English",
     "streamType": "HLS",
     "quality": "720p",
-    "baseUrl": "https://animeowl.live/",
-    "searchBaseUrl": "https://animeowl.live/search/%s",
-    "scriptUrl": "https://raw.githubusercontent.com/xibrox/testing-something-for-anime-modules/refs/heads/main/animez.js",
+    "baseUrl": "https://api.amvstr.me/",
+    "searchBaseUrl": "https://api.amvstr.me/api/v2/search?q=%s",
+    "scriptUrl": "https://raw.githubusercontent.com/xibrox/testing-something-for-anime-modules/refs/heads/main/gogoanime.js",
     "streamAsyncJS": true
 }
