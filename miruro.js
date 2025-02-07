@@ -1,32 +1,40 @@
 function searchResults(html) {
     const results = [];
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
+    // Use a more restrictive regex that ensures we match the <a> tag properly.
+    const itemRegex = /<a\b(?=[^>]*\bclass="sc-blHHSb tMXgB")(?=[^>]*\bhref="([^"]+)")[^>]*>([\s\S]*?)<\/a>/g;
+    let match;
   
-    // Select all <a> elements with the classes "sc-blHHSb" and "tMXgB"
-    const items = doc.querySelectorAll('a.sc-blHHSb.tMXgB');
-    
-    items.forEach(item => {
-      const href = item.getAttribute('href') || '';
+    while ((match = itemRegex.exec(html)) !== null) {
+      const href = match[1].trim();
+      const innerHtml = match[2];
   
-      // Try to find an <h5> element inside the <a> that has a title attribute starting with "Title:"
+      // Extract title from an inner <h5> element (if present)
       let title = '';
-      const h5 = item.querySelector('h5[title^="Title:"]');
-      if (h5) {
-        title = h5.getAttribute('title').replace(/^Title:\s*/, '').trim();
+      const titleRegex = /<h5\b[^>]*\btitle="Title:\s*([^"]+)"[^>]*>[\s\S]*?<\/h5>/;
+      const titleMatch = titleRegex.exec(innerHtml);
+      if (titleMatch) {
+        title = titleMatch[1].trim();
       } else {
-        // Fallback: use the <a> element's own title attribute if available
-        title = item.getAttribute('title') || '';
+        // Fallback: use the <a> tag's title attribute.
+        const aTitleRegex = /<a\b[^>]*\btitle="([^"]+)"[^>]*>/;
+        const aTitleMatch = aTitleRegex.exec(match[0]);
+        if (aTitleMatch) {
+          title = aTitleMatch[1].trim();
+        }
       }
-      
-      // Get the image URL from an <img> element inside the <a>
-      const img = item.querySelector('img');
-      const image = img ? img.getAttribute('src') : '';
+  
+      // Extract image URL from an <img> tag inside the <a>
+      let image = '';
+      const imgRegex = /<img\b[^>]*\bsrc="([^"]+)"[^>]*>/;
+      const imgMatch = imgRegex.exec(match[0]);
+      if (imgMatch) {
+        image = imgMatch[1].trim();
+      }
   
       if (title && href) {
         results.push({ title, image, href });
       }
-    });
+    }
   
     return results;
 }  
