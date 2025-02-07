@@ -16,9 +16,9 @@ function searchResults(html) {
         let href = aMatch[1].trim();
         const title = aMatch[2].trim();
         
-        // If href is relative, prepend the base URL.
+        // Prepend the base URL if href is relative.
         if (!/^https?:\/\//i.test(href)) {
-          href = "https://animez.org" + href;
+          href = "https://animez.org" + (href.startsWith("/") ? "" : "/") + href;
         }
         
         // Extract image URL from the <img> tag.
@@ -26,10 +26,9 @@ function searchResults(html) {
         const imgMatch = liContent.match(imgRegex);
         let imageUrl = imgMatch ? imgMatch[1].trim() : '';
         
-        // If the image URL is relative, prepend the base URL.
+        // Prepend the base URL for relative image URLs.
         if (imageUrl && !/^https?:\/\//i.test(imageUrl)) {
-          // Ensure there's exactly one slash between the base URL and the relative path.
-          imageUrl = "https://animez.org/" + imageUrl.replace(/^\/+/, '');
+          imageUrl = "https://animez.org" + (imageUrl.startsWith("/") ? "" : "/") + imageUrl;
         }
         
         results.push({
@@ -41,7 +40,7 @@ function searchResults(html) {
     }
     
     return results;
-}  
+}
   
 function extractDetails(html) {
    const details = [];
