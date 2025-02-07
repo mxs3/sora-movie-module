@@ -4,15 +4,15 @@ async function searchResults(keyword) {
         const response = await fetch(`https://api.amvstr.me/api/v2/search?q=${encodedKeyword}`);
         const data = await response.json();
 
-        // Transform the API response based on its structure
+        // Transform the API response based on the log structure
         const transformedResults = data.results.map(anime => ({
             title: anime.title.english || anime.title.romaji || anime.title.userPreferred,
             image: anime.coverImage.large || anime.coverImage.medium,
-            // Use the info endpoint to maintain consistency
             href: `https://api.amvstr.me/api/v2/episodes/${anime.id}`
         }));
 
         return JSON.stringify(transformedResults);
+        
     } catch (error) {
         console.log('Search error:', error);
         return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
