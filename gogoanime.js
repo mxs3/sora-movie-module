@@ -1,20 +1,22 @@
 async function searchResults(keyword) {
-  try {
-      const encodedKeyword = encodeURIComponent(keyword);
-      const response = await fetch(`https://api.amvstr.me/api/v2/search?q=${encodedKeyword}&type=anime`);
-      const data = await response.json();
+    try {
+        const encodedKeyword = encodeURIComponent(keyword);
+        const response = await fetch(`https://api.amvstr.me/api/v2/search?q=${encodedKeyword}`);
+        const data = await response.json();
 
-      const transformedResults = data.data.map(anime => ({
-          title: anime.title,
-          image: anime.poster,
-          href: `https://api.amvstr.me/api/v2/info/${anime.id}`
-      }));
+        // Transform the API response based on the log structure
+        const transformedResults = data.results.map(anime => ({
+            title: anime.title.english || anime.title.romaji || anime.title.userPreferred,
+            image: anime.coverImage.large || anime.coverImage.medium,
+            href: `https://api.amvstr.me/api/v2/info/${anime.id}`
+        }));
 
-      return JSON.stringify(transformedResults);
-  } catch (error) {
-      console.log('Search error:', error);
-      return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
-  }
+        return JSON.stringify(transformedResults);
+        
+    } catch (error) {
+        console.log('Search error:', error);
+        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
+    }
 }
 
 async function extractDetails(url) {
