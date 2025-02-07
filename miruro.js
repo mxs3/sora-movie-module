@@ -1,8 +1,8 @@
 function searchResults(html) {
     const results = [];
 
-    // Find all <a> elements with the specific class
-    const itemRegex = /<a\b[^>]*class="sc-blHHSb tMXgB"[^>]*>[\s\S]*?<\/a>/g;
+    // Updated regex using a positive lookahead to match the desired <a> elements
+    const itemRegex = /<a\b(?=[^>]*\bclass="sc-blHHSb tMXgB")([^>]*)>([\s\S]*?)<\/a>/g;
     const items = html.match(itemRegex) || [];
 
     items.forEach((itemHtml) => {
