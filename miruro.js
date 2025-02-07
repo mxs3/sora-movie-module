@@ -1,50 +1,32 @@
 function searchResults(html) {
     const results = [];
-    // Match all <a> tags (non-greedy match for inner content)
-    const aRegex = /<a\b[^>]*>[\s\S]*?<\/a>/gi;
-    let match;
-  
-    while ((match = aRegex.exec(html)) !== null) {
-      const aTag = match[0];
-      
-      // Only process this <a> if it contains the required class string.
-      if (!aTag.includes('class="sc-blHHSb tMXgB"')) continue;
-      
-      // Extract the href attribute from the <a> tag.
-      const hrefMatch = /href="([^"]+)"/i.exec(aTag);
-      const href = hrefMatch ? hrefMatch[1].trim() : '';
-      
-      // Extract the title.
-      // First, try to extract from an inner <h5> tag with title="Title: ..."
-      let title = "";
-      const h5Match = /<h5\b[^>]*\btitle="Title:\s*([^"]+)"[^>]*>/i.exec(aTag);
-      if (h5Match) {
-        title = h5Match[1].trim();
-      } else {
-        // Fallback: use the <a> tag's own title attribute.
-        const aTitleMatch = /title="([^"]+)"/i.exec(aTag);
-        if (aTitleMatch) {
-          title = aTitleMatch[1].trim();
+
+    // Find all <a> elements with the specific class
+    const itemRegex = /<a\b[^>]*class="sc-blHHSb tMXgB"[^>]*>[\s\S]*?<\/a>/g;
+    const items = html.match(itemRegex) || [];
+
+    items.forEach((itemHtml) => {
+        // Extract title from the <a> tag's title attribute
+        const titleMatch = itemHtml.match(/title="([^"]+)"/);
+        const title = titleMatch ? titleMatch[1].trim() : '';
+
+        // Extract href from the <a> tag's href attribute
+        const hrefMatch = itemHtml.match(/href="([^"]+)"/);
+        const href = hrefMatch ? hrefMatch[1].trim() : '';
+
+        // Extract image URL from the <img> tag inside the <a> tag
+        const imgMatch = itemHtml.match(/<img[^>]*src="([^"]+)"/);
+        const imageUrl = imgMatch ? imgMatch[1].trim() : '';
+
+        if (title && href) {
+            results.push({
+                title: title,
+                image: imageUrl,
+                href: href
+            });
         }
-      }
-      
-      // Extract the image source from an <img> tag inside the <a>
-      let image = "";
-      const imgMatch = /<img\b[^>]*\bsrc="([^"]+)"[^>]*>/i.exec(aTag);
-      if (imgMatch) {
-        image = imgMatch[1].trim();
-      }
-      
-      // Only add entries that have both a title and an href.
-      if (title && href) {
-        results.push({
-          title: title,
-          image: image,
-          href: href
-        });
-      }
-    }
-    
+    });
+
     return results;
 }
   
