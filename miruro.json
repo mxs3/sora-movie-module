@@ -10,7 +10,7 @@
     "streamType": "HLS",
     "quality": "720p",
     "baseUrl": "https://www.miruro.tv/",
-    "searchBaseUrl": "https://www.miruro.tv/search?query=%s",
+    "searchBaseUrl": "https://www.miruro.tv/search?query=%s&type=ANIME",
     "scriptUrl": "https://raw.githubusercontent.com/xibrox/testing-something-for-anime-modules/refs/heads/main/miruro.js",
     "asyncJS": true
 }
