@@ -14,8 +14,8 @@ async function searchResults(keyword) {
         // Filter out entries that do not have dub episodes (if applicable)
         const filteredAnimes = data.data.animes.filter(anime => anime.episodes && anime.episodes.dub != null);
         const transformedResults = filteredAnimes.map(anime => ({
-            title: anime.name,
-            image: anime.poster,
+            title: anime.title,
+            image: anime.image_url,
             href: `https://anitaku.bz/${anime.id}`
         }));
 
