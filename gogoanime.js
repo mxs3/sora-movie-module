@@ -11,9 +11,7 @@ async function searchResults(keyword) {
         const responseText = await fetch(`https://api.amvstr.me/api/v1/search?q=${encodedKeyword}`);
         const data = JSON.parse(responseText);
 
-        // Filter out entries that do not have dub episodes (if applicable)
-        const filteredAnimes = data.results.filter(anime => anime.episodes && anime.episodes.dub != null);
-        const transformedResults = filteredAnimes.map(anime => ({
+        const transformedResults = data.results.map(anime => ({
             title: anime.title,
             image: anime.image_url,
             href: `https://anitaku.bz/${anime.id}`
