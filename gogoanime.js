@@ -66,15 +66,13 @@ async function extractEpisodes(url) {
         const match = url.match(/https:\/\/amvstr\.me\/watch\/(.+)$/);
         if (!match) throw new Error("Invalid URL format");
         const encodedID = match[1];
-        const responseText = await fetch(`https://api.amvstr.me/api/v1/anime/${encodedID}/episodes`);
+        const responseText = await fetch(`https://api.amvstr.me/api/v1/episode/${encodedID}`);
         const data = JSON.parse(responseText);
 
-        const transformedResults = data.data.episodes.map(episode => {
-            // Assuming each episodeId contains a query param "?ep=" that we need to extract.
-            const epMatch = episode.episodeId.match(/\?ep=(.+)/);
+        const transformedResults = data.episodes.map(episode => {
             return {
-                href: `https://anitaku.bz/${encodedID}?ep=${epMatch ? epMatch[1] : episode.episodeId}`,
-                number: episode.number
+                href: `https://anitaku.bz/${episode.id}`,
+                number: episode.episode
             };
         });
         
