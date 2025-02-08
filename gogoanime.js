@@ -12,7 +12,7 @@ async function searchResults(keyword) {
         const data = JSON.parse(responseText);
 
         // Filter out entries that do not have dub episodes (if applicable)
-        const filteredAnimes = data.data.animes.filter(anime => anime.episodes && anime.episodes.dub != null);
+        const filteredAnimes = data.results.filter(anime => anime.episodes && anime.episodes.dub != null);
         const transformedResults = filteredAnimes.map(anime => ({
             title: anime.title,
             image: anime.image_url,
