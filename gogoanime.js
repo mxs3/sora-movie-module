@@ -38,12 +38,10 @@ async function extractDetails(url) {
         const responseText = await fetch(`https://api.amvstr.me/api/v1/info/${encodedID}`);
         const data = JSON.parse(responseText);
         
-        const animeInfo = data.data.anime.info;
-        const moreInfo = data.data.anime.moreInfo;
         const transformedResults = [{
-            description: animeInfo.description || 'No description available',
-            aliases: `Duration: ${animeInfo.stats && animeInfo.stats.duration ? animeInfo.stats.duration : 'Unknown'}`,
-            airdate: `Aired: ${moreInfo && moreInfo.aired ? moreInfo.aired : 'Unknown'}`
+            description: data.synopsis || 'No description available',
+            aliases: `Duration: Unknown`,
+            airdate: `Aired: ${data.released ? data.released : 'Unknown'}`
         }];
         
         return JSON.stringify(transformedResults);
