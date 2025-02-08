@@ -8,7 +8,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetch(`https://api.amvstr.me/api/v1/amvstr/search?q=${encodedKeyword}`);
+        const responseText = await fetch(`https://api.amvstr.me/api/v1/search?q=${encodedKeyword}`);
         const data = JSON.parse(responseText);
 
         // Filter out entries that do not have dub episodes (if applicable)
@@ -34,10 +34,10 @@ async function searchResults(keyword) {
  */
 async function extractDetails(url) {
     try {
-        const match = url.match(/https:\/\/amvstr\.me\/watch\/(.+)$/);
+        const match = url.match(/https:\/\/anitaku\.bz\/(.+)$/);
         if (!match) throw new Error("Invalid URL format");
         const encodedID = match[1];
-        const responseText = await fetch(`https://api.amvstr.me/api/v1/amvstr/anime/${encodedID}`);
+        const responseText = await fetch(`https://api.amvstr.me/api/v1/info/${encodedID}`);
         const data = JSON.parse(responseText);
         
         const animeInfo = data.data.anime.info;
@@ -70,14 +70,14 @@ async function extractEpisodes(url) {
         const match = url.match(/https:\/\/amvstr\.me\/watch\/(.+)$/);
         if (!match) throw new Error("Invalid URL format");
         const encodedID = match[1];
-        const responseText = await fetch(`https://api.amvstr.me/api/v1/amvstr/anime/${encodedID}/episodes`);
+        const responseText = await fetch(`https://api.amvstr.me/api/v1/anime/${encodedID}/episodes`);
         const data = JSON.parse(responseText);
 
         const transformedResults = data.data.episodes.map(episode => {
             // Assuming each episodeId contains a query param "?ep=" that we need to extract.
             const epMatch = episode.episodeId.match(/\?ep=(.+)/);
             return {
-                href: `https://amvstr.me/watch/${encodedID}?ep=${epMatch ? epMatch[1] : episode.episodeId}`,
+                href: `https://anitaku.bz/${encodedID}?ep=${epMatch ? epMatch[1] : episode.episodeId}`,
                 number: episode.number
             };
         });
