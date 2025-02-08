@@ -37,7 +37,10 @@ async function extractDetails(url) {
         const encodedID = match[1];
         const responseText = await fetch(`https://api.amvstr.me/api/v1/info/${encodedID}`);
         const data = JSON.parse(responseText);
-        
+
+        console.log(match);
+        console.log(match[1]);
+
         const transformedResults = [{
             description: data.synopsis || 'No description available',
             aliases: `Duration: Unknown`,
