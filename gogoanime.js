@@ -63,7 +63,7 @@ async function extractDetails(url) {
  */
 async function extractEpisodes(url) {
     try {
-        const match = url.match(/https:\/\/amvstr\.me\/watch\/(.+)$/);
+        const match = url.match(/https:\/\/anitaku\.bz\/(.+)$/);
         if (!match) throw new Error("Invalid URL format");
         const encodedID = match[1];
         const responseText = await fetch(`https://api.amvstr.me/api/v1/episode/${encodedID}`);
