@@ -1,10 +1,3 @@
-// amvstr.js
-
-/**
- * Searches for anime using the Amvstr API.
- * Assumes the API endpoint returns a JSON object with a structure similar to:
- * { data: { animes: [ { id, name, poster, episodes: { dub: ... } } ] } }
- */
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
@@ -24,12 +17,6 @@ async function searchResults(keyword) {
     }
 }
 
-/**
- * Extracts detailed information for a given anime.
- * Expects the URL format to be: https://amvstr.me/watch/{animeID}
- * Assumes the details endpoint returns:
- * { data: { anime: { info: { description, stats: { duration } }, moreInfo: { aired } } } }
- */
 async function extractDetails(url) {
     try {
         const match = url.match(/https:\/\/anitaku\.bz\/(.+)$/);
@@ -55,12 +42,6 @@ async function extractDetails(url) {
     }
 }
 
-/**
- * Retrieves the list of episodes for the given anime.
- * Expects the URL format to be: https://amvstr.me/watch/{animeID}
- * Assumes the episodes endpoint returns:
- * { data: { episodes: [ { episodeId, number } ] } }
- */
 async function extractEpisodes(url) {
     try {
         const match = url.match(/https:\/\/anitaku\.bz\/(.+)$/);
@@ -86,18 +67,12 @@ async function extractEpisodes(url) {
     }    
 }
 
-/**
- * Extracts the HLS stream URL for a given episode.
- * Expects the URL format to be: https://amvstr.me/watch/{animeID}
- * Assumes the stream sources endpoint returns:
- * { data: { sources: [ { type, url } ] } }
- */
 async function extractStreamUrl(url) {
     try {
-       const match = url.match(/https:\/\/amvstr\.me\/watch\/(.+)$/);
+       const match = url.match(/https:\/\/anitaku\.bz\/(.+)$/);
        if (!match) throw new Error("Invalid URL format");
        const encodedID = match[1];
-       const responseText = await fetch(`https://api.amvstr.me/api/v1/amvstr/episode/sources?animeEpisodeId=${encodedID}&category=dub`);
+       const responseText = await fetch(`https://api.amvstr.me/api/v1/episode/sources?animeEpisodeId=${encodedID}&category=dub`);
        const data = JSON.parse(responseText);
        
        // Look for the HLS source in the returned sources list.
