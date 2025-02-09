@@ -4,40 +4,52 @@ async function searchResults(keyword) {
     const encodedKeyword = encodeURIComponent(keyword);
     const searchUrl = `https://anime.uniquestream.net/api/v1/search?query=${encodedKeyword}`;
     const response = await fetch(searchUrl);
-    const data = JSON.parse(response)
-    
-    // Assume that the search API returns an array directly.
-    // If not, adjust this line (e.g., const seriesArray = data.results || data.series;)
-    const seriesArray = Array.isArray(data) ? data : data.series;
-    
-    // Create an array of URLs to fetch the first episode details for each series.
-    const firstEpisodesOfResults = seriesArray.map(item =>
+    if (!response.ok) {
+      throw new Error(`Search API error: ${response.status}`);
+    }
+    const data = await response.json();
+
+    // Ensure we have a series array
+    if (!data.series || !Array.isArray(data.series)) {
+      throw new Error("No series found in search response.");
+    }
+    const seriesArray = data.series;
+
+    // Build URLs to fetch each series detail (which includes the first episode info)
+    const firstEpisodesUrls = seriesArray.map(item =>
       `https://anime.uniquestream.net/api/v1/series/${item.content_id}`
     );
-    
-    // Fetch all series details in parallel.
+
+    // Fetch all series details in parallel
     const firstEpisodesResponses = await Promise.all(
-      firstEpisodesOfResults.map(url => fetch(url))
+      firstEpisodesUrls.map(url => fetch(url))
     );
     const firstEpisodesData = await Promise.all(
-      firstEpisodesResponses.map(response => JSON.parse(response))
+      firstEpisodesResponses.map(async (res, index) => {
+        if (!res.ok) {
+          throw new Error(
+            `Series detail fetch failed for index ${index} with status ${res.status}`
+          );
+        }
+        return await res.json();
+      })
     );
-    
-    // Map over the series array using the index to get the corresponding episode data.
+
+    // Map over the series array and pair it with its corresponding detail
     const transformedResults = seriesArray.map((item, index) => {
-      // Check that firstEpisodesData[index] has an "episode" property.
-      const episodeData = firstEpisodesData[index];
-      const episodeId = episodeData && episodeData.episode 
-                        ? episodeData.episode.content_id 
-                        : item.content_id; // fallback
-      
+      const seriesDetail = firstEpisodesData[index];
+      const episodeData = seriesDetail.episode; // first episode info
+      // Fallback: if no episode info, use the series content_id
+      const watchId = episodeData && episodeData.content_id
+        ? episodeData.content_id
+        : item.content_id;
       return {
         title: item.title,
         image: item.image,
-        href: `https://anime.uniquestream.net/watch/${episodeId}`
+        href: `https://anime.uniquestream.net/watch/${watchId}`
       };
     });
-    
+
     return JSON.stringify(transformedResults);
   } catch (error) {
     console.error('Search fetch error:', error);
