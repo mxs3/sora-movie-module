@@ -10,7 +10,6 @@ async function searchResults(keyword) {
       const firstEpisodeResponse = await fetch(firstEpisodeUrl);
       const firstEpisodeData = await firstEpisodeResponse.json();
 
-      // Assuming data.results is an array of anime objects. Adjust property names as needed.
       const transformedResults = data.series.map(item => ({
         title: item.title,
         image: item.image,
