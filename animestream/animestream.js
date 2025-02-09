@@ -143,3 +143,10 @@ async function extractStreamUrl(url, locale = 'ja-JP') {
     return null;
   }
 }
+
+module.exports = {
+  searchResults,
+  extractDetails,
+  extractEpisodes,
+  extractStreamUrl
+};
