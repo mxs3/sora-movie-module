@@ -4,7 +4,7 @@ async function searchResults(keyword) {
     const encodedKeyword = encodeURIComponent(keyword);
     const searchUrl = `https://anime.uniquestream.net/api/v1/search?query=${encodedKeyword}`;
     const response = await fetch(searchUrl);
-    const data = await response.json();
+    const data = JSON.parse(response)
     
     // Assume that the search API returns an array directly.
     // If not, adjust this line (e.g., const seriesArray = data.results || data.series;)
@@ -20,7 +20,7 @@ async function searchResults(keyword) {
       firstEpisodesOfResults.map(url => fetch(url))
     );
     const firstEpisodesData = await Promise.all(
-      firstEpisodesResponses.map(response => response.json())
+      firstEpisodesResponses.map(response => JSON.parse(response))
     );
     
     // Map over the series array using the index to get the corresponding episode data.
@@ -55,7 +55,7 @@ async function extractDetails(url) {
 
     const detailsUrl = `https://anime.uniquestream.net/api/v1/content/${content_id}`;
     const response = await fetch(detailsUrl);
-    const data = await response.json();
+    const data = JSON.parse(response)
     
     // Transform details into our desired format.
     const transformed = [{
@@ -92,7 +92,7 @@ async function extractEpisodes(url) {
 
     const detailsUrl = `https://anime.uniquestream.net/api/v1/content/${content_id}`;
     const response = await fetch(detailsUrl);
-    const data = await response.json();
+    const data = JSON.parse(response)
     
     let episodes = [];
     // Current episode
@@ -128,7 +128,7 @@ async function extractStreamUrl(url, locale = 'ja-JP') {
 
     const mediaUrl = `https://anime.uniquestream.net/api/v1/episode/${content_id}/media/dash/${locale}`;
     const response = await fetch(mediaUrl);
-    const data = await response.json();
+    const data = JSON.parse(response)
     
     // Return the main DASH playlist URL if available.
     return data.dash ? data.dash.playlist : null;
