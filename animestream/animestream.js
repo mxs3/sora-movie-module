@@ -6,25 +6,37 @@ async function searchResults(keyword) {
     const response = await fetch(searchUrl);
     const data = await response.json();
     
-    // Create an array of URLs to fetch the first episode of each series
-    const firstEpisodesOfResults = data.series.map(item =>
+    // Assume that the search API returns an array directly.
+    // If not, adjust this line (e.g., const seriesArray = data.results || data.series;)
+    const seriesArray = Array.isArray(data) ? data : data.series;
+    
+    // Create an array of URLs to fetch the first episode details for each series.
+    const firstEpisodesOfResults = seriesArray.map(item =>
       `https://anime.uniquestream.net/api/v1/series/${item.content_id}`
     );
     
-    // Fetch all first episode data in parallel
+    // Fetch all series details in parallel.
     const firstEpisodesResponses = await Promise.all(
       firstEpisodesOfResults.map(url => fetch(url))
     );
     const firstEpisodesData = await Promise.all(
       firstEpisodesResponses.map(response => response.json())
     );
-
-    // Map over the series array using the index to get the corresponding episode data
-    const transformedResults = data.series.map((item, index) => ({
-      title: item.title,
-      image: item.image,
-      href: `https://anime.uniquestream.net/watch/${firstEpisodesData[index].episode.content_id}`
-    }));
+    
+    // Map over the series array using the index to get the corresponding episode data.
+    const transformedResults = seriesArray.map((item, index) => {
+      // Check that firstEpisodesData[index] has an "episode" property.
+      const episodeData = firstEpisodesData[index];
+      const episodeId = episodeData && episodeData.episode 
+                        ? episodeData.episode.content_id 
+                        : item.content_id; // fallback
+      
+      return {
+        title: item.title,
+        image: item.image,
+        href: `https://anime.uniquestream.net/watch/${episodeId}`
+      };
+    });
     
     return JSON.stringify(transformedResults);
   } catch (error) {
