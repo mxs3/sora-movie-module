@@ -5,7 +5,7 @@ async function searchResults(keyword) {
         const data = JSON.parse(responseText);
 
         const transformedResults = data.results.map(movie => ({
-            title: movie.name || movie.title,
+            title: movie.title || movie.name,
             image: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
             href: `https://hexa.watch/watch/tv/${movie.id}/1/1`
         }));
@@ -19,7 +19,7 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        const match = url.match(/https:\/\/anitaku\.bz\/(.+)$/);
+        const match = url.match(/https:\/\/hexa\.watch\/(.+)$/);
         if (!match) throw new Error("Invalid URL format");
         const encodedID = match[1];
         const responseText = await fetch(`https://api.amvstr.me/api/v1/info/${encodedID}`);
