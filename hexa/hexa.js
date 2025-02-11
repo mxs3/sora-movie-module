@@ -19,7 +19,7 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        const match = url.match(/https:\/\/hexa\.watch\/(.+)$/);
+        const match = url.match(/https:\/\/hexa\.watch\/tv\/(.+)$/);
         if (!match) throw new Error("Invalid URL format");
         const encodedID = match[1];
         const responseText = await fetch(`https://api.themoviedb.org/3/tv/${encodedID}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=seasons`);
