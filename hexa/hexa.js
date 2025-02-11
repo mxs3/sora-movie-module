@@ -22,13 +22,13 @@ async function extractDetails(url) {
         const match = url.match(/https:\/\/hexa\.watch\/(.+)$/);
         if (!match) throw new Error("Invalid URL format");
         const encodedID = match[1];
-        const responseText = await fetch(`https://api.amvstr.me/api/v1/info/${encodedID}`);
+        const responseText = await fetch(`https://api.themoviedb.org/3/tv/${encodedID}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=seasons`);
         const data = JSON.parse(responseText);
         
         const transformedResults = [{
-            description: data.synopsis || 'No description available',
-            aliases: `Duration: Unknown`,
-            airdate: `Aired: ${data.released ? data.released : 'Unknown'}`
+            description: data.overview || 'No description available',
+            aliases: `Duration: ${data.episode_run_time}` || `Duration: Unknown`,
+            airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
         }];
         
         return JSON.stringify(transformedResults);
