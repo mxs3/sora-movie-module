@@ -5,7 +5,7 @@ async function searchResults(keyword) {
         const data = JSON.parse(responseText);
 
         const transformedResults = data.results.map(movie => ({
-            title: movie.name,
+            title: movie.name || movie.title,
             image: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
             href: `https://hexa.watch/watch/tv/${movie.id}/1/1`
         }));
