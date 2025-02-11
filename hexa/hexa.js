@@ -27,7 +27,7 @@ async function extractDetails(url) {
         
         const transformedResults = [{
             description: data.overview || 'No description available',
-            aliases: `Duration: ${data.episode_run_time}` || `Duration: Unknown`,
+            aliases: `Duration: ${data.episode_run_time ? data.episode_run_time : 'Unknown'}`,
             airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
         }];
         
