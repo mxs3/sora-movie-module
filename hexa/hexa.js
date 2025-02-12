@@ -72,6 +72,7 @@ async function extractEpisodes(url) {
 async function extractStreamUrl(url) {
     try {
         // Extract show ID, season number, and episode number from the URL.
+        // Expected URL format: https://hexa.watch/watch/tv/(showId)/(seasonNumber)/(episodeNumber)
         const regex = /https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/;
         const match = url.match(regex);
         if (!match) throw new Error("Invalid URL format");
@@ -82,14 +83,9 @@ async function extractStreamUrl(url) {
         // Build the endpoint dynamically using the extracted values.
         const responseText = await fetch(`https://fishstick.hexa.watch/api/hexa1/${showId}/${seasonNumber}/${episodeNumber}`);
         const data = JSON.parse(responseText);
-
-        const streamUrl = data.stream.map(source => ({
-            type: source.type,
-            url: source.url
-        }));
-
-        // Look for the HLS source in the returned sources list.
-        const hlsSource = data.stream[0].find(source => source.type === 'hls');
+       
+        // Look for the HLS source in the returned stream array.
+        const hlsSource = data.stream.find(source => source.type === 'hls');
         return hlsSource ? hlsSource.url : null;
     } catch (error) {
        console.log('Fetch error in extractStreamUrl:', error);
