@@ -82,23 +82,35 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        // This function is applicable only to TV shows.
-        const regex = /https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/;
-        const match = url.match(regex);
-        if (!match) throw new Error("Invalid URL format");
-        const showId = match[1];
-        const seasonNumber = match[2];
-        
-        // Fetch season details from TMDB.
-        const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
-        const data = JSON.parse(responseText);
+        if(url.includes('/watch/movie/')) {
+            // Movies do not have episodes; return a single entry.
+            const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+            const movieId = match[1];
+            return JSON.stringify([
+                { href: `https://hexa.watch/watch/movie/${movieId}`, number: 1 }
+            ]);
+        } else if(url.includes('/watch/tv/')) {
+            // For TV shows, extract episodes from the season API.
+            const regex = /https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/;
+            const match = url.match(regex);
+            if (!match) throw new Error("Invalid URL format");
+            const showId = match[1];
+            const seasonNumber = match[2];
+            
+            // Fetch season details from TMDB.
+            const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
+            const data = JSON.parse(responseText);
 
-        const transformedResults = data.episodes.map(episode => ({
-            href: `https://hexa.watch/watch/tv/${showId}/${episode.season_number}/${episode.episode_number}`,
-            number: episode.episode_number
-        }));
-        
-        return JSON.stringify(transformedResults);
+            const transformedResults = data.episodes.map(episode => ({
+                href: `https://hexa.watch/watch/tv/${showId}/${episode.season_number}/${episode.episode_number}`,
+                number: episode.episode_number
+            }));
+            
+            return JSON.stringify(transformedResults);
+        } else {
+            throw new Error("Invalid URL format");
+        }
     } catch (error) {
         console.log('Fetch error in extractEpisodes:', error);
         return JSON.stringify([]);
