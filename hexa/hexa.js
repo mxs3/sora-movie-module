@@ -82,9 +82,14 @@ async function extractStreamUrl(url) {
         // Build the endpoint dynamically using the extracted values.
         const responseText = await fetch(`https://fishstick.hexa.watch/api/hexa1/${showId}/${seasonNumber}/${episodeNumber}`);
         const data = JSON.parse(responseText);
-       
+
+        const streamUrl = data.stream.map(source => ({
+            type: source.type,
+            url: source.url
+        }));
+
         // Look for the HLS source in the returned sources list.
-        const hlsSource = data.data.sources.find(source => source.type === 'hls');
+        const hlsSource = data.stream[0].find(source => source.type === 'hls');
         return hlsSource ? hlsSource.url : null;
     } catch (error) {
        console.log('Fetch error in extractStreamUrl:', error);
