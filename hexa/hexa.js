@@ -131,18 +131,36 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
+    const endpoints = [
+        "https://fishstick.hexa.watch/api/hexa1/",
+        "https://fishstick.hexa.watch/api/hexa4/",
+        "https://fishstick.hexa.watch/api/hexa2/",
+        "https://fishstick.hexa.watch/api/hexa3/"
+    ];
+
     try {
-        if(url.includes('/watch/movie/')) {
+        if (url.includes('/watch/movie/')) {
             const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
+
             const movieId = match[1];
 
-            const responseText = await fetch(`https://fishstick.hexa.watch/api/hexa1/${movieId}`);
-            const data = JSON.parse(responseText);
+            for (let i = 0; i < endpoints.length; i++) {
+                try {
+                    const responseText = await fetch(`${endpoints[i]}${movieId}`);
+                    const data = JSON.parse(responseText);
 
-            const hlsSource = data.stream.find(source => source.type === 'hls');
-            return hlsSource ? hlsSource.url : null;
-        } else if(url.includes('/watch/tv/')) {
+                    if (data && data.stream && Array.isArray(data.stream)) {
+                        const hlsSource = data.stream.find(source => source.type === 'hls');
+
+                        if (hlsSource && hlsSource.url) return hlsSource.url;
+                    }
+                } catch (err) {
+                    console.log(`Fetch error on endpoint ${endpoints[i]} for movie ${movieId}:`, err);
+                }
+            }
+            return null;
+        } else if (url.includes('/watch/tv/')) {
             const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
@@ -150,11 +168,21 @@ async function extractStreamUrl(url) {
             const seasonNumber = match[2];
             const episodeNumber = match[3];
 
-            const responseText = await fetch(`https://fishstick.hexa.watch/api/hexa1/${showId}/${seasonNumber}/${episodeNumber}`);
-            const data = JSON.parse(responseText);
-            
-            const hlsSource = data.stream.find(source => source.type === 'hls');
-            return hlsSource ? hlsSource.url : null;
+            for (let i = 0; i < endpoints.length; i++) {
+                try {
+                    const responseText = await fetch(`${endpoints[i]}${showId}/${seasonNumber}/${episodeNumber}`);
+                    const data = JSON.parse(responseText);
+
+                    if (data && data.stream && Array.isArray(data.stream)) {
+                        const hlsSource = data.stream.find(source => source.type === 'hls');
+                        
+                        if (hlsSource && hlsSource.url) return hlsSource.url;
+                    }
+                } catch (err) {
+                    console.log(`Fetch error on endpoint ${endpoints[i]} for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
+                }
+            }
+            return null;
         } else {
             throw new Error("Invalid URL format");
         }
