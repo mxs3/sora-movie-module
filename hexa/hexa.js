@@ -44,10 +44,13 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        const match = url.match(/https:\/\/anitaku\.bz\/(.+)$/);
+        const match = url.match(/https:\/\/hexa\.watch\/tv\/(.+)$/);
         if (!match) throw new Error("Invalid URL format");
         const encodedID = match[1];
-        const responseText = await fetch(`https://api.amvstr.me/api/v1/episode/${encodedID}`);
+        const match2 = url.match(/https:\/\/hexa\.watch\/tv\/(.+)\/^(.+)$\/(.+)/);
+        if (!match2) throw new Error("Invalid URL format");
+        const encodedSeason = match2[2];
+        const responseText = await fetch(`https://api.themoviedb.org/3/tv/${encodedID}/season/${encodedSeason}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
         const data = JSON.parse(responseText);
 
         console.log(match);
@@ -55,8 +58,8 @@ async function extractEpisodes(url) {
 
         const transformedResults = data.episodes.map(episode => {
             return {
-                href: `https://anitaku.bz/${episode.id}`,
-                number: episode.episode
+                href: `https://hexa.watch/tv/${episode.id}/${episode.season_number}/${episode.episode_number}`,
+                number: episode.episode_number
             };
         });
         
@@ -69,7 +72,7 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-       const match = url.match(/https:\/\/anitaku\.bz\/(.+)$/);
+       const match = url.match(/https:\/\/hexa\.watch\/tv\/(.+)$/);
        if (!match) throw new Error("Invalid URL format");
        const encodedID = match[1];
        const responseText = await fetch(`https://api.amvstr.me/api/v1/episode/sources?animeEpisodeId=${encodedID}&category=dub`);
