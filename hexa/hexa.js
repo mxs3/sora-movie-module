@@ -87,7 +87,6 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {
     try {
         if(url.includes('/watch/movie/')) {
-            // Movies do not have episodes; return a single entry.
             const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
             const movieId = match[1];
@@ -95,27 +94,22 @@ async function extractEpisodes(url) {
                 { href: `https://hexa.watch/watch/movie/${movieId}`, number: 1, title: "Full Movie" }
             ]);
         } else if(url.includes('/watch/tv/')) {
-            // Extract only the show ID from the URL.
             const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
             const showId = match[1];
             
-            // Fetch the TV show details to get the list of all seasons.
             const showResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
             const showData = JSON.parse(showResponseText);
             
             let allEpisodes = [];
-            // Iterate through each season.
             for (const season of showData.seasons) {
                 const seasonNumber = season.season_number;
-                // Optionally skip season 0 (often used for specials) if undesired.
+
                 if(seasonNumber === 0) continue;
                 
-                // Fetch season details from TMDB.
                 const seasonResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
                 const seasonData = JSON.parse(seasonResponseText);
                 
-                // Ensure the season has episodes before mapping.
                 if (seasonData.episodes && seasonData.episodes.length) {
                     const episodes = seasonData.episodes.map(episode => ({
                         href: `https://hexa.watch/watch/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
