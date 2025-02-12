@@ -91,26 +91,34 @@ async function extractEpisodes(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-
             return JSON.stringify([
                 { href: `https://hexa.watch/watch/movie/${movieId}`, number: 1 }
             ]);
         } else if(url.includes('/watch/tv/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
+            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
-            const seasonNumber = match[2];
+            const showResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
+            const showData = JSON.parse(showResponseText);
             
-            const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
-            const data = JSON.parse(responseText);
-
-            const transformedResults = data.episodes.map(episode => ({
-                href: `https://hexa.watch/watch/tv/${showId}/${episode.season_number}/${episode.episode_number}`,
-                number: episode.episode_number
-            }));
+            let allEpisodes = [];
+            for (const season of showData.seasons) {
+                const seasonNumber = season.season_number;
+                
+                const seasonResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
+                const seasonData = JSON.parse(seasonResponseText);
+                
+                if (seasonData.episodes) {
+                    const episodes = seasonData.episodes.map(episode => ({
+                        href: `https://hexa.watch/watch/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                        number: episode.episode_number
+                    }));
+                    allEpisodes = allEpisodes.concat(episodes);
+                }
+            }
             
-            return JSON.stringify(transformedResults);
+            return JSON.stringify(allEpisodes);
         } else {
             throw new Error("Invalid URL format");
         }
@@ -119,6 +127,7 @@ async function extractEpisodes(url) {
         return JSON.stringify([]);
     }    
 }
+
 
 async function extractStreamUrl(url) {
     try {
