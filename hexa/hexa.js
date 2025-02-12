@@ -125,7 +125,7 @@ async function extractStreamUrl(url) {
             if (!match) throw new Error("Invalid URL format");
             const movieId = match[1];
             // Assumed endpoint for movies – adjust if the actual endpoint differs.
-            const responseText = await fetch(`https://fishstick.hexa.watch/api/hexa1/movie/${movieId}`);
+            const responseText = await fetch(`https://fishstick.hexa.watch/api/hexa1/${movieId}`);
             const data = JSON.parse(responseText);
             // Find the HLS stream in the stream array.
             const hlsSource = data.stream.find(source => source.type === 'hls');
