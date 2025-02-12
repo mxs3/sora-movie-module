@@ -41,31 +41,35 @@ async function searchResults(keyword) {
 async function extractDetails(url) {
     try {
         if(url.includes('/watch/movie/')) {
-            // Extract movie id from URL: e.g. https://hexa.watch/watch/movie/1241982
             const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
+
             const movieId = match[1];
             const responseText = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=videos,credits`);
             const data = JSON.parse(responseText);
+
             const transformedResults = [{
                 description: data.overview || 'No description available',
                 // Movies use runtime (in minutes)
                 aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
                 airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
             }];
+
             return JSON.stringify(transformedResults);
         } else if(url.includes('/watch/tv/')) {
-            // Extract show id from URL: e.g. https://hexa.watch/watch/tv/(ID)/1/1
             const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
+
             const showId = match[1];
             const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=seasons`);
             const data = JSON.parse(responseText);
+
             const transformedResults = [{
                 description: data.overview || 'No description available',
                 aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') : 'Unknown'}`,
                 airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
             }];
+
             return JSON.stringify(transformedResults);
         } else {
             throw new Error("Invalid URL format");
@@ -83,22 +87,21 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {
     try {
         if(url.includes('/watch/movie/')) {
-            // Movies do not have episodes; return a single entry.
             const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
+
             const movieId = match[1];
+
             return JSON.stringify([
                 { href: `https://hexa.watch/watch/movie/${movieId}`, number: 1 }
             ]);
         } else if(url.includes('/watch/tv/')) {
-            // For TV shows, extract episodes from the season API.
-            const regex = /https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/;
-            const match = url.match(regex);
+            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
+
             const showId = match[1];
             const seasonNumber = match[2];
             
-            // Fetch season details from TMDB.
             const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
             const data = JSON.parse(responseText);
 
@@ -120,26 +123,26 @@ async function extractEpisodes(url) {
 async function extractStreamUrl(url) {
     try {
         if(url.includes('/watch/movie/')) {
-            // For movies, extract the movie id from the URL.
             const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
             const movieId = match[1];
-            // Assumed endpoint for movies – adjust if the actual endpoint differs.
+
             const responseText = await fetch(`https://fishstick.hexa.watch/api/hexa1/${movieId}`);
             const data = JSON.parse(responseText);
-            // Find the HLS stream in the stream array.
+
             const hlsSource = data.stream.find(source => source.type === 'hls');
             return hlsSource ? hlsSource.url : null;
         } else if(url.includes('/watch/tv/')) {
-            // For TV shows, extract show id, season number, and episode number.
-            const regex = /https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/;
-            const match = url.match(regex);
+            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
+
             const showId = match[1];
             const seasonNumber = match[2];
             const episodeNumber = match[3];
+
             const responseText = await fetch(`https://fishstick.hexa.watch/api/hexa1/${showId}/${seasonNumber}/${episodeNumber}`);
             const data = JSON.parse(responseText);
+            
             const hlsSource = data.stream.find(source => source.type === 'hls');
             return hlsSource ? hlsSource.url : null;
         } else {
