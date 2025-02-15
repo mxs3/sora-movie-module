@@ -157,7 +157,7 @@ async function extractStreamUrl(url) {
             const movieId = match[1];
 
             for (let i = 0; i < endpoints.length; i++) {
-                for (let i = 0; i < servers.length; i++) {
+                for (let y = 0; y < servers.length; y++) {
                     try {
                         if (endpoints[i] === "https://play2.123embed.net/server/3?path=/movie/") {
                             const responseText = await fetch(`${endpoints[i]}${movieId}`);
@@ -169,7 +169,7 @@ async function extractStreamUrl(url) {
                                 if (hlsSource && hlsSource.file) return hlsSource.file;
                             }
                         } else {
-                            const responseText = await fetch(`${endpoints[i]}${movieId}${servers[i]}`);
+                            const responseText = await fetch(`${endpoints[i]}${movieId}${servers[y]}`);
                             const data = JSON.parse(responseText);
 
                             if (data) {
