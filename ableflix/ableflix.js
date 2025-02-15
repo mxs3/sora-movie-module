@@ -13,21 +13,21 @@ async function searchResults(keyword) {
                     href: `https://ableflix.xyz/watch/movie/${result.id}`
                 };
             }
-            // For TV shows, TMDB returns "name" and media_type === "tv"
-            else if(result.media_type === "tv" || result.name) {
-                return {
-                    title: result.name || result.title,
-                    image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://ableflix.xyz/watch/${result.id}`
-                };
-            } else {
-                // Fallback if media_type is not defined
-                return {
-                    title: result.title || result.name || "Untitled",
-                    image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://ableflix.xyz/watch/${result.id}`
-                };
-            }
+            // // For TV shows, TMDB returns "name" and media_type === "tv"
+            // else if(result.media_type === "tv" || result.name) {
+            //     return {
+            //         title: result.name || result.title,
+            //         image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
+            //         href: `https://ableflix.xyz/watch/${result.id}`
+            //     };
+            // } else {
+            //     // Fallback if media_type is not defined
+            //     return {
+            //         title: result.title || result.name || "Untitled",
+            //         image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
+            //         href: `https://ableflix.xyz/watch/${result.id}`
+            //     };
+            // }
         });
 
         return JSON.stringify(transformedResults);
@@ -93,35 +93,37 @@ async function extractEpisodes(url) {
             return JSON.stringify([
                 { href: `https://ableflix.xyz/watch/movie/${movieId}`, number: 1, title: "Full Movie" }
             ]);
-        } else if(url.includes('/watch/')) {
-            const match = url.match(/https:\/\/ableflix\.xyz\/watch\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-            const showId = match[1];
+        } 
+        // else if(url.includes('/watch/')) {
+        //     const match = url.match(/https:\/\/ableflix\.xyz\/watch\/([^\/]+)/);
+        //     if (!match) throw new Error("Invalid URL format");
+        //     const showId = match[1];
             
-            const showResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d`);
-            const showData = JSON.parse(showResponseText);
+        //     const showResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d`);
+        //     const showData = JSON.parse(showResponseText);
             
-            let allEpisodes = [];
-            for (const season of showData.seasons) {
-                const seasonNumber = season.season_number;
+        //     let allEpisodes = [];
+        //     for (const season of showData.seasons) {
+        //         const seasonNumber = season.season_number;
 
-                if(seasonNumber === 0) continue;
+        //         if(seasonNumber === 0) continue;
                 
-                const seasonResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d`);
-                const seasonData = JSON.parse(seasonResponseText);
+        //         const seasonResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d`);
+        //         const seasonData = JSON.parse(seasonResponseText);
                 
-                if (seasonData.episodes && seasonData.episodes.length) {
-                    const episodes = seasonData.episodes.map(episode => ({
-                        href: `https://ableflix.xyz/watch/${showId}`,
-                        number: episode.episode_number,
-                        title: episode.name || ""
-                    }));
-                    allEpisodes = allEpisodes.concat(episodes);
-                }
-            }
+        //         if (seasonData.episodes && seasonData.episodes.length) {
+        //             const episodes = seasonData.episodes.map(episode => ({
+        //                 href: `https://ableflix.xyz/watch/${showId}`,
+        //                 number: episode.episode_number,
+        //                 title: episode.name || ""
+        //             }));
+        //             allEpisodes = allEpisodes.concat(episodes);
+        //         }
+        //     }
             
-            return JSON.stringify(allEpisodes);
-        } else {
+        //     return JSON.stringify(allEpisodes);
+        // } 
+        else {
             throw new Error("Invalid URL format");
         }
     } catch (error) {
@@ -159,28 +161,30 @@ async function extractStreamUrl(url) {
                 }
             }
             return null;
-        } else if (url.includes('/watch/')) {
-            const match = url.match(/https:\/\/ableflix\.xyz\/watch\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
+        } 
+        // else if (url.includes('/watch/')) {
+        //     const match = url.match(/https:\/\/ableflix\.xyz\/watch\/([^\/]+)/);
+        //     if (!match) throw new Error("Invalid URL format");
 
-            const showId = match[1];
+        //     const showId = match[1];
 
-            for (let i = 0; i < servers.length; i++) {
-                try {
-                    const responseText = await fetch(`https://moviekex.online/embed/api/fastfetch/${showId}/${seasonNumber}/${episodeNumber}${servers[i]}`);
-                    const data = JSON.parse(responseText);
+        //     for (let i = 0; i < servers.length; i++) {
+        //         try {
+        //             const responseText = await fetch(`https://moviekex.online/embed/api/fastfetch/${showId}/${seasonNumber}/${episodeNumber}${servers[i]}`);
+        //             const data = JSON.parse(responseText);
 
-                    if (data) {
-                        const hlsSource = data.url.find(source => source.type === 'hls');
+        //             if (data) {
+        //                 const hlsSource = data.url.find(source => source.type === 'hls');
                         
-                        if (hlsSource && hlsSource.link) return hlsSource.link;
-                    }
-                } catch (err) {
-                    console.log(`Fetch error on endpoint https://moviekex.online/embed/api/fastfetch/ for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
-                }
-            }
-            return null;
-        } else {
+        //                 if (hlsSource && hlsSource.link) return hlsSource.link;
+        //             }
+        //         } catch (err) {
+        //             console.log(`Fetch error on endpoint https://moviekex.online/embed/api/fastfetch/ for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
+        //         }
+        //     }
+        //     return null;
+        // } 
+        else {
             throw new Error("Invalid URL format");
         }
     } catch (error) {
