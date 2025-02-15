@@ -4,30 +4,40 @@ async function searchResults(keyword) {
         const responseText = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=653bb8af90162bd98fc7ee32bcbbfb3d&query=${encodedKeyword}`);
         const data = JSON.parse(responseText);
 
-        const transformedResults = data.results.map(result => {
-            // For movies, TMDB returns "title" and media_type === "movie"
-            if(result.media_type === "movie" || result.title) {
-                return {
-                    title: result.title || result.name,
-                    image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://ableflix.xyz/watch/movie/${result.id}`
-                };
-            } else if(result.media_type === "tv" || result.name) {
-                // For TV shows, TMDB returns "name" and media_type === "tv"
-                return {
-                    // title: result.name || result.title,
-                    // image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    // href: `https://ableflix.xyz/watch/${result.id}`
-                };
-            } else {
-                // Fallback if media_type is not defined
-                return {
-                    // title: result.title || result.name || "Untitled",
-                    // image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    // href: `https://ableflix.xyz/watch/${result.id}`
-                };
-            }
-        });
+        // Filter results to include only movies
+        const transformedResults = data.results
+            .filter(result => result.media_type === "movie") // Ensure only movies
+            .map(result => ({
+                title: result.title || result.name,
+                image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
+                href: `https://ableflix.xyz/watch/movie/${result.id}`
+            }));
+
+
+        // const transformedResults = data.results.map(result => {
+        //     // For movies, TMDB returns "title" and media_type === "movie"
+        //     if(result.media_type === "movie" || result.title) {
+        //         return {
+        //             title: result.title || result.name,
+        //             image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
+        //             href: `https://ableflix.xyz/watch/movie/${result.id}`
+        //         };
+        //     } else if(result.media_type === "tv" || result.name) {
+        //         // For TV shows, TMDB returns "name" and media_type === "tv"
+        //         return {
+        //             title: result.name || result.title,
+        //             image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
+        //             href: `https://ableflix.xyz/watch/${result.id}`
+        //         };
+        //     } else {
+        //         // Fallback if media_type is not defined
+        //         return {
+        //             title: result.title || result.name || "Untitled",
+        //             image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
+        //             href: `https://ableflix.xyz/watch/${result.id}`
+        //         };
+        //     }
+        // });
 
         return JSON.stringify(transformedResults);
     } catch (error) {
