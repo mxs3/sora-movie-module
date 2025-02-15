@@ -148,10 +148,10 @@ async function extractStreamUrl(url) {
                     const responseText = await fetch(`https://moviekex.online/embed/api/fastfetch/${movieId}${servers[i]}`);
                     const data = JSON.parse(responseText);
 
-                    if (data && data.stream && Array.isArray(data.stream)) {
-                        const hlsSource = data.stream.find(source => source.type === 'hls');
+                    if (data) {
+                        const hlsSource = data.url.find(source => source.type === 'hls');
 
-                        if (hlsSource && hlsSource.url) return hlsSource.url;
+                        if (hlsSource && hlsSource.link) return hlsSource.link;
                     }
                 } catch (err) {
                     console.log(`Fetch error on endpoint https://moviekex.online/embed/api/fastfetch/ for movie ${movieId}:`, err);
@@ -169,10 +169,10 @@ async function extractStreamUrl(url) {
                     const responseText = await fetch(`https://moviekex.online/embed/api/fastfetch/${showId}/${seasonNumber}/${episodeNumber}${servers[i]}`);
                     const data = JSON.parse(responseText);
 
-                    if (data && data.stream && Array.isArray(data.stream)) {
-                        const hlsSource = data.stream.find(source => source.type === 'hls');
+                    if (data) {
+                        const hlsSource = data.url.find(source => source.type === 'hls');
                         
-                        if (hlsSource && hlsSource.url) return hlsSource.url;
+                        if (hlsSource && hlsSource.link) return hlsSource.link;
                     }
                 } catch (err) {
                     console.log(`Fetch error on endpoint https://moviekex.online/embed/api/fastfetch/ for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
