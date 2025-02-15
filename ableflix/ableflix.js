@@ -26,7 +26,7 @@ async function searchResults(keyword) {
                 return {
                     title: result.title || result.name || "Untitled",
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://ableflix.xyz/tv/${result.id}`
+                    href: `https://ableflix.xyz/watch/${result.id}`
                 };
             }
         });
@@ -40,7 +40,7 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        if(url.includes('/movie/')) {
+        if(url.includes('/watch/movie/')) {
             const match = url.match(/https:\/\/ableflix\.xyz\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
@@ -55,7 +55,7 @@ async function extractDetails(url) {
             }];
 
             return JSON.stringify(transformedResults);
-        } else if(url.includes('/tv/')) {
+        } else if(url.includes('/watch/')) {
             const match = url.match(/https:\/\/ableflix\.xyz\/tv\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
@@ -130,23 +130,22 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
-    const endpoints = [
-        "https://fishstick.hexa.watch/api/hexa1/",
-        "https://fishstick.hexa.watch/api/hexa4/",
-        "https://fishstick.hexa.watch/api/hexa2/",
-        "https://fishstick.hexa.watch/api/hexa3/"
+    const servers = [
+        "?sr=3",
+        "?sr=2",
+        "?sr=1"
     ];
 
     try {
         if (url.includes('/watch/movie/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/([^\/]+)/);
+            const match = url.match(/https:\/\/ableflix\.xyz\/watch\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
 
             for (let i = 0; i < endpoints.length; i++) {
                 try {
-                    const responseText = await fetch(`${endpoints[i]}${movieId}`);
+                    const responseText = await fetch(`https://moviekex.online/embed/api/fastfetch/${movieId}${servers[i]}`);
                     const data = JSON.parse(responseText);
 
                     if (data && data.stream && Array.isArray(data.stream)) {
@@ -155,12 +154,12 @@ async function extractStreamUrl(url) {
                         if (hlsSource && hlsSource.url) return hlsSource.url;
                     }
                 } catch (err) {
-                    console.log(`Fetch error on endpoint ${endpoints[i]} for movie ${movieId}:`, err);
+                    console.log(`Fetch error on endpoint https://moviekex.online/embed/api/fastfetch/ for movie ${movieId}:`, err);
                 }
             }
             return null;
-        } else if (url.includes('/watch/tv/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/iframe\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
+        } else if (url.includes('/watch/')) {
+            const match = url.match(/https:\/\/ableflix\.xyz\/watch\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
@@ -169,7 +168,7 @@ async function extractStreamUrl(url) {
 
             for (let i = 0; i < endpoints.length; i++) {
                 try {
-                    const responseText = await fetch(`${endpoints[i]}${showId}/${seasonNumber}/${episodeNumber}`);
+                    const responseText = await fetch(`https://moviekex.online/embed/api/fastfetch/${showId}/${seasonNumber}/${episodeNumber}${servers[i]}`);
                     const data = JSON.parse(responseText);
 
                     if (data && data.stream && Array.isArray(data.stream)) {
@@ -178,7 +177,7 @@ async function extractStreamUrl(url) {
                         if (hlsSource && hlsSource.url) return hlsSource.url;
                     }
                 } catch (err) {
-                    console.log(`Fetch error on endpoint ${endpoints[i]} for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
+                    console.log(`Fetch error on endpoint https://moviekex.online/embed/api/fastfetch/ for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
                 }
             }
             return null;
