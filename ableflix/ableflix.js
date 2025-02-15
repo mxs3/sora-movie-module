@@ -19,14 +19,14 @@ async function searchResults(keyword) {
                     title: result.name || result.title,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
                     // Using default season/episode numbers (1/1)
-                    href: `https://ableflix.xyz/watch/${result.id}/1/1`
+                    href: `https://ableflix.xyz/watch/${result.id}`
                 };
             } else {
                 // Fallback if media_type is not defined
                 return {
                     title: result.title || result.name || "Untitled",
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://ableflix.xyz/watch/tv/${result.id}/1/1`
+                    href: `https://ableflix.xyz/watch/tv/${result.id}`
                 };
             }
         });
