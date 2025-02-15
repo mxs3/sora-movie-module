@@ -143,7 +143,7 @@ async function extractStreamUrl(url) {
 
             const movieId = match[1];
 
-            for (let i = 0; i < endpoints.length; i++) {
+            for (let i = 0; i < servers.length; i++) {
                 try {
                     const responseText = await fetch(`https://moviekex.online/embed/api/fastfetch/${movieId}${servers[i]}`);
                     const data = JSON.parse(responseText);
@@ -164,7 +164,7 @@ async function extractStreamUrl(url) {
 
             const showId = match[1];
 
-            for (let i = 0; i < endpoints.length; i++) {
+            for (let i = 0; i < servers.length; i++) {
                 try {
                     const responseText = await fetch(`https://moviekex.online/embed/api/fastfetch/${showId}/${seasonNumber}/${episodeNumber}${servers[i]}`);
                     const data = JSON.parse(responseText);
