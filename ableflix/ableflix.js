@@ -45,7 +45,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-            const responseText = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d&language=en-US`);
+            const responseText = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d`);
             const data = JSON.parse(responseText);
 
             const transformedResults = [{
@@ -60,7 +60,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
-            const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d&language=en-US`);
+            const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d`);
             const data = JSON.parse(responseText);
 
             const transformedResults = [{
@@ -86,14 +86,14 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {
     try {
         if(url.includes('/watch/movie/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/([^\/]+)/);
+            const match = url.match(/https:\/\/ableflix\.xyz\/watch\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
             const movieId = match[1];
             return JSON.stringify([
-                { href: `https://hexa.watch/watch/movie/${movieId}`, number: 1, title: "Full Movie" }
+                { href: `https://ableflix.xyz/watch/movie/${movieId}`, number: 1, title: "Full Movie" }
             ]);
-        } else if(url.includes('/watch/tv/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)/);
+        } else if(url.includes('/watch/')) {
+            const match = url.match(/https:\/\/ableflix\.xyz\/watch\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
             const showId = match[1];
             
@@ -111,7 +111,7 @@ async function extractEpisodes(url) {
                 
                 if (seasonData.episodes && seasonData.episodes.length) {
                     const episodes = seasonData.episodes.map(episode => ({
-                        href: `https://hexa.watch/watch/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                        href: `https://ableflix.xyz/watch/${showId}`,
                         number: episode.episode_number,
                         title: episode.name || ""
                     }));
