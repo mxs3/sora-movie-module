@@ -163,8 +163,6 @@ async function extractStreamUrl(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
-            const seasonNumber = match[2];
-            const episodeNumber = match[3];
 
             for (let i = 0; i < endpoints.length; i++) {
                 try {
