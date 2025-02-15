@@ -11,6 +11,6 @@
     "quality": "1080p",
     "baseUrl": "https://api.themoviedb.org/",
     "searchBaseUrl": "https://api.themoviedb.org/3/search/multi?api_key=653bb8af90162bd98fc7ee32bcbbfb3d&query=%s",
-    "scriptUrl": "https://raw.githubusercontent.com/xibrox/hexa-module/refs/heads/main/ableflix/ableflix.js",
+    "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.js",
     "asyncJS": true
 }
