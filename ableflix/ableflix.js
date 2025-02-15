@@ -13,20 +13,21 @@ async function searchResults(keyword) {
                     href: `https://ableflix.xyz/watch/movie/${result.id}`
                 };
             }
-            // For TV shows, TMDB returns "name" and media_type === "tv"
-            else if(result.media_type === "tv" || result.name) {
-                return {
-                    title: result.name || result.title,
-                    image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    // Using default season/episode numbers (1/1)
-                    href: `https://ableflix.xyz/watch/${result.id}`
-                };
-            } else {
+            // // For TV shows, TMDB returns "name" and media_type === "tv"
+            // else if(result.media_type === "tv" || result.name) {
+            //     return {
+            //         title: result.name || result.title,
+            //         image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
+            //         // Using default season/episode numbers (1/1)
+            //         href: `https://ableflix.xyz/watch/${result.id}`
+            //     };
+            // } 
+            else {
                 // Fallback if media_type is not defined
                 return {
                     title: result.title || result.name || "Untitled",
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://ableflix.xyz/watch/${result.id}`
+                    href: `https://ableflix.xyz/watch/movie/${result.id}`
                 };
             }
         });
