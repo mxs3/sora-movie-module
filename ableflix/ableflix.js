@@ -157,25 +157,22 @@ async function extractStreamUrl(url) {
             const movieId = match[1];
 
             for (let i = 0; i < endpoints.length; i++) {
-                for (let y = 0; y < servers.length; y++) {
+                for (let j = 0; j < servers.length; j++) {
                     try {
-                        if (endpoints[i] === "https://play2.123embed.net/server/3?path=/movie/") {
-                            const responseText = await fetch(`${endpoints[i]}${movieId}`);
-                            const data = JSON.parse(responseText);
+                        let apiUrl = endpoints[i] === "https://play2.123embed.net/server/3?path=/movie/"
+                            ? `${endpoints[i]}${movieId}`
+                            : `${endpoints[i]}${movieId}${servers[j]}`;
 
-                            if (data) {
-                                const hlsSource = data.playlist.find(source => source.type === 'hls');
+                        const responseText = await fetch(apiUrl);
+                        const data = JSON.parse(responseText);
 
-                                if (hlsSource && hlsSource.file) return hlsSource.file;
-                            }
-                        } else {
-                            const responseText = await fetch(`${endpoints[i]}${movieId}${servers[y]}`);
-                            const data = JSON.parse(responseText);
-
-                            if (data) {
-                                const hlsSource = data.url.find(source => source.type === 'hls');
-
-                                if (hlsSource && hlsSource.link) return hlsSource.link;
+                        if (data) {
+                            if (endpoints[i] === "https://play2.123embed.net/server/3?path=/movie/") {
+                                const hlsSource = data.playlist?.find(source => source.type === 'hls');
+                                if (hlsSource?.file) return hlsSource.file;
+                            } else {
+                                const hlsSource = data.url?.find(source => source.type === 'hls');
+                                if (hlsSource?.link) return hlsSource.link;
                             }
                         }
                     } catch (err) {
