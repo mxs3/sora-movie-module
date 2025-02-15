@@ -139,8 +139,8 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     const endpoints = [
-        "https://play2.123embed.net/server/3?path=/movie/",  
         "https://moviekex.online/embed/api/fastfetch/",
+        "https://play2.123embed.net/server/3?path=/movie/",  
     ];
 
     const servers = [
