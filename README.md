@@ -1,6 +1,6 @@
-# Movie Module for [Sora](https://github.com/cranci1/Sora)
+# Movie Modules for [Sora](https://github.com/cranci1/Sora)
 
-## Modules for Sora app
+## Available Modules
 
 <details>
 
