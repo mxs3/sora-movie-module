@@ -19,7 +19,7 @@ async function searchResults(keyword) {
                     title: result.name || result.title,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
                     // Using default season/episode numbers (1/1)
-                    href: `https://ableflix.xyz/watch/tv/${result.id}/1/1`
+                    href: `https://ableflix.xyz/watch/${result.id}/1/1`
                 };
             } else {
                 // Fallback if media_type is not defined
