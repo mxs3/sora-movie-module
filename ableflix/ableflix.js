@@ -13,21 +13,19 @@ async function searchResults(keyword) {
                     href: `https://ableflix.xyz/watch/movie/${result.id}`
                 };
             }
-            // // For TV shows, TMDB returns "name" and media_type === "tv"
-            // else if(result.media_type === "tv" || result.name) {
-            //     return {
-            //         title: result.name || result.title,
-            //         image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-            //         // Using default season/episode numbers (1/1)
-            //         href: `https://ableflix.xyz/watch/${result.id}`
-            //     };
-            // } 
-            else {
+            // For TV shows, TMDB returns "name" and media_type === "tv"
+            else if(result.media_type === "tv" || result.name) {
+                return {
+                    title: result.name || result.title,
+                    image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
+                    href: `https://ableflix.xyz/watch/${result.id}`
+                };
+            } else {
                 // Fallback if media_type is not defined
                 return {
                     title: result.title || result.name || "Untitled",
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://ableflix.xyz/watch/movie/${result.id}`
+                    href: `https://ableflix.xyz/watch/${result.id}`
                 };
             }
         });
@@ -56,22 +54,24 @@ async function extractDetails(url) {
             }];
 
             return JSON.stringify(transformedResults);
-        } else if(url.includes('/watch/')) {
-            const match = url.match(/https:\/\/ableflix\.xyz\/watch\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
+        } 
+        // else if(url.includes('/watch/')) {
+        //     const match = url.match(/https:\/\/ableflix\.xyz\/watch\/([^\/]+)/);
+        //     if (!match) throw new Error("Invalid URL format");
 
-            const showId = match[1];
-            const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d`);
-            const data = JSON.parse(responseText);
+        //     const showId = match[1];
+        //     const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d`);
+        //     const data = JSON.parse(responseText);
 
-            const transformedResults = [{
-                description: data.overview || 'No description available',
-                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
-                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
-            }];
+        //     const transformedResults = [{
+        //         description: data.overview || 'No description available',
+        //         aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
+        //         airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
+        //     }];
 
-            return JSON.stringify(transformedResults);
-        } else {
+        //     return JSON.stringify(transformedResults);
+        // } 
+        else {
             throw new Error("Invalid URL format");
         }
     } catch (error) {
