@@ -10,7 +10,7 @@ async function searchResults(keyword) {
                 return {
                     title: result.title || result.name,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://ableflix.xyz/watch/movie/${result.id}`
+                    href: `https://ableflix.xyz/movie/${result.id}`
                 };
             }
             // For TV shows, TMDB returns "name" and media_type === "tv"
@@ -19,14 +19,14 @@ async function searchResults(keyword) {
                     title: result.name || result.title,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
                     // Using default season/episode numbers (1/1)
-                    href: `https://ableflix.xyz/watch/${result.id}`
+                    href: `https://ableflix.xyz/tv/${result.id}`
                 };
             } else {
                 // Fallback if media_type is not defined
                 return {
                     title: result.title || result.name || "Untitled",
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://ableflix.xyz/watch/${result.id}`
+                    href: `https://ableflix.xyz/tv/${result.id}`
                 };
             }
         });
@@ -50,7 +50,6 @@ async function extractDetails(url) {
 
             const transformedResults = [{
                 description: data.overview || 'No description available',
-                // Movies use runtime (in minutes)
                 aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
                 airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
             }];
