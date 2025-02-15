@@ -41,7 +41,7 @@ async function searchResults(keyword) {
 async function extractDetails(url) {
     try {
         if(url.includes('/watch/movie/')) {
-            const match = url.match(/https:\/\/ableflix\.xyz\/movie\/([^\/]+)/);
+            const match = url.match(/https:\/\/ableflix\.xyz\/watch\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
@@ -56,7 +56,7 @@ async function extractDetails(url) {
 
             return JSON.stringify(transformedResults);
         } else if(url.includes('/watch/')) {
-            const match = url.match(/https:\/\/ableflix\.xyz\/tv\/([^\/]+)/);
+            const match = url.match(/https:\/\/ableflix\.xyz\/watch\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
