@@ -138,6 +138,11 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
+    const endpoints = [
+        "https://moviekex.online/embed/api/fastfetch/",
+        "https://play2.123embed.net/server/3?path=/movie/",  
+    ];
+
     const servers = [
         "?sr=3",
         "?sr=2",
@@ -151,18 +156,31 @@ async function extractStreamUrl(url) {
 
             const movieId = match[1];
 
-            for (let i = 0; i < servers.length; i++) {
-                try {
-                    const responseText = await fetch(`https://moviekex.online/embed/api/fastfetch/${movieId}${servers[i]}`);
-                    const data = JSON.parse(responseText);
+            for (let i = 0; i < endpoints.length; i++) {
+                for (let i = 0; i < servers.length; i++) {
+                    try {
+                        if (endpoints[i] === "https://play2.123embed.net/server/3?path=/movie/") {
+                            const responseText = await fetch(`${endpoints[i]}${movieId}`);
+                            const data = JSON.parse(responseText);
 
-                    if (data) {
-                        const hlsSource = data.url.find(source => source.type === 'hls');
+                            if (data) {
+                                const hlsSource = data.playlist.find(source => source.type === 'hls');
 
-                        if (hlsSource && hlsSource.link) return hlsSource.link;
+                                if (hlsSource && hlsSource.file) return hlsSource.file;
+                            }
+                        } else {
+                            const responseText = await fetch(`${endpoints[i]}${movieId}${servers[i]}`);
+                            const data = JSON.parse(responseText);
+
+                            if (data) {
+                                const hlsSource = data.url.find(source => source.type === 'hls');
+
+                                if (hlsSource && hlsSource.link) return hlsSource.link;
+                            }
+                        }
+                    } catch (err) {
+                        console.log(`Fetch error on endpoint ${endpoints[i]} for movie ${movieId}:`, err);
                     }
-                } catch (err) {
-                    console.log(`Fetch error on endpoint https://moviekex.online/embed/api/fastfetch/ for movie ${movieId}:`, err);
                 }
             }
             return null;
