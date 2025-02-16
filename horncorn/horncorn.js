@@ -64,10 +64,6 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
-    const endpoints = [
-        "https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=1241982&service=guru&secretKey=D5Q&proxyMode=noProxy",
-    ];
-
     const services = [
         "guru",
         "halo",
