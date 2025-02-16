@@ -146,7 +146,7 @@ async function extractStreamUrl(url) {
             const movieId = match[1];
 
             try {
-                const responseText = await fetch(`https://play2.123embed.net/server/3?path=/tv/${showId}/${seasonNumber}/${episodeNumber}`);
+                const responseText = await fetch(`https://play2.123embed.net/server/3?path=/tv/${movieId}/1/1`);
                 const data = JSON.parse(responseText);
 
                 if (data) {
@@ -160,10 +160,12 @@ async function extractStreamUrl(url) {
 
             return null;
         } else if (url.includes('/stream/tv/')) {
-            const match = url.match(/https:\/\/letstream\.site\/stream\/tv\/([^\/]+)/);
+            const match = url.match(/https:\/\/letstream\.site\/stream\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
+            const seasonNumber = match[2];
+            const episodeNumber = match[3];
 
             try {
                 const responseText = await fetch(`https://play2.123embed.net/server/3?path=/tv/${showId}/${seasonNumber}/${episodeNumber}`);
