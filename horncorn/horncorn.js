@@ -94,7 +94,7 @@ async function extractStreamUrl(url) {
     const secretKey = ["I", "3LZu", "M2V3", "4EXX", "s4", "yRy", "oqMz", "ysE", "RT", "iSI", "zlc", "H", "YNp", "5vR6", "h9S", "R", "jo", "F", "h2", "W8", "i", "sz09", "Xom", "gpU", "q", "6Qvg", "Cu", "5Zaz", "VK", "od", "FGY4", "eu", "D5Q", "smH", "11eq", "QrXs", "3", "L3", "YhlP", "c", "Z", "YT", "bnsy", "5", "fcL", "L22G", "r8", "J", "4", "gnK"];
 
     try {
-        const match = url.match(/https:\/\/ableflix\.xyz\/watch\/movie\/([^\/]+)/);
+        const match = url.match(/https:\/\/c\.hopmarks\.com\/movie\/([^\/]+)/);
         if (!match) throw new Error("Invalid URL format");
 
         const movieId = match[1];
