@@ -106,7 +106,7 @@ async function extractEpisodes(url) {
                 
                 if (seasonData.episodes && seasonData.episodes.length) {
                     const episodes = seasonData.episodes.map(episode => ({
-                        href: `https://bingeflex.vercel.app/tv/${showId}`,
+                        href: `https://bingeflex.vercel.app/tv/${showId}?season=${seasonNumber}&episode=${episode.episode_number}`,
                         number: episode.episode_number,
                         title: episode.name || ""
                     }));
@@ -169,8 +169,6 @@ async function extractStreamUrl(url) {
                         const responseText = await fetch(apiUrl);
                         const data = JSON.parse(responseText);
 
-                        console.log('API response:', data);
-
                         if (data) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
                             if (hlsSource?.url) return hlsSource.url;
@@ -197,8 +195,6 @@ async function extractStreamUrl(url) {
 
                         const responseText = await fetch(apiUrl);
                         const data = JSON.parse(responseText);
-
-                        console.log('API response:', data);
 
                         if (data) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
