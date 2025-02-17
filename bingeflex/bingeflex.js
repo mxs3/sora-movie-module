@@ -129,12 +129,12 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     const services = [
+        "ghost",
         "guru",
         "halo",
         "alpha",
         "g1",
         "g2",
-        "ghost",
         "fastx",
         "astra",
         "anime",
@@ -204,7 +204,7 @@ async function extractStreamUrl(url) {
                             if (hlsSource?.url) return hlsSource.url;
                         }
                     } catch (err) {
-                        console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for show ${showId}:`, err);
+                        console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for show ${showId}:`, err);
                     }
                 }
             }
