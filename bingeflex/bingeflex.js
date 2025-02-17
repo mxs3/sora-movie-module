@@ -165,7 +165,7 @@ async function extractStreamUrl(url) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
+            const data = JSON.parse(response);
 
             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
             return hlsSource?.url || null;
