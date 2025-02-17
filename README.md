@@ -6,16 +6,16 @@
 
 <summary>
 
-### Ableflix.xyz
+### Bingeflex.vercel.app (Movies and TV Shows)
 
 </summary>
 
-**File:** `Ableflix.json`<br>
+**File:** `Bingeflex.json`<br>
 **App version:** V2 and up <br>
 **Author:** ibro <br><br>
-[<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json)
+[<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/bingeflex.json)
 
-https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json
+https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/bingeflex.json
 
 </details>
 
@@ -23,7 +23,7 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ablef
 
 <summary>
 
-### c.Hopmarks.com
+### c.Hopmarks.com (Movies)
 
 </summary>
 
@@ -33,5 +33,22 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ablef
 [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/horncorn/horncorn.json)
 
 https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/horncorn/horncorn.json
+
+</details>
+
+<details>
+
+<summary>
+
+### Ableflix.xyz (Movies)
+
+</summary>
+
+**File:** `Ableflix.json`<br>
+**App version:** V2 and up <br>
+**Author:** ibro <br><br>
+[<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json)
+
+https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json
 
 </details>
