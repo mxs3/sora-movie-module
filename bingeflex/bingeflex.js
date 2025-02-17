@@ -204,7 +204,7 @@ async function extractStreamUrl(url) {
                             if (hlsSource?.url) return hlsSource.url;
                         }
                     } catch (err) {
-                        console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for movie ${movieId}:`, err);
+                        console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for show ${showId}:`, err);
                     }
                 }
             }
