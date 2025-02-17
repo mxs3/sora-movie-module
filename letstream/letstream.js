@@ -146,7 +146,7 @@ async function extractStreamUrl(url) {
             const movieId = match[1];
 
             try {
-                const responseText = await fetch(`https://play2.123embed.net/server/3?path=/tv/${movieId}`);
+                const responseText = await fetch(`https://play2.123embed.net/server/3?path=/movie/${movieId}`);
                 const data = JSON.parse(responseText);
 
                 if (data) {
@@ -155,7 +155,7 @@ async function extractStreamUrl(url) {
                     if (hlsSource && hlsSource.file) return hlsSource.file;
                 }
             } catch (err) {
-                console.log(`Fetch error on endpoint https://play2.123embed.net/server/3?path=/tv/ for movie ${movieId}:`, err);
+                console.log(`Fetch error on endpoint https://play2.123embed.net/server/3?path=/movie/ for movie ${movieId}:`, err);
             }
 
             return null;
