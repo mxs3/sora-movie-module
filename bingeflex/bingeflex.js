@@ -17,14 +17,14 @@ async function searchResults(keyword) {
                 return {
                     title: result.name || result.title || result.original_name || result.original_title,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://bingeflex.vercel.app/tv/${result.id}`
+                    href: `https://bingeflex.vercel.app/tv/${result.id}/1/1`
                 };
             } else {
                 // Fallback if media_type is not defined
                 return {
                     title: result.title || result.name || result.original_name || result.original_title || "Untitled",
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://bingeflex.vercel.app/tv/${result.id}`
+                    href: `https://bingeflex.vercel.app/tv/${result.id}/1/1`
                 };
             }
         });
