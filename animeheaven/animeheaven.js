@@ -73,6 +73,6 @@ function extractEpisodes(html) {
   
 function extractStreamUrl(html) {
     const episodePattern = /<a href=["']episode\.php\?([^"']+)["'][^>]*>.*?<div class=["']watch2 bc["']>(\d+)<\/div>/;
-    const match = html.match(sourceRegex);
+    const match = html.match(episodePattern);
     return match ? match[1].replace(/&amp;/g, '&') : null;
 }
