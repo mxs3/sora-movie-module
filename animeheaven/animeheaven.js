@@ -55,7 +55,7 @@ function extractEpisodes(html) {
     const episodes = [];
     const baseUrl = 'https://animeheaven.me/';
     
-    const episodePattern = /<a\s+href=["']episode\.php\?([^"']+)["'][^>]*>[\s\S]*?<div\s+class=["'][^"']*?\bwatch2\b[^"']*["']>\s*(\d+)\s*<\/div>/g;
+    const episodePattern = /<a href='episode\.php\?=([^']+)'[^>]*>.*?<div class='watch2 bc'>(\d+)<\/div>/gs;
     
     let match;
   
