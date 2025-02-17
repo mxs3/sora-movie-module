@@ -129,12 +129,12 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     const services = [
-        "ghost",
         "guru",
         "halo",
         "alpha",
         "g1",
         "g2",
+        "ghost",
         "fastx",
         "astra",
         "anime",
@@ -157,59 +157,111 @@ async function extractStreamUrl(url) {
 
     const secretKey = ["I", "3LZu", "M2V3", "4EXX", "s4", "yRy", "oqMz", "ysE", "RT", "iSI", "zlc", "H", "YNp", "5vR6", "h9S", "R", "jo", "F", "h2", "W8", "i", "sz09", "Xom", "gpU", "q", "6Qvg", "Cu", "5Zaz", "VK", "od", "FGY4", "eu", "D5Q", "smH", "11eq", "QrXs", "3", "L3", "YhlP", "c", "Z", "YT", "bnsy", "5", "fcL", "L22G", "r8", "J", "4", "gnK"];
 
+    async function tryService(apiUrl) {
+        try {
+            const response = await fetch(apiUrl);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
+            return hlsSource?.url || null;
+        } catch (err) {
+            console.log('Fetch error:', err);
+            return null;
+        }
+    }
+
     try {
         if (url.includes('/movie/')) {
+            // const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
+            // if (!match) throw new Error("Invalid URL format");
+
+            // const movieId = match[1];
+
+            // for (let i = 0; i < services.length; i++) {
+            //     for (let j = 0; j < secretKey.length; j++) {
+            //         try {
+            //             let apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+
+            //             const responseText = await fetch(apiUrl);
+            //             const data = JSON.parse(responseText);
+
+            //             if (data) {
+            //                 const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
+            //                 if (hlsSource?.url) return hlsSource.url;
+            //             }
+            //         } catch (err) {
+            //             console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for movie ${movieId}:`, err);
+            //         }
+            //     }
+            // }
+
+            // return null;
+
             const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
+            const promises = [];
 
-            for (let i = 0; i < services.length; i++) {
-                for (let j = 0; j < secretKey.length; j++) {
-                    try {
-                        let apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
-
-                        const responseText = await fetch(apiUrl);
-                        const data = JSON.parse(responseText);
-
-                        if (data) {
-                            const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
-                            if (hlsSource?.url) return hlsSource.url;
-                        }
-                    } catch (err) {
-                        console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for movie ${movieId}:`, err);
-                    }
+            // Create a promise for every combination
+            for (const service of services) {
+                for (const key of secretKey) {
+                    const apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${key}&proxyMode=noProxy`;
+                    promises.push(tryService(apiUrl));
                 }
             }
 
-            return null;
+            // Resolve as soon as one valid stream is found
+            const results = await Promise.all(promises);
+            return results.find(url => url) || null;
         } else if (url.includes('/tv/')) {
+            // const match = url.match(/https:\/\/bingeflex\.vercel\.app\/tv\/([^\/]+)\?season\=([^\/]+)\&episode\=([^\/]+)/);
+            // if (!match) throw new Error("Invalid URL format");
+
+            // const showId = match[1];
+            // const seasonNumber = match[2];
+            // const episodeNumber = match[3];
+
+            // for (let i = 0; i < services.length; i++) {
+            //     for (let j = 0; j < secretKey.length; j++) {
+            //         try {
+            //             let apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+
+            //             const responseText = await fetch(apiUrl);
+            //             const data = JSON.parse(responseText);
+
+            //             if (data) {
+            //                 const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
+            //                 if (hlsSource?.url) return hlsSource.url;
+            //             }
+            //         } catch (err) {
+            //             console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for show ${showId}:`, err);
+            //         }
+            //     }
+            // }
+
+            // return null;
+
             const match = url.match(/https:\/\/bingeflex\.vercel\.app\/tv\/([^\/]+)\?season\=([^\/]+)\&episode\=([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
-            const showId = match[1];
-            const seasonNumber = match[2];
-            const episodeNumber = match[3];
+            const [ , showId, seasonNumber, episodeNumber ] = match;
+            const promises = [];
 
-            for (let i = 0; i < services.length; i++) {
-                for (let j = 0; j < secretKey.length; j++) {
-                    try {
-                        let apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
-
-                        const responseText = await fetch(apiUrl);
-                        const data = JSON.parse(responseText);
-
-                        if (data) {
-                            const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
-                            if (hlsSource?.url) return hlsSource.url;
-                        }
-                    } catch (err) {
-                        console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for show ${showId}:`, err);
-                    }
+            for (const service of services) {
+                for (const key of secretKey) {
+                    const apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${key}&proxyMode=noProxy`;
+                    promises.push(tryService(apiUrl));
                 }
             }
 
-            return null;
+            const results = await Promise.all(promises);
+            return results.find(url => url) || null;
         } else {
             throw new Error("Invalid URL format");
         }
