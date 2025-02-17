@@ -55,7 +55,7 @@ function extractEpisodes(html) {
     const episodes = [];
     const baseUrl = 'https://animeheaven.me/';
     
-    const episodePattern = /<a href='episode\.php\?([^']+)'[^>]*>.*?<div class='watch2 bc'>(\d+)<\/div>/gs;
+    const episodePattern = /<a href='episode\.php\?([^']+)'[^>]*>.*?<div class='watch2 bc'>(\d+)<\/div>/;
     
     let match;
   
@@ -72,7 +72,7 @@ function extractEpisodes(html) {
 }
   
 function extractStreamUrl(html) {
-    const episodePattern = /<a href=["']episode\.php\?([^"']+)["'][^>]*>.*?<div class=["']watch2 bc["']>(\d+)<\/div>/;
-    const match = html.match(episodePattern);
+    const sourceRegex = /<a href='([^']+)'[^>]*><div class='boxitem bc2 c1 mar0'/;
+    const match = html.match(sourceRegex);
     return match ? match[1].replace(/&amp;/g, '&') : null;
 }
