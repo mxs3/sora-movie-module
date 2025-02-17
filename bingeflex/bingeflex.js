@@ -5,7 +5,6 @@ async function searchResults(keyword) {
         const data = JSON.parse(responseText);
 
         const transformedResults = data.results.map(result => {
-            // For movies, TMDB returns "title" and media_type === "movie"
             if(result.media_type === "movie" || result.title) {
                 return {
                     title: result.title || result.name || result.original_title || result.original_name,
@@ -13,18 +12,16 @@ async function searchResults(keyword) {
                     href: `https://bingeflex.vercel.app/movie/${result.id}`
                 };
             } else if(result.media_type === "tv" || result.name) {
-                // For TV shows, TMDB returns "name" and media_type === "tv"
                 return {
                     title: result.name || result.title || result.original_name || result.original_title,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://bingeflex.vercel.app/tv/${result.id}/1/1`
+                    href: `https://bingeflex.vercel.app/tv/${result.id}?season=1&episode=1`
                 };
             } else {
-                // Fallback if media_type is not defined
                 return {
                     title: result.title || result.name || result.original_name || result.original_title || "Untitled",
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://bingeflex.vercel.app/tv/${result.id}/1/1`
+                    href: `https://bingeflex.vercel.app/tv/${result.id}?season=1&episode=1`
                 };
             }
         });
