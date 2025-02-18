@@ -1,5 +1,11 @@
 # Movie Modules for [Sora](https://github.com/cranci1/Sora)
 
+> [!IMPORTANT]
+> ONLY USE THE BELOW MODULES
+> IF A MODULE IN MY REPO ISN'T LISTED BELOW THEN IT'S NOT WORKING
+
+TV Show and Movie modules for Sora (maybe anime modules in future).
+
 ## Available Modules
 
 <details>
