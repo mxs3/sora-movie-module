@@ -151,7 +151,7 @@ async function extractStreamUrl(url) {
     async function safeJsonFetch(apiUrl) {
       const response = await fetch(apiUrl);
       try {
-        const data = JSON.parse(response);
+        const data = await response.json();
         // Check for an error message indicating an invalid secret key.
         // Adjust the property names as needed to match your API's response.
         if (data && data.error && data.error.includes("Invalid secret key")) {
@@ -192,7 +192,8 @@ async function extractStreamUrl(url) {
         // Try services that support captions.
         for (let service of servicesWithCaption) {
           const apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${correctSecretKey}&proxyMode=noProxy`;
-          const data = await safeJsonFetch(apiUrl);
+          const responseText = await fetch(apiUrl);
+                    const data = JSON.parse(responseText);
           if (data) {
             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
             const subtitleTrack = data.data?.captions?.find(track =>
@@ -210,7 +211,8 @@ async function extractStreamUrl(url) {
         // Then try services without captions.
         for (let service of servicesWithoutCaption) {
           const apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${correctSecretKey}&proxyMode=noProxy`;
-          const data = await safeJsonFetch(apiUrl);
+          const responseText = await fetch(apiUrl);
+                    const data = JSON.parse(responseText);
           if (data) {
             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
             if (hlsSource?.url) return hlsSource.url;
@@ -235,7 +237,8 @@ async function extractStreamUrl(url) {
         // Try services with captions.
         for (let service of servicesWithCaption) {
           const apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${correctSecretKey}&proxyMode=noProxy`;
-          const data = await safeJsonFetch(apiUrl);
+          const responseText = await fetch(apiUrl);
+                    const data = JSON.parse(responseText);
           if (data) {
             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
             const subtitleTrack = data.data?.captions?.find(track =>
@@ -257,7 +260,8 @@ async function extractStreamUrl(url) {
         // Then try services without captions.
         for (let service of servicesWithoutCaption) {
           const apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${correctSecretKey}&proxyMode=noProxy`;
-          const data = await safeJsonFetch(apiUrl);
+          const responseText = await fetch(apiUrl);
+                    const data = JSON.parse(responseText);
           if (data) {
             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
             if (hlsSource?.url) return hlsSource.url;
