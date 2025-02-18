@@ -147,42 +147,42 @@ async function extractStreamUrl(url) {
       "bnsy", "5", "fcL", "L22G", "r8", "J", "4", "gnK"
     ];
   
-    // Helper to safely fetch JSON data.
+    // Helper function to fetch JSON data safely.
     async function safeJsonFetch(apiUrl) {
       const response = await fetch(apiUrl);
-      const text = await response.text();
       try {
-        return JSON.parse(text);
-      } catch (e) {
-        if (text.includes("Invalid secret key")) {
+        const data = await response.json();
+        // Check for an error message indicating an invalid secret key.
+        // Adjust the property names as needed to match your API's response.
+        if (data && data.error && data.error.includes("Invalid secret key")) {
           console.log(`Invalid secret key response for ${apiUrl}`);
-          return null; // Skip this key.
-        } else {
-          throw e;
+          return null;
         }
+        return data;
+      } catch (e) {
+        console.error(`Error parsing JSON from ${apiUrl}:`, e);
+        return null;
       }
     }
   
-    // Finds the correct secret key for a given base URL (without the secretKey parameter).
+    // Finds and returns the first valid secret key for the given base URL.
     async function findValidSecretKey(baseUrl) {
       for (let key of secretKey) {
         const apiUrl = `${baseUrl}&secretKey=${key}&proxyMode=noProxy`;
         const data = await safeJsonFetch(apiUrl);
-        if (data) {
-          return key;
-        }
+        if (data) return key;
       }
       return null;
     }
   
     try {
       if (url.includes('/movie/')) {
-        // Extract movie ID.
+        // Extract the movie ID.
         const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
         if (!match) throw new Error("Invalid URL format");
         const movieId = match[1];
   
-        // Use a default service to find the correct secret key.
+        // Use a default service to determine the correct secret key.
         const defaultService = servicesWithCaption[0] || servicesWithoutCaption[0];
         const baseUrlForKey = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${defaultService}`;
         const correctSecretKey = await findValidSecretKey(baseUrlForKey);
@@ -193,8 +193,7 @@ async function extractStreamUrl(url) {
         for (let service of servicesWithCaption) {
           const apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${correctSecretKey}&proxyMode=noProxy`;
           const responseText = await fetch(apiUrl);
-          const data = JSON.parse(responseText);
-
+                    const data = JSON.parse(responseText);
           if (data) {
             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
             const subtitleTrack = data.data?.captions?.find(track =>
@@ -213,7 +212,7 @@ async function extractStreamUrl(url) {
         for (let service of servicesWithoutCaption) {
           const apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${correctSecretKey}&proxyMode=noProxy`;
           const responseText = await fetch(apiUrl);
-          const data = JSON.parse(responseText);
+                    const data = JSON.parse(responseText);
           if (data) {
             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
             if (hlsSource?.url) return hlsSource.url;
@@ -228,7 +227,7 @@ async function extractStreamUrl(url) {
         const seasonNumber = match[2];
         const episodeNumber = match[3];
   
-        // Use a default service to find the correct secret key.
+        // Use a default service to determine the correct secret key.
         const defaultService = servicesWithCaption[0] || servicesWithoutCaption[0];
         const baseUrlForKey = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${defaultService}`;
         const correctSecretKey = await findValidSecretKey(baseUrlForKey);
@@ -239,8 +238,7 @@ async function extractStreamUrl(url) {
         for (let service of servicesWithCaption) {
           const apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${correctSecretKey}&proxyMode=noProxy`;
           const responseText = await fetch(apiUrl);
-          const data = JSON.parse(responseText);
-          
+                    const data = JSON.parse(responseText);
           if (data) {
             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
             const subtitleTrack = data.data?.captions?.find(track =>
@@ -251,8 +249,8 @@ async function extractStreamUrl(url) {
               continue;
             }
             const result = {
-              stream: hlsSource ? hlsSource.url : null,
-              subtitles: subtitleTrack ? subtitleTrack.file : null
+              stream: hlsSource.url,
+              subtitles: subtitleTrack.file
             };
             console.log("Result:", JSON.stringify(result));
             return JSON.stringify(result);
@@ -263,8 +261,7 @@ async function extractStreamUrl(url) {
         for (let service of servicesWithoutCaption) {
           const apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${correctSecretKey}&proxyMode=noProxy`;
           const responseText = await fetch(apiUrl);
-          const data = JSON.parse(responseText);
-          
+                    const data = JSON.parse(responseText);
           if (data) {
             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
             if (hlsSource?.url) return hlsSource.url;
