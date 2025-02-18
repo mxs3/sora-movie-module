@@ -167,7 +167,7 @@ async function extractStreamUrl(url) {
     // helper to get JSON safely
     async function safeJsonFetch(apiUrl) {
         const response = await fetch(apiUrl);
-        const text = await response.text();
+        const text = await response.json();
         try {
             return JSON.parse(text);
         } catch (e) {
@@ -226,6 +226,7 @@ async function extractStreamUrl(url) {
                     
                     try {
                         const data = await safeJsonFetch(apiUrl);
+
                         if (data) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
                             if (hlsSource?.url) return hlsSource.url;
@@ -235,6 +236,7 @@ async function extractStreamUrl(url) {
                     }
                 }
             }
+
             return null;
         } else if (url.includes('/tv/')) {
             const match = url.match(/https:\/\/bingeflex\.vercel\.app\/tv\/([^\/]+)\?season=([^\/]+)&episode=([^\/]+)/);
