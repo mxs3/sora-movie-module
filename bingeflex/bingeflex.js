@@ -167,7 +167,7 @@ async function extractStreamUrl(url) {
     // helper to get JSON safely
     async function safeJsonFetch(apiUrl) {
         const response = await fetch(apiUrl);
-        const text = await response.json();
+        const text = await response.text();
         try {
             return JSON.parse(text);
         } catch (e) {
@@ -301,5 +301,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractStreamUrl("https://bingeflex.vercel.app/movie/1241982");
