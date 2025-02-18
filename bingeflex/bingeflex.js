@@ -125,13 +125,18 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
-    const services = [
+    // hyvax with .srt captions
+
+    const servicesWithCaption = [
+        "ghost",
+    ];
+
+    const servicesWithoutCaption = [
         "guru",
         "halo",
         "alpha",
         "g1",
         "g2",
-        "ghost",
         "fastx",
         "astra",
         "anime",
@@ -161,7 +166,34 @@ async function extractStreamUrl(url) {
 
             const movieId = match[1];
 
-            for (let i = 0; i < services.length; i++) {
+            for (let i = 0; i < servicesWithCaption.length; i++) {
+                for (let j = 0; j < secretKey.length; j++) {
+                    try {
+                        let apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+
+                        const responseText = await fetch(apiUrl);
+                        const data = JSON.parse(responseText);
+
+                        if (data) {
+                            const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
+                            const subtitleTrack = data.data?.captions?.find(track =>
+                                track.label.startsWith('English')
+                            );
+
+                            const result = {
+                                stream: hlsSource ? hlsSource.url : null,
+                                subtitles: subtitleTrack ? subtitleTrack.file : null
+                            };
+
+                            return JSON.stringify(result);
+                        }
+                    } catch (err) {
+                        console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for movie ${movieId}:`, err);
+                    }
+                }
+            }
+
+            for (let i = 0; i < servicesWithoutCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
                     try {
                         let apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
@@ -188,10 +220,37 @@ async function extractStreamUrl(url) {
             const seasonNumber = match[2];
             const episodeNumber = match[3];
 
-            for (let i = 0; i < services.length; i++) {
+            for (let i = 0; i < servicesWithCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
                     try {
-                        let apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+                        let apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${servicesWithCaption[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+
+                        const responseText = await fetch(apiUrl);
+                        const data = JSON.parse(responseText);
+
+                        if (data) {
+                            const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
+                            const subtitleTrack = data.data?.captions?.find(track =>
+                                track.label.startsWith('English')
+                            );
+
+                            const result = {
+                                stream: hlsSource ? hlsSource.url : null,
+                                subtitles: subtitleTrack ? subtitleTrack.file : null
+                            };
+
+                            return JSON.stringify(result);
+                        }
+                    } catch (err) {
+                        console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${servicesWithCaption[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for show ${showId}:`, err);
+                    }
+                }
+            }
+
+            for (let i = 0; i < servicesWithoutCaption.length; i++) {
+                for (let j = 0; j < secretKey.length; j++) {
+                    try {
+                        let apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${servicesWithoutCaption[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
 
                         const responseText = await fetch(apiUrl);
                         const data = JSON.parse(responseText);
@@ -201,7 +260,7 @@ async function extractStreamUrl(url) {
                             if (hlsSource?.url) return hlsSource.url;
                         }
                     } catch (err) {
-                        console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for show ${showId}:`, err);
+                        console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${servicesWithoutCaption[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for show ${showId}:`, err);
                     }
                 }
             }
