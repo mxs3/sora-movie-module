@@ -130,7 +130,7 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
-    // hyvax with .srt captions
+    // "hyvax" is with .srt captions
   
     const servicesWithCaption = [
         "ghost",
@@ -254,7 +254,17 @@ async function extractStreamUrl(url) {
                     const apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
                     
                     try {
-                        const data = await safeJsonFetch(apiUrl);
+                        const responseText = await fetch(apiUrl);
+                        const text = await responseText.text();
+
+                        console.log("Response text: " +  text);
+
+                        if (text.includes("Invalid secret key")) {
+                            console.log(`Invalid secret key response for ${apiUrl}`);
+                            continue;
+                        }
+
+                        const data = JSON.parse(responseText);
                         
                         if (data) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
@@ -267,10 +277,13 @@ async function extractStreamUrl(url) {
                                 subtitles: subtitleTrack ? subtitleTrack.file : null
                             };
 
+                            console.log("API URL: " + apiUrl);
+                            console.log("Result: " + JSON.stringify(result));
+
                             return JSON.stringify(result);
                         }
                     } catch (err) {
-                    console.log(`Fetch error on endpoint ${apiUrl} for show ${showId}:`, err);
+                        console.log(`Fetch error on endpoint ${apiUrl} for show ${showId}:`, err);
                     }
                 }
             }
@@ -303,3 +316,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractStreamUrl("https://bingeflex.vercel.app/tv/46260?season=1&episode=1");
