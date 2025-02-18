@@ -42,7 +42,7 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hornc
 
 <summary>
 
-### Ableflix.xyz (Movies)
+### Ableflix.xyz (ONLY Movies)
 
 </summary>
 
