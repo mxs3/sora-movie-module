@@ -194,8 +194,7 @@ async function extractStreamUrl(url) {
                     const apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
                     
                     try {
-                        const responseText = await fetch(apiUrl);
-                        const data = JSON.parse(responseText);
+                        const data = await safeJsonFetch(apiUrl);
                         
                         if (data) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
@@ -255,8 +254,7 @@ async function extractStreamUrl(url) {
                     const apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
                     
                     try {
-                        const responseText = await fetch(apiUrl);
-                        const data = JSON.parse(responseText);
+                        const data = await safeJsonFetch(apiUrl);
                         
                         if (data) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
