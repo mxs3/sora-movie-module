@@ -185,7 +185,8 @@ async function extractStreamUrl(url) {
                                 subtitles: subtitleTrack ? subtitleTrack.file : null
                             };
 
-                            return JSON.stringify(result);
+                            if (hlsSource?.url) return hlsSource.url;
+                            //return JSON.stringify(result);
                         }
                     } catch (err) {
                         console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for movie ${movieId}:`, err);
@@ -239,7 +240,8 @@ async function extractStreamUrl(url) {
                                 subtitles: subtitleTrack ? subtitleTrack.file : null
                             };
 
-                            return JSON.stringify(result);
+                            if (hlsSource?.url) return hlsSource.url;
+                            //return JSON.stringify(result);
                         }
                     } catch (err) {
                         console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${servicesWithCaption[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for show ${showId}:`, err);
