@@ -274,6 +274,11 @@ async function extractStreamUrl(url) {
                                 track.label.startsWith('English')
                             );
 
+                            if (!hlsSource || !subtitleTrack) {
+                                console.log("No hlsSource or subtitleTrack found for show " + showId);
+                                continue;
+                            }
+
                             const result = {
                                 stream: hlsSource ? hlsSource.url : null,
                                 subtitles: subtitleTrack ? subtitleTrack.file : null
