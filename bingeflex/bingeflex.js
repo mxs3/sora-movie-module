@@ -269,8 +269,12 @@ async function extractStreamUrl(url) {
                         // const data = await safeJsonFetch(apiUrl);
 
                         const responseText = await fetch(apiUrl);
-                        const data = await JSON.parse(responseText);
+                        const data = JSON.parse(responseText);
                         
+                        if (!data) {
+                            continue;
+                        }
+
                         if (data) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
                             const subtitleTrack = data.data?.captions?.find(track =>
