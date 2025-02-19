@@ -239,20 +239,6 @@ async function extractStreamUrl(url) {
                     const apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
                     
                     try {
-                        // const responseText = await fetch(apiUrl);
-                        // const text = await responseText.text();
-
-                        // if (text.includes("Invalid secret key")) {
-                        //     console.log(`Invalid secret key response for ${apiUrl}`);
-                        //     continue;
-                        // }
-
-                        // const data = responseText.json();
-
-                        // console.log(data);
-
-                        // const data = await safeJsonFetch(apiUrl);
-
                         const responseText = await fetch(apiUrl);
                         const data = JSON.parse(responseText);
                         
