@@ -3,8 +3,8 @@
 TV Show and Movie modules for Sora (maybe anime modules in future).
 
 > [!WARNING]
-> ONLY USE THE BELOW MODULES
-> (IF A MODULE IN MY REPO ISN'T LISTED BELOW THEN IT'S NOT WORKING)
+> <ins>ONLY USE THE BELOW MODULES</ins><br>
+> <ins>IF A MODULE IN MY REPO ISN'T LISTED BELOW THEN IT'S NOT WORKING</ins>
 
 ---
 
