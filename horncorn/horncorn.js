@@ -105,7 +105,7 @@ async function extractStreamUrl(url) {
 
                 try {
                     const responseText = await fetch(apiUrl);
-                    const data = await responseText.json();
+                    const data = JSON.parse(responseText);
 
                     if (data) {
                         const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
