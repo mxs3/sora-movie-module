@@ -124,5 +124,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractStreamUrl("https://c.hopmarks.com/movie/1241982");
