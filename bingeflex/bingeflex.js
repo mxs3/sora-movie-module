@@ -266,18 +266,16 @@ async function extractStreamUrl(url) {
 
                         // console.log(data);
 
-                        const data = await safeJsonFetch(apiUrl);
+                        // const data = await safeJsonFetch(apiUrl);
+
+                        const responseText = await fetch(apiUrl);
+                        const data = await JSON.parse(responseText);
                         
                         if (data) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
                             const subtitleTrack = data.data?.captions?.find(track =>
                                 track.label.startsWith('English')
                             );
-
-                            if (!hlsSource || !subtitleTrack) {
-                                console.log("No hlsSource or subtitleTrack found for show " + showId);
-                                continue;
-                            }
 
                             const result = {
                                 stream: hlsSource ? hlsSource.url : null,
@@ -324,4 +322,4 @@ async function extractStreamUrl(url) {
     }
 }
 
-extractStreamUrl("https://bingeflex.vercel.app/tv/46260?season=1&episode=1");
+// extractStreamUrl("https://bingeflex.vercel.app/tv/46260?season=1&episode=1");

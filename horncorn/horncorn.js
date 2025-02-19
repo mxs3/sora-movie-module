@@ -101,18 +101,19 @@ async function extractStreamUrl(url) {
 
         for (let i = 0; i < services.length; i++) {
             for (let j = 0; j < secretKey.length; j++) {
-                try {
-                    let apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+                const apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
 
+                try {
                     const responseText = await fetch(apiUrl);
-                    const data = JSON.parse(responseText);
+                    const data = await responseText.json();
 
                     if (data) {
                         const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
+
                         if (hlsSource?.url) return hlsSource.url;
                     }
                 } catch (err) {
-                    console.log(`Fetch error on endpoint https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${services[i]}&secretKey=${secretKey[j]}&proxyMode=noProxy for movie ${movieId}:`, err);
+                    console.log(`Fetch error on endpoint ${apiUrl} for movie ${movieId}:`, err);
                 }
             }
         }
@@ -123,3 +124,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractStreamUrl("https://c.hopmarks.com/movie/1241982");
