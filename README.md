@@ -35,14 +35,14 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/binge
 
 </summary>
 
-**File:** `HornCorn.json`<br>
+**File:** `HopCorn.json`<br>
 **Type:** `ONLY Movies`<br>
 **Language:** English. (SUB)<br>
 **App version:** V2 and up <br>
 **Author:** ibro <br><br>
-[<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/horncorn/horncorn.json)
+[<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json)
 
-https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/horncorn/horncorn.json
+https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json
 
 </details>
 
