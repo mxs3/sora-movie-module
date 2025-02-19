@@ -164,21 +164,21 @@ async function extractStreamUrl(url) {
   
     const secretKey = ["I", "3LZu", "M2V3", "4EXX", "s4", "yRy", "oqMz", "ysE", "RT", "iSI", "zlc", "H", "YNp", "5vR6", "h9S", "R", "jo", "F", "h2", "W8", "i", "sz09", "Xom", "gpU", "q", "6Qvg", "Cu", "5Zaz", "VK", "od", "FGY4", "eu", "D5Q", "smH", "11eq", "QrXs", "3", "L3", "YhlP", "c", "Z", "YT", "bnsy", "5", "fcL", "L22G", "r8", "J", "4", "gnK"];
   
-    // helper to get JSON safely
-    async function safeJsonFetch(apiUrl) {
-        const response = await fetch(apiUrl);
-        const text = await response.text();
-        try {
-            return JSON.parse(text);
-        } catch (e) {
-            if (text.includes("Invalid secret key")) {
-                console.log(`Invalid secret key response for ${apiUrl}`);
-                return null; // skip this secret key
-            } else {
-                throw e;
-            }
-        }
-    }
+    // // helper to get JSON safely
+    // async function safeJsonFetch(apiUrl) {
+    //     const response = await fetch(apiUrl);
+    //     const text = await response.text();
+    //     try {
+    //         return JSON.parse(text);
+    //     } catch (e) {
+    //         if (text.includes("Invalid secret key")) {
+    //             console.log(`Invalid secret key response for ${apiUrl}`);
+    //             return null; // skip this secret key
+    //         } else {
+    //             throw e;
+    //         }
+    //     }
+    // }
   
     try {
         if (url.includes('/movie/')) {
@@ -194,7 +194,8 @@ async function extractStreamUrl(url) {
                     const apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
                     
                     try {
-                        const data = await safeJsonFetch(apiUrl);
+                        const responseText = await fetch(apiUrl);
+                        const data = JSON.parse(responseText);
                         
                         if (data) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
@@ -271,25 +272,23 @@ async function extractStreamUrl(url) {
                         const responseText = await fetch(apiUrl);
                         const data = JSON.parse(responseText);
                         
-                        if (!data) {
-                            continue;
-                        }
-
                         if (data) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
                             const subtitleTrack = data.data?.captions?.find(track =>
                                 track.label.startsWith('English')
                             );
 
-                            const result = {
-                                stream: hlsSource ? hlsSource.url : null,
-                                subtitles: subtitleTrack ? subtitleTrack.file : null
-                            };
-
-                            console.log("API URL: " + apiUrl);
-                            console.log("Result: " + JSON.stringify(result));
-
-                            return JSON.stringify(result);
+                            if (hlsSource?.url) {
+                                const result = {
+                                    stream: hlsSource ? hlsSource.url : null,
+                                    subtitles: subtitleTrack ? subtitleTrack.file : null
+                                };
+                                
+                                console.log("API URL: " + apiUrl);
+                                console.log("Result: " + JSON.stringify(result));
+                                
+                                return JSON.stringify(result);
+                            }
                         }
                     } catch (err) {
                         console.log(`Fetch error on endpoint ${apiUrl} for show ${showId}:`, err);
