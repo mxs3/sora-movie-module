@@ -164,22 +164,6 @@ async function extractStreamUrl(url) {
   
     const secretKey = ["I", "3LZu", "M2V3", "4EXX", "s4", "yRy", "oqMz", "ysE", "RT", "iSI", "zlc", "H", "YNp", "5vR6", "h9S", "R", "jo", "F", "h2", "W8", "i", "sz09", "Xom", "gpU", "q", "6Qvg", "Cu", "5Zaz", "VK", "od", "FGY4", "eu", "D5Q", "smH", "11eq", "QrXs", "3", "L3", "YhlP", "c", "Z", "YT", "bnsy", "5", "fcL", "L22G", "r8", "J", "4", "gnK"];
   
-    // // helper to get JSON safely
-    // async function safeJsonFetch(apiUrl) {
-    //     const response = await fetch(apiUrl);
-    //     const text = await response.text();
-    //     try {
-    //         return JSON.parse(text);
-    //     } catch (e) {
-    //         if (text.includes("Invalid secret key")) {
-    //             console.log(`Invalid secret key response for ${apiUrl}`);
-    //             return null; // skip this secret key
-    //         } else {
-    //             throw e;
-    //         }
-    //     }
-    // }
-  
     try {
         if (url.includes('/movie/')) {
             const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
@@ -324,5 +308,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-// extractStreamUrl("https://bingeflex.vercel.app/tv/46260?season=1&episode=1");
