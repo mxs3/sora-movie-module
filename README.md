@@ -6,15 +6,19 @@ TV Show and Movie modules for Sora (maybe anime modules in future).
 > ONLY USE THE BELOW MODULES
 > (IF A MODULE IN MY REPO ISN'T LISTED BELOW THEN IT'S NOT WORKING)
 
+---
+
 ## Available Modules
 
 <details>
 
 <summary>
 
-### Bingeflex.vercel.app (TV Shows and Movies WITH SUBTITLES)
+### Bingeflex (TV Shows and Movies WITH SUBTITLES)
 
 </summary>
+
+<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/icon.png" width="125px"><br>
 
 **File:** `Bingeflex.json`<br>
 **Type:** `TV Shows and Movies`<br>
@@ -31,9 +35,11 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/binge
 
 <summary>
 
-### c.Hopmarks.com (ONLY Movies WITH SUBTITLES)
+### HopCorn+ (ONLY Movies WITH SUBTITLES)
 
 </summary>
+
+<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/icon.png" width="125px"><br>
 
 **File:** `HopCorn.json`<br>
 **Type:** `ONLY Movies`<br>
@@ -50,9 +56,11 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopco
 
 <summary>
 
-### Ableflix.xyz (ONLY Movies)
+### Ableflix (ONLY Movies)
 
 </summary>
+
+<img src="https://ableflix.xyz/favicon.ico" width="125px"><br>
 
 **File:** `Ableflix.json`<br>
 **Type:** `ONLY Movies`<br>
