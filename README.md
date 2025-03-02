@@ -1,12 +1,10 @@
-# TV Show and Movie Modules for [Sora](https://github.com/cranci1/Sora)
-
-TV Show and Movie modules for Sora (maybe anime modules in future).
-
 > [!WARNING]
 > **ONLY USE THE BELOW MODULES**<br>
 > **IF A MODULE IN MY REPO ISN'T LISTED BELOW THEN IT'S NOT WORKING**
 
----
+# TV Show and Movie Modules for [Sora](https://github.com/cranci1/Sora)
+
+TV Show and Movie modules for Sora (maybe anime modules in future).
 
 ## Available Modules
 
