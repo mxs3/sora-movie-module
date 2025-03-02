@@ -10,7 +10,7 @@ TV Show and Movie modules for Sora (maybe anime modules in future).
 
 ## Available Modules
 
-<!-- <details>
+<details>
 
 <summary>
 
@@ -50,7 +50,7 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/binge
 
 https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json
 
-</details> -->
+</details>
 
 <details>
 
