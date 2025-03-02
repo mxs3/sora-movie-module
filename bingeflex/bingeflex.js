@@ -161,9 +161,9 @@ async function extractStreamUrl(url) {
         "putafilme",
         "ophim",
     ];
-  
+
     const secretKey = ["I", "3LZu", "M2V3", "4EXX", "s4", "yRy", "oqMz", "ysE", "RT", "iSI", "zlc", "H", "YNp", "5vR6", "h9S", "R", "jo", "F", "h2", "W8", "i", "sz09", "Xom", "gpU", "q", "6Qvg", "Cu", "5Zaz", "VK", "od", "FGY4", "eu", "D5Q", "smH", "11eq", "QrXs", "3", "L3", "YhlP", "c", "Z", "YT", "bnsy", "5", "fcL", "L22G", "r8", "J", "4", "gnK"];
-  
+
     try {
         if (url.includes('/movie/')) {
             const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
@@ -175,8 +175,8 @@ async function extractStreamUrl(url) {
             for (let i = 0; i < servicesWithCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
                     const service = servicesWithCaption[i];
-                    const apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
-                    
+                    const apiUrl = `https://rivestream.org/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+
                     try {
                         const responseText = await fetch(apiUrl);
                         const data = JSON.parse(responseText);
@@ -207,7 +207,7 @@ async function extractStreamUrl(url) {
             for (let i = 0; i < servicesWithoutCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
                     const service = servicesWithoutCaption[i];
-                    const apiUrl = `https://rivestream.live/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+                    const apiUrl = `https://rivestream.org/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
                     
                     try {
                         const responseText = await fetch(apiUrl);
@@ -236,7 +236,7 @@ async function extractStreamUrl(url) {
             for (let i = 0; i < servicesWithCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
                     const service = servicesWithCaption[i];
-                    const apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+                    const apiUrl = `https://rivestream.org/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
                     
                     try {
                         const responseText = await fetch(apiUrl);
@@ -270,7 +270,7 @@ async function extractStreamUrl(url) {
             for (let i = 0; i < servicesWithoutCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
                     const service = servicesWithoutCaption[i];
-                    const apiUrl = `https://rivestream.live/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+                    const apiUrl = `https://rivestream.org/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
                     
                     try {
                         const responseText = await fetch(apiUrl);
