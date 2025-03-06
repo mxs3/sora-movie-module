@@ -93,14 +93,14 @@ async function extractStreamUrl(url) {
 
             const hlsSource = `https://sudatchi.com/${streamData.url}`;
 
-            const subtitleTrack = episodesData.subtitlesMap["1"];
+            //const subtitleTrack = episodesData.subtitlesMap["1"];
 
-            const result = {
-                stream: hlsSource ? hlsSource : null,
-                subtitles: subtitleTrack ? `https://ipfs.sudatchi.com${subtitleTrack}` : null,
-            };
+            // const result = {
+            //     stream: hlsSource ? hlsSource : null,
+            //     subtitles: subtitleTrack ? `https://ipfs.sudatchi.com${subtitleTrack}` : null,
+            // };
             
-            return JSON.stringify(result);
+            return JSON.stringify(hlsSource);
         } catch (err) {
             console.log(`Fetch error for show ${showId}:`, err);
         }
