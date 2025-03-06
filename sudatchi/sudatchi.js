@@ -84,7 +84,7 @@ async function extractStreamUrl(url) {
             const responseTextEpisodes = await fetch(episodesApiUrl);
             const episodesData = JSON.parse(responseTextEpisodes);
 
-            const episodeId = episodesData.episodes.map(episode => episode.id);
+            const episodeId = episodesData.episodes.find(episode => episode.number === episodeNumber).id;
 
             const streamApiUrl = `https://sudatchi.com/api/streams?episodeId=${episodeId}`;
             
