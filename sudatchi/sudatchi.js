@@ -90,22 +90,17 @@ async function extractStreamUrl(url) {
             
             const responseTextStream = await fetch(streamApiUrl);
             const streamData = JSON.parse(responseTextStream);
-                    
-            if (episodesData.data && streamData.data) {
-                const episode = episodesData.data;
-                const hlsSource = streamData.url;
 
-                const subtitleTrack = episode.subtitlesMap[0];
+            const hlsSource = `https://sudatchi.com/${streamData.url}`;
 
-                if (hlsSource) {
-                    const result = {
-                        stream: hlsSource ? `https://sudatchi.com/${hlsSource}` : null,
-                        subtitles: subtitleTrack ? `https://ipfs.sudatchi.com${subtitleTrack}` : null,
-                    };
-                    
-                    return JSON.stringify(result);
-                }
-            }
+            const subtitleTrack = episodesData.subtitlesMap["1"];
+
+            const result = {
+                stream: hlsSource ? hlsSource : null,
+                subtitles: subtitleTrack ? `https://ipfs.sudatchi.com${subtitleTrack}` : null,
+            };
+            
+            return JSON.stringify(result);
         } catch (err) {
             console.log(`Fetch error for show ${showId}:`, err);
         }
