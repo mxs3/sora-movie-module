@@ -100,7 +100,7 @@ async function extractStreamUrl(url) {
                 if (hlsSource) {
                     const result = {
                         stream: hlsSource ? `https://sudatchi.com/${hlsSource}` : null,
-                        subtitles: subtitleTrack ? `https://sudatchi.com${subtitleTrack}` : null,
+                        subtitles: subtitleTrack ? `https://ipfs.sudatchi.com${subtitleTrack}` : null,
                     };
                     
                     return JSON.stringify(result);
