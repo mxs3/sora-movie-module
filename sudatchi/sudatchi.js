@@ -111,5 +111,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractStreamUrl(`https://sudatchi.com/watch/172019/9`);
