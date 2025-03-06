@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=68e094699525b18a70bab2f86b1fa706&query=${encodedKeyword}`);
+        const responseText = await fetch(`https://sudatchi-api.vercel.app/api/search?q=${encodedKeyword}`);
         const data = JSON.parse(responseText);
 
         const transformedResults = data.media.map(result => {
