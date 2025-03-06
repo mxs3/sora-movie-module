@@ -100,7 +100,7 @@ async function extractStreamUrl(url) {
             //     subtitles: subtitleTrack ? `https://ipfs.sudatchi.com${subtitleTrack}` : null,
             // };
             
-            return JSON.stringify(hlsSource);
+            return hlsSource;
         } catch (err) {
             console.log(`Fetch error for show ${showId}:`, err);
         }
