@@ -84,9 +84,9 @@ async function extractStreamUrl(url) {
             const responseTextEpisodes = await fetch(episodesApiUrl);
             const episodesData = JSON.parse(responseTextEpisodes);
 
-            const episodeId = episodesData.episodes.find(episode => episode.number === episodeNumber).id;
+            const episode = episodesData?.episodes?.find(episode => String(episode.number) === episodeNumber);
 
-            const streamApiUrl = `https://sudatchi.com/api/streams?episodeId=${episodeId}`;
+            const streamApiUrl = `https://sudatchi.com/api/streams?episodeId=${episode.id}`;
             
             const responseTextStream = await fetch(streamApiUrl);
             const streamData = JSON.parse(responseTextStream);
@@ -116,3 +116,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractStreamUrl(`https://sudatchi.com/watch/172019/9`);
