@@ -144,10 +144,10 @@ async function extractStreamUrl(url) {
     ];
 
     const servers = [
+        "?sr=0",
         "?sr=3",
         "?sr=2",
         "?sr=1",
-        "?sr=0"
     ];
 
     try {
@@ -167,14 +167,12 @@ async function extractStreamUrl(url) {
                         const responseText = await fetch(apiUrl);
                         const data = JSON.parse(responseText);
 
-                        if (data) {
-                            if (endpoints[i] === "https://moviekex.online/embed/api/fastfetch/") {
-                                const hlsSource = data.url?.find(source => source.type === 'hls');
-                                if (hlsSource?.link) return hlsSource.link;
-                            } else {
-                                const hlsSource = data.playlist?.find(source => source.type === 'hls');
-                                if (hlsSource?.file) return hlsSource.file;
-                            }
+                        if (endpoints[i] === "https://moviekex.online/embed/api/fastfetch/") {
+                            const hlsSource = data.url?.find(source => source.type === 'hls');
+                            if (hlsSource?.link) return hlsSource.link;
+                        } else {
+                            const hlsSource = data.playlist?.find(source => source.type === 'hls');
+                            if (hlsSource?.file) return hlsSource.file;
                         }
                     } catch (err) {
                         console.log(`Fetch error on endpoint ${endpoints[i]} for movie ${movieId}:`, err);
