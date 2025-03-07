@@ -119,8 +119,8 @@ async function extractStreamUrl(url) {
                         );
 
                         const result = {
-                            stream: hlsSource ? hlsSource.url : null,
-                            subtitles: subtitleTrack ? subtitleTrack.file : null
+                            stream: hlsSource ? hlsSource.url : "",
+                            subtitles: subtitleTrack ? subtitleTrack.file : ""
                         };
 
                         console.log("API URL: " + apiUrl);
@@ -146,7 +146,15 @@ async function extractStreamUrl(url) {
 
                     if (data) {
                         const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
-                        if (hlsSource?.url) return hlsSource.url;
+                        
+                        if (hlsSource?.url) {
+                            const result = {
+                                stream: hlsSource ? hlsSource.url : "",
+                                subtitles: ""
+                            };
+
+                            return JSON.stringify(result);
+                        }
                     }
                 } catch (err) {
                     console.log(`Fetch error on endpoint ${apiUrl} for movie ${movieId}:`, err);
