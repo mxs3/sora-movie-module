@@ -217,5 +217,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractStreamUrl("https://ableflix.xyz/watch/movie/277834");
