@@ -137,17 +137,19 @@ async function extractStreamUrl(url) {
     ];
   
     const servicesWithoutCaption = [
-        "guru",
         "halo",
         "alpha",
         "g1",
         "g2",
+        "fastx",
         "astra",
         "anime",
+        "ninja",
         "catflix",
         "hyvax",
         "vidcloud",
         "filmxyz",
+        "shadow",
         "kaze",
         "asiacloud",
         "zenith",
@@ -155,9 +157,7 @@ async function extractStreamUrl(url) {
         "filmecho",
         "kinoecho",
         "ee3",
-        "ninja",
-        "shadow",
-        "fastx",
+        "guru",
         "putafilme",
         "ophim",
     ];
@@ -286,7 +286,7 @@ async function extractStreamUrl(url) {
                         
                         if (data) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
-
+                            
                             if (hlsSource?.url) {
                                 const result = {
                                     stream: hlsSource ? hlsSource.url : "",
