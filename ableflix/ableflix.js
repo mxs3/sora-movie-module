@@ -139,8 +139,8 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     const endpoints = [
-        "https://play2.123embed.net/server/3?path=/movie/",  
         "https://moviekex.online/embed/api/fastfetch/",
+        "https://play2.123embed.net/server/3?path=/movie/",
     ];
 
     const servers = [
@@ -160,20 +160,20 @@ async function extractStreamUrl(url) {
             for (let i = 0; i < endpoints.length; i++) {
                 for (let j = 0; j < servers.length; j++) {
                     try {
-                        let apiUrl = endpoints[i] === "https://play2.123embed.net/server/3?path=/movie/"
-                            ? `${endpoints[i]}${movieId}`
-                            : `${endpoints[i]}${movieId}${servers[j]}`;
+                        let apiUrl = endpoints[i] === "https://moviekex.online/embed/api/fastfetch/"
+                            ? `${endpoints[i]}${movieId}${servers[j]}`
+                            : `${endpoints[i]}${movieId}`;
 
                         const responseText = await fetch(apiUrl);
                         const data = JSON.parse(responseText);
 
                         if (data) {
-                            if (endpoints[i] === "https://play2.123embed.net/server/3?path=/movie/") {
-                                const hlsSource = data.playlist?.find(source => source.type === 'hls');
-                                if (hlsSource?.file) return hlsSource.file;
-                            } else {
+                            if (endpoints[i] === "https://moviekex.online/embed/api/fastfetch/") {
                                 const hlsSource = data.url?.find(source => source.type === 'hls');
                                 if (hlsSource?.link) return hlsSource.link;
+                            } else {
+                                const hlsSource = data.playlist?.find(source => source.type === 'hls');
+                                if (hlsSource?.file) return hlsSource.file;
                             }
                         }
                     } catch (err) {
