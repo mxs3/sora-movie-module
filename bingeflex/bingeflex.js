@@ -137,10 +137,12 @@ async function extractStreamUrl(url) {
     ];
   
     const servicesWithoutCaption = [
+        "guru",
         "halo",
         "alpha",
         "g1",
         "g2",
+        "fastx",
         "astra",
         "anime",
         "ninja",
@@ -156,8 +158,6 @@ async function extractStreamUrl(url) {
         "filmecho",
         "kinoecho",
         "ee3",
-        "guru",
-        "fastx",
         "putafilme",
         "ophim",
     ];
@@ -181,21 +181,20 @@ async function extractStreamUrl(url) {
                         const responseText = await fetch(apiUrl);
                         const data = JSON.parse(responseText);
                         
-                        if (data) {
+                        if (data && data.error !== "Internal Server Error") {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
                             const subtitleTrack = data.data?.captions?.find(track =>
                                 track.label.startsWith('English')
                             );
 
-                            const result = {
-                                stream: hlsSource ? hlsSource.url : "",
-                                subtitles: subtitleTrack ? subtitleTrack.file : ""
-                            };
-
-                            console.log("API URL: " + apiUrl);
-                            console.log("Result: " + JSON.stringify(result));
-
-                            return JSON.stringify(result);
+                            if (hlsSource?.url) {
+                                const result = {
+                                    stream: hlsSource ? hlsSource.url : "",
+                                    subtitles: subtitleTrack ? subtitleTrack.file : ""
+                                };
+                                    
+                                return JSON.stringify(result);
+                            }
                         }
                     } catch (err) {
                         console.log(`Fetch error on endpoint ${apiUrl} for movie ${movieId}:`, err);
@@ -213,7 +212,7 @@ async function extractStreamUrl(url) {
                         const responseText = await fetch(apiUrl);
                         const data = JSON.parse(responseText);
 
-                        if (data) {
+                        if (data && data.error !== "Internal Server Error") {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
 
                             if (hlsSource?.url) {
@@ -221,6 +220,8 @@ async function extractStreamUrl(url) {
                                     stream: hlsSource ? hlsSource.url : "",
                                     subtitles: ""
                                 };
+
+                                console.log(JSON.stringify(result));
 
                                 return JSON.stringify(result);
                             }
@@ -250,7 +251,7 @@ async function extractStreamUrl(url) {
                         const responseText = await fetch(apiUrl);
                         const data = JSON.parse(responseText);
                         
-                        if (data) {
+                        if (data && data.error !== "Internal Server Error") {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
                             const subtitleTrack = data.data?.captions?.find(track =>
                                 track.label.startsWith('English')
@@ -261,9 +262,6 @@ async function extractStreamUrl(url) {
                                     stream: hlsSource ? hlsSource.url : "",
                                     subtitles: subtitleTrack ? subtitleTrack.file : ""
                                 };
-                                
-                                console.log("API URL: " + apiUrl);
-                                console.log("Result: " + JSON.stringify(result));
                                 
                                 return JSON.stringify(result);
                             }
@@ -284,7 +282,7 @@ async function extractStreamUrl(url) {
                         const responseText = await fetch(apiUrl);
                         const data = JSON.parse(responseText);
                         
-                        if (data) {
+                        if (data && data.error !== "Internal Server Error") {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
                             
                             if (hlsSource?.url) {
@@ -301,6 +299,7 @@ async function extractStreamUrl(url) {
                     }
                 }
             }
+
             return null;
         } else {
             throw new Error("Invalid URL format");
