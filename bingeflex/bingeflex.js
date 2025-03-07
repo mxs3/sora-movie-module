@@ -141,7 +141,6 @@ async function extractStreamUrl(url) {
         "alpha",
         "g1",
         "g2",
-        "fastx",
         "astra",
         "anime",
         "ninja",
@@ -158,6 +157,7 @@ async function extractStreamUrl(url) {
         "kinoecho",
         "ee3",
         "guru",
+        "fastx",
         "putafilme",
         "ophim",
     ];
