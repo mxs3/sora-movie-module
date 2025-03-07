@@ -146,7 +146,8 @@ async function extractStreamUrl(url) {
     const servers = [
         "?sr=3",
         "?sr=2",
-        "?sr=1"
+        "?sr=1",
+        "?sr=0"
     ];
 
     try {
