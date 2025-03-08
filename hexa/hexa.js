@@ -178,16 +178,7 @@ async function extractStreamUrl(url) {
                     };
 
                     console.log(result);
-                    console.log(JSON.stringify(result));
                     
-                    return JSON.stringify(result);
-                } else {
-                    // Fallback if no streams are found
-                    const result = {
-                        stream: hlsSource ? hlsSource.link : "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
-
                     return JSON.stringify(result);
                 }
             } catch (err) {
@@ -241,7 +232,6 @@ async function extractStreamUrl(url) {
                     };
 
                     console.log(result);
-                    console.log(JSON.stringify(result));
                     
                     return JSON.stringify(result);
                 } else {
@@ -264,3 +254,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractStreamUrl("https://hexa.watch/watch/movie/iframe/238");
