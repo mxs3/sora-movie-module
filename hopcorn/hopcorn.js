@@ -125,7 +125,7 @@ async function extractStreamUrl(url) {
 
                         if (hlsSource?.url) {
                             const checkedUrl = await fetch(hlsSource.url);
-                            const html = JSON.parse(checkedUrl);
+                            const html = checkedUrl;
 
                             const titleRegex = /<title>400 Bad Request<\/title>/i;
                             const match = html.match(titleRegex);
@@ -166,7 +166,7 @@ async function extractStreamUrl(url) {
                         
                         if (hlsSource?.url) {
                             const checkedUrl = await fetch(hlsSource.url);
-                            const html = JSON.parse(checkedUrl);
+                            const html = checkedUrl;
 
                             const titleRegex = /<title>400 Bad Request<\/title>/i;
                             const match = html.match(titleRegex);
