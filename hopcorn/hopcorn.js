@@ -125,19 +125,16 @@ async function extractStreamUrl(url) {
 
                         if (hlsSource?.url) {
                             const checkedUrl = await fetch(hlsSource.url);
-                            const content = await checkedUrl.text();
+                            const html = JSON.parse(checkedUrl);
 
-                            const statusCodes = [400, 401, 402, 403, 404, 405, 500, 501, 502, 503, 504, 505];
+                            const titleRegex = /<title>400 Bad Request<\/title>/i;
+                            const match = html.match(titleRegex);
 
-                            const regex = new RegExp(`\\b(?:${statusCodes.join('|')})\\b`, 'g');
-
-                            const matches = content.match(regex) || [];
-
-                            if (matches.length > 0) {
-                                console.log('Found status codes in content:', [...new Set(matches)]);
+                            if (match) {
+                                console.log("Error: 400 Bad Request");
                                 continue loopWithCaptions;
                             } else {
-                                console.log('No status codes found in content.');
+                                console.log(html);
                             }
 
                             const result = {
@@ -169,19 +166,16 @@ async function extractStreamUrl(url) {
                         
                         if (hlsSource?.url) {
                             const checkedUrl = await fetch(hlsSource.url);
-                            const content = await checkedUrl.text();
+                            const html = JSON.parse(checkedUrl);
 
-                            const statusCodes = [400, 401, 402, 403, 404, 405, 500, 501, 502, 503, 504, 505];
+                            const titleRegex = /<title>400 Bad Request<\/title>/i;
+                            const match = html.match(titleRegex);
 
-                            const regex = new RegExp(`\\b(?:${statusCodes.join('|')})\\b`, 'g');
-
-                            const matches = content.match(regex) || [];
-
-                            if (matches.length > 0) {
-                                console.log('Found status codes in content:', [...new Set(matches)]);
+                            if (match) {
+                                console.log("Error: 400 Bad Request");
                                 continue;
                             } else {
-                                console.log('No status codes found in content.');
+                                console.log(html);
                             }
 
                             const result = {
