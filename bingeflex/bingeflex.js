@@ -174,6 +174,7 @@ async function extractStreamUrl(url) {
             const movieId = match[1];
     
             // Try services with captions
+            loopWithCaptions:
             for (let i = 0; i < servicesWithCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
                     const service = servicesWithCaption[i];
@@ -202,7 +203,7 @@ async function extractStreamUrl(url) {
 
                                 if (foundCodes.length > 0) {
                                     console.log('Found status codes in content:', foundCodes);
-                                    continue;
+                                    continue loopWithCaptions;
                                 } else {
                                     console.log('No status codes found in content.');
                                 }
@@ -276,6 +277,7 @@ async function extractStreamUrl(url) {
             const episodeNumber = match[3];
     
             // Try services with captions
+            loopWithCaptions:
             for (let i = 0; i < servicesWithCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
                     const service = servicesWithCaption[i];
@@ -304,7 +306,7 @@ async function extractStreamUrl(url) {
 
                                 if (foundCodes.length > 0) {
                                     console.log('Found status codes in content:', foundCodes);
-                                    continue;
+                                    continue loopWithCaptions;
                                 } else {
                                     console.log('No status codes found in content.');
                                 }
