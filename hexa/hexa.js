@@ -148,7 +148,7 @@ async function extractStreamUrl(url) {
                 );
 
                 const responseFile = await fetch(hlsSource.link);
-                const fileData = await responseFile.text();
+                const fileData = responseFile;
 
                 const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+x\d+)[\r\n]+(https?:\/\/[^\r\n]+)/g;
 
@@ -203,7 +203,7 @@ async function extractStreamUrl(url) {
 
             try {
                 const responseText = await fetch(`https://demo.autoembed.cc/api/server?id=${showId}&sr=1&ep=${episodeNumber}&ss=${seasonNumber}`);
-                const data = await responseText.json();
+                const data = JSON.parse(responseText);
 
                 const hlsSource = data.url?.find(source => source.type === 'playlist');
                 const subtitleTrack = data.tracks?.find(track =>
@@ -211,7 +211,7 @@ async function extractStreamUrl(url) {
                 );
 
                 const responseFile = await fetch(hlsSource.link);
-                const fileData = await responseFile.text();
+                const fileData = responseFile;
 
                 const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+x\d+)[\r\n]+(https?:\/\/[^\r\n]+)/g;
 
@@ -264,5 +264,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractStreamUrl("https://hexa.watch/watch/movie/iframe/238");
