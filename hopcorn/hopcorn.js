@@ -133,7 +133,7 @@ async function extractStreamUrl(url) {
 
                             if (foundCodes.length > 0) {
                                 console.log('Found status codes in content:', foundCodes);
-                                return null;
+                                continue;
                             } else {
                                 console.log('No status codes found in content.');
                             }
@@ -176,7 +176,7 @@ async function extractStreamUrl(url) {
 
                             if (foundCodes.length > 0) {
                                 console.log('Found status codes in content:', foundCodes);
-                                return null;
+                                continue;
                             } else {
                                 console.log('No status codes found in content.');
                             }
