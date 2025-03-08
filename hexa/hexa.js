@@ -147,20 +147,49 @@ async function extractStreamUrl(url) {
                     track.lang.startsWith('English')
                 );
 
-                // const hlsSource1 = await fetch(hlsSource.link);
-                // const hlsData = await hlsSource1.text();
+                const responseFile = await fetch(hlsSource.link);
+                const fileData = await responseFile.text();
 
-                // console.log(hlsData);
-                
-                const result = {
-                    stream: hlsSource ? hlsSource.link : "",
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                };
+                const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+x\d+)[\r\n]+(https?:\/\/[^\r\n]+)/g;
 
-                console.log(result);
-                console.log(JSON.stringify(result));
+                let match;
+                const streams = [];
 
-                return JSON.stringify(result);
+                // Loop over all matches
+                while ((match = regex.exec(fileData)) !== null) {
+                    const resolutionStr = match[1]; // e.g., "1920x1080"
+                    const url = match[2];
+
+                    // Convert resolution into numbers for comparison.
+                    const [width, height] = resolutionStr.split('x').map(Number);
+
+                    streams.push({ width, height, url });
+                }
+
+                if (streams.length > 0) {
+                    // Calculate pixel count to compare resolution sizes.
+                    streams.sort((a, b) => (b.width * b.height) - (a.width * a.height));
+
+                    const highestStreamUrl = streams[0].url;
+
+                    const result = {
+                        stream: highestStreamUrl,
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+
+                    console.log(result);
+                    console.log(JSON.stringify(result));
+                    
+                    return JSON.stringify(result);
+                } else {
+                    // Fallback if no streams are found
+                    const result = {
+                        stream: hlsSource ? hlsSource.link : "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+
+                    return JSON.stringify(result);
+                }
             } catch (err) {
                 console.log(`Fetch error on endpoint https://demo.autoembed.cc/api/server for movie ${movieId}:`, err);
             }
@@ -181,20 +210,49 @@ async function extractStreamUrl(url) {
                     track.lang.startsWith('English')
                 );
 
-                // const hlsSource1 = await fetch(hlsSource.link);
-                // const hlsData = await hlsSource1.text();
+                const responseFile = await fetch(hlsSource.link);
+                const fileData = await responseFile.text();
 
-                // console.log(hlsData);
-                
-                const result = {
-                    stream: hlsSource ? hlsSource.link : "",
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                };
+                const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+x\d+)[\r\n]+(https?:\/\/[^\r\n]+)/g;
 
-                console.log(result);
-                console.log(JSON.stringify(result));
+                let match;
+                const streams = [];
 
-                return JSON.stringify(result);
+                // Loop over all matches
+                while ((match = regex.exec(fileData)) !== null) {
+                    const resolutionStr = match[1]; // e.g., "1920x1080"
+                    const url = match[2];
+
+                    // Convert resolution into numbers for comparison.
+                    const [width, height] = resolutionStr.split('x').map(Number);
+
+                    streams.push({ width, height, url });
+                }
+
+                if (streams.length > 0) {
+                    // Calculate pixel count to compare resolution sizes.
+                    streams.sort((a, b) => (b.width * b.height) - (a.width * a.height));
+
+                    const highestStreamUrl = streams[0].url;
+
+                    const result = {
+                        stream: highestStreamUrl,
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+
+                    console.log(result);
+                    console.log(JSON.stringify(result));
+                    
+                    return JSON.stringify(result);
+                } else {
+                    // Fallback if no streams are found
+                    const result = {
+                        stream: hlsSource ? hlsSource.link : "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+
+                    return JSON.stringify(result);
+                }
             } catch (err) {
                 console.log(`Fetch error on endpoint https://demo.autoembed.cc/api/server for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
             }
