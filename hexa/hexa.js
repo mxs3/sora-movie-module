@@ -10,7 +10,7 @@ async function searchResults(keyword) {
                 return {
                     title: result.title || result.name,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://hexa.watch/watch/movie/${result.id}`
+                    href: `https://hexa.watch/movie/${result.id}`
                 };
             }
             // For TV shows, TMDB returns "name" and media_type === "tv"
@@ -19,14 +19,14 @@ async function searchResults(keyword) {
                     title: result.name || result.title,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
                     // Using default season/episode numbers (1/1)
-                    href: `https://hexa.watch/watch/tv/${result.id}`
+                    href: `https://hexa.watch/tv/${result.id}`
                 };
             } else {
                 // Fallback if media_type is not defined
                 return {
                     title: result.title || result.name || "Untitled",
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://hexa.watch/watch/tv/${result.id}`
+                    href: `https://hexa.watch/tv/${result.id}`
                 };
             }
         });
