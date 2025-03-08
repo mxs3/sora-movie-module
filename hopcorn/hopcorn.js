@@ -71,9 +71,9 @@ async function extractStreamUrl(url) {
     const servicesWithoutCaption = [
         "guru",
         "halo",
-        "alpha",
         "g1",
         "g2",
+        "alpha",
         "fastx",
         "astra",
         "anime",
