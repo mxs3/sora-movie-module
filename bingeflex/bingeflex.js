@@ -165,6 +165,8 @@ async function extractStreamUrl(url) {
     const secretKey = ["I", "3LZu", "M2V3", "4EXX", "s4", "yRy", "oqMz", "ysE", "RT", "iSI", "zlc", "H", "YNp", "5vR6", "h9S", "R", "jo", "F", "h2", "W8", "i", "sz09", "Xom", "gpU", "q", "6Qvg", "Cu", "5Zaz", "VK", "od", "FGY4", "eu", "D5Q", "smH", "11eq", "QrXs", "3", "L3", "YhlP", "c", "Z", "YT", "bnsy", "5", "fcL", "L22G", "r8", "J", "4", "gnK"];
 
     try {
+        let subtitles = "";
+
         if (url.includes('/movie/')) {
             const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
@@ -187,13 +189,22 @@ async function extractStreamUrl(url) {
                                 track.label.startsWith('English')
                             );
 
-                            if (hlsSource?.url) {
-                                const checkedUrl = fetch(hlsSource.url);
-                                const statusCode = (await checkedUrl).status;
+                            subtitles = subtitleTrack ? subtitleTrack.file : "";
 
-                                if (statusCode === 404 || statusCode === 500 || statusCode === 403 || statusCode === 400 || statusCode === 401 || statusCode === 502 || statusCode === 503 || statusCode === 504 || statusCode === 505) {
-                                    console.log('Stream URL not found:', hlsSource.url);
+                            if (hlsSource?.url) {
+                                const checkedUrl = await fetch(hlsSource.url);
+                                
+                                const content = await checkedUrl.text();
+                                
+                                const statusCodes = [400, 401, 402, 403, 404, 405, 500, 501, 502, 503, 504, 505];
+
+                                const foundCodes = statusCodes.filter(code => content.includes(code.toString()));
+
+                                if (foundCodes.length > 0) {
+                                    console.log('Found status codes in content:', foundCodes);
                                     return null;
+                                } else {
+                                    console.log('No status codes found in content.');
                                 }
 
                                 const result = {
@@ -224,17 +235,24 @@ async function extractStreamUrl(url) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
 
                             if (hlsSource?.url) {
-                                const checkedUrl = fetch(hlsSource.url);
-                                const statusCode = (await checkedUrl).status;
+                                const checkedUrl = await fetch(hlsSource.url);
                                 
-                                if (statusCode === 404 || statusCode === 500 || statusCode === 403 || statusCode === 400 || statusCode === 401 || statusCode === 502 || statusCode === 503 || statusCode === 504 || statusCode === 505) {
-                                    console.log('Stream URL not found:', hlsSource.url);
+                                const content = await checkedUrl.text();
+                                
+                                const statusCodes = [400, 401, 402, 403, 404, 405, 500, 501, 502, 503, 504, 505];
+
+                                const foundCodes = statusCodes.filter(code => content.includes(code.toString()));
+
+                                if (foundCodes.length > 0) {
+                                    console.log('Found status codes in content:', foundCodes);
                                     return null;
+                                } else {
+                                    console.log('No status codes found in content.');
                                 }
 
                                 const result = {
                                     stream: hlsSource ? hlsSource.url : "",
-                                    subtitles: ""
+                                    subtitles: subtitles
                                 };
 
                                 console.log(JSON.stringify(result));
@@ -273,13 +291,22 @@ async function extractStreamUrl(url) {
                                 track.label.startsWith('English')
                             );
 
+                            subtitles = subtitleTrack ? subtitleTrack.file : "";
+
                             if (hlsSource?.url) {
-                                const checkedUrl = fetch(hlsSource.url);
-                                const statusCode = (await checkedUrl).status;
+                                const checkedUrl = await fetch(hlsSource.url);
                                 
-                                if (statusCode === 404 || statusCode === 500 || statusCode === 403 || statusCode === 400 || statusCode === 401 || statusCode === 502 || statusCode === 503 || statusCode === 504 || statusCode === 505) {
-                                    console.log('Stream URL not found:', hlsSource.url);
+                                const content = await checkedUrl.text();
+                                
+                                const statusCodes = [400, 401, 402, 403, 404, 405, 500, 501, 502, 503, 504, 505];
+
+                                const foundCodes = statusCodes.filter(code => content.includes(code.toString()));
+
+                                if (foundCodes.length > 0) {
+                                    console.log('Found status codes in content:', foundCodes);
                                     return null;
+                                } else {
+                                    console.log('No status codes found in content.');
                                 }
 
                                 const result = {
@@ -310,17 +337,24 @@ async function extractStreamUrl(url) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
                             
                             if (hlsSource?.url) {
-                                const checkedUrl = fetch(hlsSource.url);
-                                const statusCode = (await checkedUrl).status;
+                                const checkedUrl = await fetch(hlsSource.url);
                                 
-                                if (statusCode === 404 || statusCode === 500 || statusCode === 403 || statusCode === 400 || statusCode === 401 || statusCode === 502 || statusCode === 503 || statusCode === 504 || statusCode === 505) {
-                                    console.log('Stream URL not found:', hlsSource.url);
+                                const content = await checkedUrl.text();
+                                
+                                const statusCodes = [400, 401, 402, 403, 404, 405, 500, 501, 502, 503, 504, 505];
+
+                                const foundCodes = statusCodes.filter(code => content.includes(code.toString()));
+
+                                if (foundCodes.length > 0) {
+                                    console.log('Found status codes in content:', foundCodes);
                                     return null;
+                                } else {
+                                    console.log('No status codes found in content.');
                                 }
 
                                 const result = {
                                     stream: hlsSource ? hlsSource.url : "",
-                                    subtitles: ""
+                                    subtitles: subtitles
                                 };
 
                                 return JSON.stringify(result);
@@ -341,5 +375,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractStreamUrl("https://bingeflex.vercel.app/movie/238");
