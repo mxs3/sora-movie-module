@@ -194,15 +194,16 @@ async function extractStreamUrl(url) {
 
                             if (hlsSource?.url) {
                                 const checkedUrl = await fetch(hlsSource.url);
-                                
                                 const content = await checkedUrl.text();
-                                
+
                                 const statusCodes = [400, 401, 402, 403, 404, 405, 500, 501, 502, 503, 504, 505];
 
-                                const foundCodes = statusCodes.filter(code => content.includes(code.toString()));
+                                const regex = new RegExp(`\\b(?:${statusCodes.join('|')})\\b`, 'g');
 
-                                if (foundCodes.length > 0) {
-                                    console.log('Found status codes in content:', foundCodes);
+                                const matches = content.match(regex) || [];
+
+                                if (matches.length > 0) {
+                                    console.log('Found status codes in content:', [...new Set(matches)]);
                                     continue loopWithCaptions;
                                 } else {
                                     console.log('No status codes found in content.');
@@ -237,15 +238,16 @@ async function extractStreamUrl(url) {
 
                             if (hlsSource?.url) {
                                 const checkedUrl = await fetch(hlsSource.url);
-                                
                                 const content = await checkedUrl.text();
-                                
+
                                 const statusCodes = [400, 401, 402, 403, 404, 405, 500, 501, 502, 503, 504, 505];
 
-                                const foundCodes = statusCodes.filter(code => content.includes(code.toString()));
+                                const regex = new RegExp(`\\b(?:${statusCodes.join('|')})\\b`, 'g');
 
-                                if (foundCodes.length > 0) {
-                                    console.log('Found status codes in content:', foundCodes);
+                                const matches = content.match(regex) || [];
+
+                                if (matches.length > 0) {
+                                    console.log('Found status codes in content:', [...new Set(matches)]);
                                     continue;
                                 } else {
                                     console.log('No status codes found in content.');
@@ -297,15 +299,16 @@ async function extractStreamUrl(url) {
 
                             if (hlsSource?.url) {
                                 const checkedUrl = await fetch(hlsSource.url);
-                                
                                 const content = await checkedUrl.text();
-                                
+
                                 const statusCodes = [400, 401, 402, 403, 404, 405, 500, 501, 502, 503, 504, 505];
 
-                                const foundCodes = statusCodes.filter(code => content.includes(code.toString()));
+                                const regex = new RegExp(`\\b(?:${statusCodes.join('|')})\\b`, 'g');
 
-                                if (foundCodes.length > 0) {
-                                    console.log('Found status codes in content:', foundCodes);
+                                const matches = content.match(regex) || [];
+
+                                if (matches.length > 0) {
+                                    console.log('Found status codes in content:', [...new Set(matches)]);
                                     continue loopWithCaptions;
                                 } else {
                                     console.log('No status codes found in content.');
@@ -340,15 +343,16 @@ async function extractStreamUrl(url) {
                             
                             if (hlsSource?.url) {
                                 const checkedUrl = await fetch(hlsSource.url);
-                                
                                 const content = await checkedUrl.text();
-                                
+
                                 const statusCodes = [400, 401, 402, 403, 404, 405, 500, 501, 502, 503, 504, 505];
 
-                                const foundCodes = statusCodes.filter(code => content.includes(code.toString()));
+                                const regex = new RegExp(`\\b(?:${statusCodes.join('|')})\\b`, 'g');
 
-                                if (foundCodes.length > 0) {
-                                    console.log('Found status codes in content:', foundCodes);
+                                const matches = content.match(regex) || [];
+
+                                if (matches.length > 0) {
+                                    console.log('Found status codes in content:', [...new Set(matches)]);
                                     continue;
                                 } else {
                                     console.log('No status codes found in content.');
