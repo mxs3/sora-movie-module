@@ -112,7 +112,7 @@ async function extractEpisodes(url) {
                 
                 if (seasonData.episodes && seasonData.episodes.length) {
                     const episodes = seasonData.episodes.map(episode => ({
-                        href: `https://hexa.watch/watch/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                        href: `https://hexa.watch/watch/tv/iframe/${showId}/${seasonNumber}/${episode.episode_number}`,
                         number: episode.episode_number,
                         title: episode.name || ""
                     }));
@@ -131,58 +131,61 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
-    const endpoints = [
-        "https://fishstick.hexa.watch/api/hexa1/",
-        "https://fishstick.hexa.watch/api/hexa4/",
-        "https://fishstick.hexa.watch/api/hexa2/",
-        "https://fishstick.hexa.watch/api/hexa3/"
-    ];
-
     try {
         if (url.includes('/watch/movie/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/([^\/]+)/);
+            const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/iframe\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
 
-            for (let i = 0; i < endpoints.length; i++) {
-                try {
-                    const responseText = await fetch(`${endpoints[i]}${movieId}`);
-                    const data = JSON.parse(responseText);
+            try {
+                const responseText = await fetch(`https://demo.autoembed.cc/api/server?id=${movieId}&sr=1`);
+                const data = JSON.parse(responseText);
 
-                    if (data && data.stream && Array.isArray(data.stream)) {
-                        const hlsSource = data.stream.find(source => source.type === 'hls');
+                if (data && data.stream && Array.isArray(data.stream)) {
+                    const hlsSource = data.url.find(source => source.type === 'playlist');
+                    const subtitleTrack = data.tracks?.find(track =>
+                        track.label.startsWith('English')
+                    );
+                    
+                    const result = {
+                        stream: hlsSource ? hlsSource.link : "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
 
-                        if (hlsSource && hlsSource.url) return hlsSource.url;
-                    }
-                } catch (err) {
-                    console.log(`Fetch error on endpoint ${endpoints[i]} for movie ${movieId}:`, err);
+                    return JSON.stringify(result);
                 }
+            } catch (err) {
+                console.log(`Fetch error on endpoint https://demo.autoembed.cc/api/server for movie ${movieId}:`, err);
             }
-            return null;
         } else if (url.includes('/watch/tv/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
+            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/iframe\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
             const seasonNumber = match[2];
             const episodeNumber = match[3];
 
-            for (let i = 0; i < endpoints.length; i++) {
-                try {
-                    const responseText = await fetch(`${endpoints[i]}${showId}/${seasonNumber}/${episodeNumber}`);
-                    const data = JSON.parse(responseText);
+            try {
+                const responseText = await fetch(`https://demo.autoembed.cc/api/server?id=${showId}&sr=1&ep=${episodeNumber}&ss=${seasonNumber}`);
+                const data = JSON.parse(responseText);
 
-                    if (data && data.stream && Array.isArray(data.stream)) {
-                        const hlsSource = data.stream.find(source => source.type === 'hls');
-                        
-                        if (hlsSource && hlsSource.url) return hlsSource.url;
-                    }
-                } catch (err) {
-                    console.log(`Fetch error on endpoint ${endpoints[i]} for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
+                if (data && data.stream && Array.isArray(data.stream)) {
+                    const hlsSource = data.url.find(source => source.type === 'playlist');
+                    const subtitleTrack = data.tracks?.find(track =>
+                        track.label.startsWith('English')
+                    );
+                    
+                    const result = {
+                        stream: hlsSource ? hlsSource.link : "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+
+                    return JSON.stringify(result);
                 }
+            } catch (err) {
+                console.log(`Fetch error on endpoint https://demo.autoembed.cc/api/server for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
             }
-            return null;
         } else {
             throw new Error("Invalid URL format");
         }
