@@ -10,7 +10,7 @@ async function searchResults(keyword) {
                 return {
                     title: result.title || result.name,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://hexa.watch/watch/movie/iframe/${result.id}`
+                    href: `https://hexa.watch/watch/movie/${result.id}`
                 };
             }
             // For TV shows, TMDB returns "name" and media_type === "tv"
@@ -19,14 +19,14 @@ async function searchResults(keyword) {
                     title: result.name || result.title,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
                     // Using default season/episode numbers (1/1)
-                    href: `https://hexa.watch/watch/tv/iframe/${result.id}/1/1`
+                    href: `https://hexa.watch/watch/tv/${result.id}`
                 };
             } else {
                 // Fallback if media_type is not defined
                 return {
                     title: result.title || result.name || "Untitled",
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://hexa.watch/watch/tv/iframe/${result.id}/1/1`
+                    href: `https://hexa.watch/watch/tv/${result.id}`
                 };
             }
         });
@@ -40,8 +40,8 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        if(url.includes('/watch/movie/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/iframe\/([^\/]+)/);
+        if(url.includes('/movie/')) {
+            const match = url.match(/https:\/\/hexa\.watch\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
@@ -56,8 +56,8 @@ async function extractDetails(url) {
             }];
 
             return JSON.stringify(transformedResults);
-        } else if(url.includes('/watch/tv/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/iframe\/([^\/]+)/);
+        } else if(url.includes('/tv/')) {
+            const match = url.match(/https:\/\/hexa\.watch\/tv\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
@@ -145,7 +145,7 @@ async function extractStreamUrl(url) {
                 if (data && data.stream && Array.isArray(data.stream)) {
                     const hlsSource = data.url.find(source => source.type === 'playlist');
                     const subtitleTrack = data.tracks?.find(track =>
-                        track.label.startsWith('English')
+                        track.lang.startsWith('English')
                     );
                     
                     const result = {
@@ -173,7 +173,7 @@ async function extractStreamUrl(url) {
                 if (data && data.stream && Array.isArray(data.stream)) {
                     const hlsSource = data.url.find(source => source.type === 'playlist');
                     const subtitleTrack = data.tracks?.find(track =>
-                        track.label.startsWith('English')
+                        track.lang.startsWith('English')
                     );
                     
                     const result = {
