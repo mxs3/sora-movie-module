@@ -153,6 +153,9 @@ async function extractStreamUrl(url) {
                         subtitles: subtitleTrack ? subtitleTrack.url : ""
                     };
 
+                    console.log(result);
+                    console.log(JSON.stringify(result));
+
                     return JSON.stringify(result);
                 }
             } catch (err) {
@@ -180,6 +183,9 @@ async function extractStreamUrl(url) {
                         stream: hlsSource ? hlsSource.link : "",
                         subtitles: subtitleTrack ? subtitleTrack.url : ""
                     };
+
+                    console.log(result);
+                    console.log(JSON.stringify(result));
 
                     return JSON.stringify(result);
                 }
