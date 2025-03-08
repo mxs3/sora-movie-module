@@ -225,6 +225,7 @@ async function extractStreamUrl(url) {
 
                             if (hlsSource?.url) {
                                 const checkedUrl = fetch(hlsSource.url);
+                                const statusCode = (await checkedUrl).status;
                                 
                                 if (statusCode === 404 || statusCode === 500 || statusCode === 403 || statusCode === 400 || statusCode === 401 || statusCode === 502 || statusCode === 503 || statusCode === 504 || statusCode === 505) {
                                     console.log('Stream URL not found:', hlsSource.url);
@@ -274,6 +275,7 @@ async function extractStreamUrl(url) {
 
                             if (hlsSource?.url) {
                                 const checkedUrl = fetch(hlsSource.url);
+                                const statusCode = (await checkedUrl).status;
                                 
                                 if (statusCode === 404 || statusCode === 500 || statusCode === 403 || statusCode === 400 || statusCode === 401 || statusCode === 502 || statusCode === 503 || statusCode === 504 || statusCode === 505) {
                                     console.log('Stream URL not found:', hlsSource.url);
@@ -309,6 +311,7 @@ async function extractStreamUrl(url) {
                             
                             if (hlsSource?.url) {
                                 const checkedUrl = fetch(hlsSource.url);
+                                const statusCode = (await checkedUrl).status;
                                 
                                 if (statusCode === 404 || statusCode === 500 || statusCode === 403 || statusCode === 400 || statusCode === 401 || statusCode === 502 || statusCode === 503 || statusCode === 504 || statusCode === 505) {
                                     console.log('Stream URL not found:', hlsSource.url);
