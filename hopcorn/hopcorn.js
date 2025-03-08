@@ -118,12 +118,21 @@ async function extractStreamUrl(url) {
                             track.label.startsWith('English')
                         );
 
-                        const result = {
-                            stream: hlsSource ? hlsSource.url : "",
-                            subtitles: subtitleTrack ? subtitleTrack.file : ""
-                        };
+                        if (hlsSource?.url) {
+                            const checkedUrl = fetch(hlsSource.url);
+                            
+                            if (checkedUrl.status === 404 || checkedUrl.status === 500 || checkedUrl.status === 403 || checkedUrl.status === 400 || checkedUrl.status === 401 || checkedUrl.status === 502 || checkedUrl.status === 503 || checkedUrl.status === 504 || checkedUrl.status === 505) {
+                                console.log('Stream URL not found:', hlsSource.url);
+                                return null;
+                            }
 
-                        return JSON.stringify(result);
+                            const result = {
+                                stream: hlsSource ? hlsSource.url : "",
+                                subtitles: subtitleTrack ? subtitleTrack.file : ""
+                            };
+    
+                            return JSON.stringify(result);
+                        }
                     }
                 } catch (err) {
                     console.log(`Fetch error on endpoint ${apiUrl} for movie ${movieId}:`, err);
@@ -145,6 +154,13 @@ async function extractStreamUrl(url) {
                         const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
                         
                         if (hlsSource?.url) {
+                            const checkedUrl = fetch(hlsSource.url);
+                            
+                            if (checkedUrl.status === 404 || checkedUrl.status === 500 || checkedUrl.status === 403 || checkedUrl.status === 400 || checkedUrl.status === 401 || checkedUrl.status === 502 || checkedUrl.status === 503 || checkedUrl.status === 504 || checkedUrl.status === 505) {
+                                console.log('Stream URL not found:', hlsSource.url);
+                                return null;
+                            }
+
                             const result = {
                                 stream: hlsSource ? hlsSource.url : "",
                                 subtitles: ""

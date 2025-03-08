@@ -188,6 +188,13 @@ async function extractStreamUrl(url) {
                             );
 
                             if (hlsSource?.url) {
+                                const checkedUrl = fetch(hlsSource.url);
+                                
+                                if (checkedUrl.status === 404 || checkedUrl.status === 500 || checkedUrl.status === 403 || checkedUrl.status === 400 || checkedUrl.status === 401 || checkedUrl.status === 502 || checkedUrl.status === 503 || checkedUrl.status === 504 || checkedUrl.status === 505) {
+                                    console.log('Stream URL not found:', hlsSource.url);
+                                    return null;
+                                }
+
                                 const result = {
                                     stream: hlsSource ? hlsSource.url : "",
                                     subtitles: subtitleTrack ? subtitleTrack.file : ""
@@ -216,6 +223,13 @@ async function extractStreamUrl(url) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
 
                             if (hlsSource?.url) {
+                                const checkedUrl = fetch(hlsSource.url);
+                                
+                                if (checkedUrl.status === 404 || checkedUrl.status === 500 || checkedUrl.status === 403 || checkedUrl.status === 400 || checkedUrl.status === 401 || checkedUrl.status === 502 || checkedUrl.status === 503 || checkedUrl.status === 504 || checkedUrl.status === 505) {
+                                    console.log('Stream URL not found:', hlsSource.url);
+                                    return null;
+                                }
+
                                 const result = {
                                     stream: hlsSource ? hlsSource.url : "",
                                     subtitles: ""
@@ -258,6 +272,13 @@ async function extractStreamUrl(url) {
                             );
 
                             if (hlsSource?.url) {
+                                const checkedUrl = fetch(hlsSource.url);
+                                
+                                if (checkedUrl.status === 404 || checkedUrl.status === 500 || checkedUrl.status === 403 || checkedUrl.status === 400 || checkedUrl.status === 401 || checkedUrl.status === 502 || checkedUrl.status === 503 || checkedUrl.status === 504 || checkedUrl.status === 505) {
+                                    console.log('Stream URL not found:', hlsSource.url);
+                                    return null;
+                                }
+
                                 const result = {
                                     stream: hlsSource ? hlsSource.url : "",
                                     subtitles: subtitleTrack ? subtitleTrack.file : ""
@@ -286,6 +307,13 @@ async function extractStreamUrl(url) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
                             
                             if (hlsSource?.url) {
+                                const checkedUrl = fetch(hlsSource.url);
+                                
+                                if (checkedUrl.status === 404 || checkedUrl.status === 500 || checkedUrl.status === 403 || checkedUrl.status === 400 || checkedUrl.status === 401 || checkedUrl.status === 502 || checkedUrl.status === 503 || checkedUrl.status === 504 || checkedUrl.status === 505) {
+                                    console.log('Stream URL not found:', hlsSource.url);
+                                    return null;
+                                }
+
                                 const result = {
                                     stream: hlsSource ? hlsSource.url : "",
                                     subtitles: ""
