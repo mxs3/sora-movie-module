@@ -142,22 +142,25 @@ async function extractStreamUrl(url) {
                 const responseText = await fetch(`https://demo.autoembed.cc/api/server?id=${movieId}&sr=1`);
                 const data = JSON.parse(responseText);
 
-                if (data && data.stream && Array.isArray(data.stream)) {
-                    const hlsSource = data.url.find(source => source.type === 'playlist');
-                    const subtitleTrack = data.tracks?.find(track =>
-                        track.lang.startsWith('English')
-                    );
-                    
-                    const result = {
-                        stream: hlsSource ? hlsSource.link : "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
+                const hlsSource = data.url?.find(source => source.type === 'playlist');
+                const subtitleTrack = data.tracks?.find(track =>
+                    track.lang.startsWith('English')
+                );
 
-                    console.log(result);
-                    console.log(JSON.stringify(result));
+                // const hlsSource1 = await fetch(hlsSource.link);
+                // const hlsData = await hlsSource1.text();
 
-                    return JSON.stringify(result);
-                }
+                // console.log(hlsData);
+                
+                const result = {
+                    stream: hlsSource ? hlsSource.link : "",
+                    subtitles: subtitleTrack ? subtitleTrack.url : ""
+                };
+
+                console.log(result);
+                console.log(JSON.stringify(result));
+
+                return JSON.stringify(result);
             } catch (err) {
                 console.log(`Fetch error on endpoint https://demo.autoembed.cc/api/server for movie ${movieId}:`, err);
             }
@@ -171,24 +174,27 @@ async function extractStreamUrl(url) {
 
             try {
                 const responseText = await fetch(`https://demo.autoembed.cc/api/server?id=${showId}&sr=1&ep=${episodeNumber}&ss=${seasonNumber}`);
-                const data = JSON.parse(responseText);
+                const data = await responseText.json();
 
-                if (data && data.stream && Array.isArray(data.stream)) {
-                    const hlsSource = data.url.find(source => source.type === 'playlist');
-                    const subtitleTrack = data.tracks?.find(track =>
-                        track.lang.startsWith('English')
-                    );
-                    
-                    const result = {
-                        stream: hlsSource ? hlsSource.link : "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
+                const hlsSource = data.url?.find(source => source.type === 'playlist');
+                const subtitleTrack = data.tracks?.find(track =>
+                    track.lang.startsWith('English')
+                );
 
-                    console.log(result);
-                    console.log(JSON.stringify(result));
+                // const hlsSource1 = await fetch(hlsSource.link);
+                // const hlsData = await hlsSource1.text();
 
-                    return JSON.stringify(result);
-                }
+                // console.log(hlsData);
+                
+                const result = {
+                    stream: hlsSource ? hlsSource.link : "",
+                    subtitles: subtitleTrack ? subtitleTrack.url : ""
+                };
+
+                console.log(result);
+                console.log(JSON.stringify(result));
+
+                return JSON.stringify(result);
             } catch (err) {
                 console.log(`Fetch error on endpoint https://demo.autoembed.cc/api/server for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
             }
@@ -200,3 +206,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractStreamUrl("https://hexa.watch/watch/movie/iframe/238");
