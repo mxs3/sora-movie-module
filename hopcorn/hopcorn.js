@@ -152,6 +152,7 @@ async function extractStreamUrl(url) {
         }
 
         // Try services without captions
+        loopWithoutCaptions:
         for (let i = 0; i < servicesWithoutCaption.length; i++) {
             for (let j = 0; j < secretKey.length; j++) {
                 const service = servicesWithoutCaption[i];
@@ -173,7 +174,7 @@ async function extractStreamUrl(url) {
 
                             if (match) {
                                 console.log("Error: 400 Bad Request");
-                                continue;
+                                continue loopWithoutCaptions;
                             } else {
                                 console.log(html);
                             }
