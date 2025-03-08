@@ -86,15 +86,15 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        if(url.includes('/watch/movie/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/iframe\/([^\/]+)/);
+        if(url.includes('/movie/')) {
+            const match = url.match(/https:\/\/hexa\.watch\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
             const movieId = match[1];
             return JSON.stringify([
                 { href: `https://hexa.watch/watch/movie/iframe/${movieId}`, number: 1, title: "Full Movie" }
             ]);
-        } else if(url.includes('/watch/tv/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/iframe\/([^\/]+)/);
+        } else if(url.includes('/tv/')) {
+            const match = url.match(/https:\/\/hexa\.watch\/tv\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
             const showId = match[1];
             
