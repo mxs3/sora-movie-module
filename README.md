@@ -3,7 +3,7 @@
 > **IF A MODULE IN MY REPO ISN'T LISTED BELOW THEN IT'S NOT WORKING**<br>
 > <i>(e.g., LetStream, Sudatchi)</i>
 
-# 🍿 TV Show and Movie Modules for [Sora](https://github.com/cranci1/Sora) 📺
+# 🍿 TV Show and Movie Modules for [Sora](https://github.com/cranci1/Sora) 🎥
 
 Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collection includes modules for ***Sora*** (app version V2 and up) featuring TV shows and movies with English subtitles. (Anime modules may be added in the future.)
 
