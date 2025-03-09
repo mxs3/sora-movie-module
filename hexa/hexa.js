@@ -234,14 +234,6 @@ async function extractStreamUrl(url) {
                     console.log(result);
                     
                     return JSON.stringify(result);
-                } else {
-                    // Fallback if no streams are found
-                    const result = {
-                        stream: hlsSource ? hlsSource.link : "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
-
-                    return JSON.stringify(result);
                 }
             } catch (err) {
                 console.log(`Fetch error on endpoint https://demo.autoembed.cc/api/server for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);

@@ -93,6 +93,38 @@ async function extractStreamUrl(url) {
 
             const hlsSource = `https://sudatchi.com/${streamData.url}`;
 
+            const responseFile = await fetch(hlsSource);
+            const fileData = responseFile;
+
+            // The regex matches a stream line that contains a resolution (e.g. "1920x1080")
+            // and then captures the URL on the next line.
+            const regex = /#EXT-X-STREAM-INF:[^\n]*RESOLUTION=(\d+x\d+)[^\n]*\n(https?:\/\/[^\n]+)/g;
+
+            let match;
+            const streams = [];
+
+            // Loop through all matches to extract each stream's resolution and URL.
+            while ((match = regex.exec(fileData)) !== null) {
+                const resolutionStr = match[1];  // e.g., "1920x1080"
+                const url = match[2];
+                const [width, height] = resolutionStr.split('x').map(Number);
+                
+                streams.push({ width, height, url });
+            }
+
+            // Determine the highest resolution stream
+            if (streams.length > 0) {
+                // Compare by total pixels (width * height)
+                streams.sort((a, b) => (b.width * b.height) - (a.width * a.height));
+                
+                // Highest resolution stream URL
+                const highestStreamUrl = streams[0].url;
+
+                console.log(highestStreamUrl);
+
+                return highestStreamUrl;
+            }
+
             //const subtitleTrack = episodesData.subtitlesMap["1"];
 
             // const result = {
@@ -100,7 +132,7 @@ async function extractStreamUrl(url) {
             //     subtitles: subtitleTrack ? `https://ipfs.sudatchi.com${subtitleTrack}` : null,
             // };
             
-            return hlsSource;
+            // return hlsSource;
         } catch (err) {
             console.log(`Fetch error for show ${showId}:`, err);
         }
@@ -111,3 +143,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractStreamUrl(`https://sudatchi.com/watch/167143/1`);
