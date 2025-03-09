@@ -20,7 +20,7 @@ TV Show and Movie modules for Sora (maybe anime modules in future).
 
 <summary>
 
-### Bingeflex (TV Shows and Movies WITH SUBTITLES)
+### 1️⃣ Bingeflex (TV Shows and Movies WITH SUBTITLES)
 
 </summary>
 
@@ -41,7 +41,7 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/binge
 
 <summary>
 
-### Hexa (TV Shows and Movies WITH SUBTITLES)
+### 2️⃣ Hexa (TV Shows and Movies WITH SUBTITLES)
 
 </summary>
 
@@ -62,7 +62,7 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/
 
 <summary>
 
-### HopCorn+ (ONLY Movies WITH SUBTITLES)
+### 3️⃣ HopCorn+ (ONLY Movies WITH SUBTITLES)
 
 </summary>
 
@@ -93,7 +93,7 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopco
 
 <summary>
 
-### Ableflix (ONLY Movies)
+### 1️⃣ Ableflix (ONLY Movies)
 
 </summary>
 
