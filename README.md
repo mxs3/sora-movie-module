@@ -152,26 +152,26 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopco
 
 </summary>
 
--   <details>
+<details>
 
-    <summary>
+<summary>
 
-    ### 1️⃣ Ableflix (ONLY Movies)
+### 1️⃣ Ableflix (ONLY Movies)
 
-    </summary>
+</summary>
 
-    <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/icon.png" width="125px"><br>
+<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/icon.png" width="125px"><br>
 
-    **File:** `Ableflix.json`<br>
-    **Type:** `ONLY Movies`<br>
-    **Language:** English. <br>
-    **App version:** V2 and up <br>
-    **Author:** ibro <br><br>
-    [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json)
+**File:** `Ableflix.json`<br>
+**Type:** `ONLY Movies`<br>
+**Language:** English. <br>
+**App version:** V2 and up <br>
+**Author:** ibro <br><br>
+[<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json)
 
-    https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json
+https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json
 
-    </details>
+</details>
 
 </details>
 
