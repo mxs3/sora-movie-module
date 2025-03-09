@@ -40,7 +40,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-            const responseText = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=d64117f26031a428449f102ced3aba73`);
+            const responseText = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const data = JSON.parse(responseText);
 
             const transformedResults = [{
@@ -55,7 +55,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
-            const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=d64117f26031a428449f102ced3aba73`);
+            const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const data = JSON.parse(responseText);
 
             const transformedResults = [{
@@ -97,7 +97,7 @@ async function extractEpisodes(url) {
             
             const showId = match[1];
             
-            const showResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=d64117f26031a428449f102ced3aba73`);
+            const showResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const showData = JSON.parse(showResponseText);
             
             let allEpisodes = [];
@@ -106,7 +106,7 @@ async function extractEpisodes(url) {
 
                 if(seasonNumber === 0) continue;
                 
-                const seasonResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=d64117f26031a428449f102ced3aba73`);
+                const seasonResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
                 const seasonData = JSON.parse(seasonResponseText);
                 
                 if (seasonData.episodes && seasonData.episodes.length) {
