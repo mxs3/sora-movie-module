@@ -98,7 +98,7 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopco
 
 </summary>
 
-<img src="https://ableflix.xyz/favicon.ico" width="125px"><br>
+<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/icon.png" width="125px"><br>
 
 **File:** `Ableflix.json`<br>
 **Type:** `ONLY Movies`<br>
