@@ -33,6 +33,27 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/binge
 
 <summary>
 
+### Hexa (TV Shows and Movies WITH SUBTITLES)
+
+</summary>
+
+<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/icon.png" width="125px"><br>
+
+**File:** `Hexa.json`<br>
+**Type:** `TV Shows and Movies`<br>
+**Language:** English. (SUB)<br>
+**App version:** V2 and up <br>
+**Author:** ibro <br><br>
+[<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/hexa.json)
+
+https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/hexa.json
+
+</details>
+
+<details>
+
+<summary>
+
 ### HopCorn+ (ONLY Movies WITH SUBTITLES)
 
 </summary>
