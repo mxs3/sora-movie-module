@@ -51,7 +51,7 @@ async function extractDetails(url) {
 
             return JSON.stringify(transformedResults);
         } else if(url.includes('tv')) {
-            const match = url.match(/https:\/\/rivestream\.org\/watch\?type=movie&id=([^\/]+)&season=([^\/]+)&episode=([^\/]+)/);
+            const match = url.match(/https:\/\/rivestream\.org\/watch\?type=tv&id=([^\/]+)&season=([^\/]+)&episode=([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
@@ -91,7 +91,7 @@ async function extractEpisodes(url) {
                 { href: `https://rivestream.org/watch?type=movie&id=${movieId}`, number: 1, title: "Full Movie" }
             ]);
         } else if(url.includes('tv')) {
-            const match = url.match(/https:\/\/rivestream\.org\/watch\?type=movie&id=([^\/]+)&season=([^\/]+)&episode=([^\/]+)/);
+            const match = url.match(/https:\/\/rivestream\.org\/watch\?type=tv&id=([^\/]+)&season=([^\/]+)&episode=([^\/]+)/);
             
             if (!match) throw new Error("Invalid URL format");
             
@@ -266,7 +266,7 @@ async function extractStreamUrl(url) {
 
             return null;
         } else if (url.includes('tv')) {
-            const match = url.match(/https:\/\/rivestream\.org\/watch\?type=movie&id=([^\/]+)&season=([^\/]+)&episode=([^\/]+)/);
+            const match = url.match(/https:\/\/rivestream\.org\/watch\?type=tv&id=([^\/]+)&season=([^\/]+)&episode=([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
     
             const showId = match[1];
