@@ -1,176 +1,164 @@
-> [!CAUTION]
-> **ONLY USE THE BELOW MODULES**<br>
-> **IF A MODULE IN MY REPO ISN'T LISTED BELOW THEN IT'S NOT WORKING**<br>
-> <i>(e.g., LetStream, Sudatchi)</i>
-
 # TV Show and Movie Modules for [Sora](https://github.com/cranci1/Sora)
 
-TV Show and Movie modules for Sora (maybe anime modules in future).
+> **⚠️ CAUTION: USE ONLY THE MODULES LISTED BELOW!**
+>
+> If a module in this repository is not listed below, it is not functional.
+>
+> *(e.g., LetStream, Sudatchi)*
+
+Welcome to the **TV Show and Movie Modules for Sora** repository. This collection includes modules for Sora (app version V2 and up) featuring TV shows and movies with English subtitles. (Anime modules may be added in the future.)
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Available Modules](#available-modules)
+  - [With Subtitles](#with-subtitles)
+    - [TV Shows and Movies](#tv-shows-and-movies)
+      - [1️⃣ Hexa](#1️⃣-hexa)
+      - [2️⃣ Rive](#2️⃣-rive)
+      - [3️⃣ Bingeflex](#3️⃣-bingeflex)
+    - [ONLY Movies](#only-movies)
+      - [4️⃣ Autoembed](#4️⃣-autoembed)
+      - [5️⃣ HopCorn+](#5️⃣-hopcorn)
+  - [No Subtitles](#no-subtitles)
+    - [ONLY Movies](#only-movies-1)
+      - [1️⃣ Ableflix](#1️⃣-ableflix)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Overview
+
+This repository hosts modules specifically designed for Sora. Each module is pre-configured for easy integration, with details such as language, file names, and supported content types provided below. Simply click the **Add to Sora** button to load any module directly into your app.
+
+---
 
 ## Available Modules
 
-<details>
-
-<summary>
-
 ### With Subtitles
 
-</summary>
-
 <details>
+  <summary><strong>TV Shows and Movies</strong></summary>
 
-<summary>
+#### 1️⃣ Hexa
 
-### TV Shows and Movies
+<div align="center">
+  <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/icon.png" width="125px" alt="Hexa Icon">
+</div>
 
-</summary>
+- **File:** `Hexa.json`
+- **Type:** TV Shows and Movies
+- **Language:** English (SUB)
+- **App Version:** V2 and up
+- **Author:** ibro
 
-<details>
+[![Add to Sora](https://img.shields.io/badge/Add%20to-Sora-blue)](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/hexa.json)  
+[View Module](https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/hexa.json)
 
-<summary>
+---
 
-### 1️⃣ Hexa
+#### 2️⃣ Rive
 
-</summary>
+<div align="center">
+  <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/icon.png" width="125px" alt="Rive Icon">
+</div>
 
-<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/icon.png" width="125px"><br>
+- **File:** `Rive.json`
+- **Type:** TV Shows and Movies
+- **Language:** English (SUB)
+- **App Version:** V2 and up
+- **Author:** ibro
 
-**File:** `Hexa.json`<br>
-**Type:** `TV Shows and Movies`<br>
-**Language:** English. (SUB)<br>
-**App version:** V2 and up <br>
-**Author:** ibro <br><br>
-[<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/hexa.json)
+[![Add to Sora](https://img.shields.io/badge/Add%20to-Sora-blue)](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/rive.json)  
+[View Module](https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/rive.json)
 
-https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/hexa.json
+---
 
-</details>
+#### 3️⃣ Bingeflex
 
-<details>
+<div align="center">
+  <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/icon.png" width="125px" alt="Bingeflex Icon">
+</div>
 
-<summary>
+- **File:** `Bingeflex.json`
+- **Type:** TV Shows and Movies
+- **Language:** English (SUB)
+- **App Version:** V2 and up
+- **Author:** ibro
 
-### 2️⃣ Rive
-
-</summary>
-
-<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/icon.png" width="125px"><br>
-
-**File:** `Rive.json`<br>
-**Type:** `TV Shows and Movies`<br>
-**Language:** English. (SUB)<br>
-**App version:** V2 and up <br>
-**Author:** ibro <br><br>
-[<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/rive.json)
-
-https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/rive.json
-
-</details>
-
-<details>
-
-<summary>
-
-### 3️⃣ Bingeflex
-
-</summary>
-
-<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/icon.png" width="125px"><br>
-
-**File:** `Bingeflex.json`<br>
-**Type:** `TV Shows and Movies`<br>
-**Language:** English. (SUB)<br>
-**App version:** V2 and up <br>
-**Author:** ibro <br><br>
-[<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/bingeflex.json)
-
-https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/bingeflex.json
-
-</details>
+[![Add to Sora](https://img.shields.io/badge/Add%20to-Sora-blue)](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/bingeflex.json)  
+[View Module](https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/bingeflex.json)
 
 </details>
 
 <details>
+  <summary><strong>ONLY Movies</strong></summary>
 
-<summary>
+#### 4️⃣ Autoembed
 
-### ONLY Movies
+<div align="center">
+  <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/icon.png" width="125px" alt="Autoembed Icon">
+</div>
 
-</summary>
+- **File:** `Autoembed.json`
+- **Type:** ONLY Movies
+- **Language:** English (SUB)
+- **App Version:** V2 and up
+- **Author:** ibro
+
+[![Add to Sora](https://img.shields.io/badge/Add%20to-Sora-blue)](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/autoembed.json)  
+[View Module](https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/autoembed.json)
+
+---
+
+#### 5️⃣ HopCorn+
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/icon.png" width="125px" alt="HopCorn+ Icon">
+</div>
+
+- **File:** `HopCorn.json`
+- **Type:** ONLY Movies
+- **Language:** English (SUB)
+- **App Version:** V2 and up
+- **Author:** ibro
+
+[![Add to Sora](https://img.shields.io/badge/Add%20to-Sora-blue)](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json)  
+[View Module](https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json)
+
+</details>
+
+### No Subtitles
 
 <details>
+  <summary><strong>ONLY Movies</strong></summary>
 
-<summary>
+#### 1️⃣ Ableflix
 
-### 4️⃣ Autoembed
+<div align="center">
+  <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/icon.png" width="125px" alt="Ableflix Icon">
+</div>
 
-</summary>
+- **File:** `Ableflix.json`
+- **Type:** ONLY Movies
+- **Language:** English
+- **App Version:** V2 and up
+- **Author:** ibro
 
-<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/icon.png" width="125px"><br>
-
-**File:** `Autoembed.json`<br>
-**Type:** `ONLY Movies`<br>
-**Language:** English. (SUB)<br>
-**App version:** V2 and up <br>
-**Author:** ibro <br><br>
-[<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/autoembed.json)
-
-https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/autoembed.json
-
-</details>
-
-<details>
-
-<summary>
-
-### 4️⃣ HopCorn+
-
-</summary>
-
-<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/icon.png" width="125px"><br>
-
-**File:** `HopCorn.json`<br>
-**Type:** `ONLY Movies`<br>
-**Language:** English. (SUB)<br>
-**App version:** V2 and up <br>
-**Author:** ibro <br><br>
-[<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json)
-
-https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json
+[![Add to Sora](https://img.shields.io/badge/Add%20to-Sora-blue)](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json)  
+[View Module](https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json)
 
 </details>
 
-</details>
+---
 
-</details>
+## Contributing
 
-<details>
+Contributions are welcome! If you'd like to add or improve a module, please review the [CONTRIBUTING.md](CONTRIBUTING.md) guidelines before submitting a pull request.
 
-<summary>
+## License
 
-### NO Subtitles
-
-</summary>
-
-<details>
-
-<summary>
-
-### 1️⃣ Ableflix (ONLY Movies)
-
-</summary>
-
-<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/icon.png" width="125px"><br>
-
-**File:** `Ableflix.json`<br>
-**Type:** `ONLY Movies`<br>
-**Language:** English. <br>
-**App version:** V2 and up <br>
-**Author:** ibro <br><br>
-[<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json)
-
-https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json
-
-</details>
-
-</details>
+This project is licensed under the terms of the [MIT License](LICENSE).
