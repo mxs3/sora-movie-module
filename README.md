@@ -13,7 +13,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
 <summary>
 
-### With Subtitles
+### <img src="https://www.svgrepo.com/show/497565/subtitle.svg" width="25px"> With Subtitles
 
 </summary>
 
