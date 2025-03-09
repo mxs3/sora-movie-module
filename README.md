@@ -13,7 +13,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
 <summary>
 
-### <span style="background-position-y: 2rem;"><img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/subs.png" width="50px"><span> With Subtitles
+### <div><img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/subs.png" width="50px"><div> With Subtitles
 
 </summary>
 
@@ -148,7 +148,7 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopco
 
 <summary>
 
-### <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/no_subs.png" width="50px"> NO Subtitles
+### <div><img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/no_subs.png" width="50px"><div> NO Subtitles
 
 </summary>
 
