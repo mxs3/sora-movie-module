@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=71fdb081b0133511ac14ac0cc10fd307&query=${encodedKeyword}`);
+        const responseText = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=453752deba3272cd109112cd41127fd8&query=${encodedKeyword}`);
         const data = JSON.parse(responseText);
 
         const transformedResults = data.results.map(result => {
@@ -10,7 +10,7 @@ async function searchResults(keyword) {
                 return {
                     title: result.title || result.name,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://hexa.watch/watch/movie/iframe/${result.id}`
+                    href: `https://watch.autoembed.cc/movie/${result.id}`
                 };
             }
             // For TV shows, TMDB returns "name" and media_type === "tv"
@@ -19,14 +19,14 @@ async function searchResults(keyword) {
                     title: result.name || result.title,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
                     // Using default season/episode numbers (1/1)
-                    href: `https://hexa.watch/watch/tv/iframe/${result.id}/1/1`
+                    href: `https://watch.autoembed.cc/tv/${result.id}/episodes/1`
                 };
             } else {
                 // Fallback if media_type is not defined
                 return {
                     title: result.title || result.name || "Untitled",
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://hexa.watch/watch/tv/iframe/${result.id}/1/1`
+                    href: `https://watch.autoembed.cc/tv/${result.id}/episodes/1`
                 };
             }
         });
@@ -40,12 +40,12 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        if(url.includes('/watch/movie/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/iframe\/([^\/]+)/);
+        if(url.includes('/movie/')) {
+            const match = url.match(/https:\/\/watch\.autoembed\.cc\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-            const responseText = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=videos,credits`);
+            const responseText = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=453752deba3272cd109112cd41127fd8&append_to_response=videos,credits`);
             const data = JSON.parse(responseText);
 
             const transformedResults = [{
@@ -56,12 +56,12 @@ async function extractDetails(url) {
             }];
 
             return JSON.stringify(transformedResults);
-        } else if(url.includes('/watch/tv/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/iframe\/([^\/]+)/);
+        } else if(url.includes('/tv/')) {
+            const match = url.match(/https:\/\/watch\.autoembed\.cc\/tv\/([^\/]+)\/episodes\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
-            const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=seasons`);
+            const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=453752deba3272cd109112cd41127fd8&append_to_response=seasons`);
             const data = JSON.parse(responseText);
 
             const transformedResults = [{
@@ -86,19 +86,22 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        if(url.includes('/watch/movie/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/iframe\/([^\/]+)/);
+        if(url.includes('/movie/')) {
+            const match = url.match(/https:\/\/watch\.autoembed\.cc\/movie\/([^\/]+)/);
+            
             if (!match) throw new Error("Invalid URL format");
+            
             const movieId = match[1];
+
             return JSON.stringify([
-                { href: `https://hexa.watch/watch/movie/iframe/${movieId}`, number: 1, title: "Full Movie" }
+                { href: `https://watch.autoembed.cc/movie/${movieId}`, number: 1, title: "Full Movie" }
             ]);
-        } else if(url.includes('/watch/tv/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/iframe\/([^\/]+)/);
+        } else if(url.includes('/tv/')) {
+            const match = url.match(/https:\/\/watch\.autoembed\.cc\/tv\/([^\/]+)\/episodes\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
             const showId = match[1];
             
-            const showResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
+            const showResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=453752deba3272cd109112cd41127fd8`);
             const showData = JSON.parse(showResponseText);
             
             let allEpisodes = [];
@@ -107,7 +110,7 @@ async function extractEpisodes(url) {
 
                 if(seasonNumber === 0) continue;
                 
-                const seasonResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
+                const seasonResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=453752deba3272cd109112cd41127fd8`);
                 const seasonData = JSON.parse(seasonResponseText);
                 
                 if (seasonData.episodes && seasonData.episodes.length) {
@@ -132,14 +135,17 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        if (url.includes('/watch/movie/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/movie\/iframe\/([^\/]+)/);
+        if (url.includes('/movie/')) {
+            const match = url.match(/https:\/\/watch\.autoembed\.cc\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
 
             try {
-                const responseText = await fetch(`https://demo.autoembed.cc/api/server?id=${movieId}&sr=1`);
+                const showResponse = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=453752deba3272cd109112cd41127fd8`);
+                const showData = JSON.parse(showResponse);
+
+                const responseText = await fetch(`https://demo.autoembed.cc/api/server?id=${showData.imdb_id}&sr=1`);
                 const data = JSON.parse(responseText);
 
                 const hlsSource = data.url?.find(source => source.type === 'playlist');
@@ -184,8 +190,8 @@ async function extractStreamUrl(url) {
             } catch (err) {
                 console.log(`Fetch error on endpoint https://demo.autoembed.cc/api/server for movie ${movieId}:`, err);
             }
-        } else if (url.includes('/watch/tv/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/iframe\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
+        } else if (url.includes('/tv/')) {
+            const match = url.match(/https:\/\/watch\.autoembed\.cc\/tv\/([^\/]+)\/episodes\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
