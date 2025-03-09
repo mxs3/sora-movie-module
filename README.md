@@ -144,7 +144,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
 </details>
 
-    <details>
+  - <details>
 
     <summary>
 
