@@ -7,7 +7,7 @@
 
 Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collection includes modules for ***Sora*** (app version V2 and up) featuring TV shows and movies with English subtitles. (🌸 Anime modules may be added in the future. 🍥 🍜)
 
-## Available Modules
+## 📦 Available Modules
 
 <details>
 
