@@ -174,7 +174,3 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ablef
 </details>
 
 </details>
-
----
-
-> ## Free Palestine 🇵🇸
