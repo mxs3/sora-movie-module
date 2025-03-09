@@ -13,7 +13,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
 <summary>
 
-### <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/subs.png" width="50px"> With Subtitles
+### <div style="background-position-y: 2rem;"><img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/subs.png" width="50px"><div> With Subtitles
 
 </summary>
 
