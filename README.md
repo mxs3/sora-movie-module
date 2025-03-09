@@ -12,6 +12,14 @@ TV Show and Movie modules for Sora (maybe anime modules in future).
 
 <summary>
 
+### With Subtitles
+
+</summary>
+
+<details>
+
+<summary>
+
 ### Bingeflex (TV Shows and Movies WITH SUBTITLES)
 
 </summary>
@@ -71,6 +79,16 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopco
 
 </details>
 
+</details>
+
+<details>
+
+<summary>
+
+### NO Subtitles
+
+</summary>
+
 <details>
 
 <summary>
@@ -89,5 +107,7 @@ https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopco
 [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json)
 
 https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json
+
+</details>
 
 </details>
