@@ -25,68 +25,68 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
     </summary>
 
-    <details>
+      - <details>
 
-    <summary>
+        <summary>
 
-    ### 1️⃣ Hexa
+        ### 1️⃣ Hexa
 
-    </summary>
+        </summary>
 
-    <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/icon.png" width="125px"><br>
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/icon.png" width="125px"><br>
 
-    **File:** `Hexa.json`<br>
-    **Type:** `TV Shows and Movies`<br>
-    **Language:** English. (SUB)<br>
-    **App version:** V2 and up <br>
-    **Author:** ibro <br><br>
-    [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/hexa.json)
+        **File:** `Hexa.json`<br>
+        **Type:** `TV Shows and Movies`<br>
+        **Language:** English. (SUB)<br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/hexa.json)
 
-    https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/hexa.json
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/hexa.json
 
-    </details>
+        </details>
 
-    <details>
+        <details>
 
-    <summary>
+        <summary>
 
-    ### 2️⃣ Rive
+        ### 2️⃣ Rive
 
-    </summary>
+        </summary>
 
-    <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/icon.png" width="125px"><br>
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/icon.png" width="125px"><br>
 
-    **File:** `Rive.json`<br>
-    **Type:** `TV Shows and Movies`<br>
-    **Language:** English. (SUB)<br>
-    **App version:** V2 and up <br>
-    **Author:** ibro <br><br>
-    [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/rive.json)
+        **File:** `Rive.json`<br>
+        **Type:** `TV Shows and Movies`<br>
+        **Language:** English. (SUB)<br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/rive.json)
 
-    https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/rive.json
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/rive.json
 
-    </details>
+        </details>
 
-    <details>
+        <details>
 
-    <summary>
+        <summary>
 
-    ### 3️⃣ Bingeflex
+        ### 3️⃣ Bingeflex
 
-    </summary>
+        </summary>
 
-    <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/icon.png" width="125px"><br>
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/icon.png" width="125px"><br>
 
-    **File:** `Bingeflex.json`<br>
-    **Type:** `TV Shows and Movies`<br>
-    **Language:** English. (SUB)<br>
-    **App version:** V2 and up <br>
-    **Author:** ibro <br><br>
-    [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/bingeflex.json)
+        **File:** `Bingeflex.json`<br>
+        **Type:** `TV Shows and Movies`<br>
+        **Language:** English. (SUB)<br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/bingeflex.json)
 
-    https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/bingeflex.json
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/bingeflex.json
 
-    </details>
+        </details>
 
     </details>
 
@@ -98,49 +98,49 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
     </summary>
 
-    <details>
+      - <details>
 
-    <summary>
+        <summary>
 
-    ### 4️⃣ Autoembed
+        ### 4️⃣ Autoembed
 
-    </summary>
+        </summary>
 
-    <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/icon.png" width="125px"><br>
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/icon.png" width="125px"><br>
 
-    **File:** `Autoembed.json`<br>
-    **Type:** `ONLY Movies`<br>
-    **Language:** English. (SUB)<br>
-    **App version:** V2 and up <br>
-    **Author:** ibro <br><br>
-    [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/autoembed.json)
+        **File:** `Autoembed.json`<br>
+        **Type:** `ONLY Movies`<br>
+        **Language:** English. (SUB)<br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/autoembed.json)
 
-    https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/autoembed.json
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/autoembed.json
+
+        </details>
+
+        <details>
+
+        <summary>
+
+        ### 5️⃣ HopCorn+
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/icon.png" width="125px"><br>
+
+        **File:** `HopCorn.json`<br>
+        **Type:** `ONLY Movies`<br>
+        **Language:** English. (SUB)<br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json
+
+        </details>
 
     </details>
-
-    <details>
-
-    <summary>
-
-    ### 5️⃣ HopCorn+
-
-    </summary>
-
-    <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/icon.png" width="125px"><br>
-
-    **File:** `HopCorn.json`<br>
-    **Type:** `ONLY Movies`<br>
-    **Language:** English. (SUB)<br>
-    **App version:** V2 and up <br>
-    **Author:** ibro <br><br>
-    [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json)
-
-    https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json
-
-    </details>
-
-</details>
 
 </details>
 
