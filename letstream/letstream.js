@@ -151,27 +151,24 @@ async function extractStreamUrl(url) {
                         const hlsResponse = await fetch(data.newurl);
                         const hlsSourceText = await hlsResponse.text();
                 
-                        // Regex to extract a URL that contains "master.m3u8"
-                        const masterRegex = /(https?:\/\/[^\n]+master\.m3u8[^\n]*)/;
-                        const masterMatch = hlsSourceText.match(masterRegex);
+                        // Regex to match any URL that contains "index-v1-a1.m3u8"
+                        const indexRegex = /(https?:\/\/[^\n]+index-v1-a1\.m3u8[^\n]*)/;
+                        const indexMatch = hlsSourceText.match(indexRegex);
                 
-                        if (masterMatch && masterMatch[1]) {
-                            const masterUrl = masterMatch[1];
-                            console.log("Master stream found:", masterUrl);
-                            return masterUrl;
+                        if (indexMatch && indexMatch[1]) {
+                            const indexStreamUrl = indexMatch[1];
+                            console.log("Found index stream URL:", indexStreamUrl);
+                            return indexStreamUrl;
                         }
                 
-                        // Fallback: if no master stream URL is found, return the original URL
-                        console.log("No master stream found; returning default URL:", data.newurl);
+                        // Fallback: If the index stream is not found, return the original URL
+                        console.log("Index stream URL not found; using original URL.");
                         return data.newurl;
                     }
                 } catch (err) {
-                    console.log(
-                        `Fetch error on endpoint https://vidstream.site/api/getmovie?type=movie&id=${movieId}&server=${providers[i]} for movie ${movieId}:`,
-                        err
-                    );
+                    console.log(`Fetch error on endpoint https://vidstream.site/api/getmovie?type=movie&id=${movieId}&server=${providers[i]} for movie ${movieId}:`, err);
                 }
-            }  
+            }              
         } else if (url.includes('/stream/tv/')) {
             const match = url.match(/https:\/\/letstream\.site\/stream\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
