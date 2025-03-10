@@ -145,11 +145,11 @@ async function extractStreamUrl(url) {
             for (let i = 0; i < providers.length; i++) {
                 try {
                     const responseText = await fetch(`https://vidstream.site/api/getmovie?type=movie&id=${movieId}&server=${providers[i]}`);
-                    const data = await responseText.json();
+                    const data = JSON.parse(responseText);
                 
                     if (data && data.newurl) {
                         const hlsResponse = await fetch(data.newurl);
-                        const hlsSourceText = await hlsResponse.text();
+                        const hlsSourceText = hlsResponse;
                 
                         // Regex to match any URL that contains "index-v1-a1.m3u8"
                         const indexRegex = /(https?:\/\/[^\n]+index-v1-a1\.m3u8[^\n]*)/;
@@ -160,10 +160,6 @@ async function extractStreamUrl(url) {
                             console.log("Found index stream URL:", indexStreamUrl);
                             return indexStreamUrl;
                         }
-                
-                        // Fallback: If the index stream is not found, return the original URL
-                        console.log("Index stream URL not found; using original URL.");
-                        return data.newurl;
                     }
                 } catch (err) {
                     console.log(`Fetch error on endpoint https://vidstream.site/api/getmovie?type=movie&id=${movieId}&server=${providers[i]} for movie ${movieId}:`, err);
