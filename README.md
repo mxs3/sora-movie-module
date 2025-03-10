@@ -1,7 +1,7 @@
 > [!CAUTION]
 > **ONLY USE THE BELOW MODULES**<br>
 > **IF A MODULE IN MY REPO ISN'T LISTED BELOW THEN IT'S NOT WORKING**<br>
-> <i>(e.g., LetStream, Sudatchi)</i>
+> <i>(e.g., Sudatchi)</i>
 
 # 🍿 TV Show and Movie Modules for [Sora](https://github.com/cranci1/Sora) 🎥
 
