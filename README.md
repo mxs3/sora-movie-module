@@ -88,6 +88,28 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         </details>
 
+      - <details>
+
+        <summary>
+
+        ### 4️⃣ Let's Stream (⚠️ Read note)
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/letstream/icon.png" width="125px"><br>
+
+        **File:** `LetStream.json`<br>
+        **Type:** `TV Shows and Movies`<br>
+        **Note:** *⚠️ Some TV Shows or Movies will be in Hindi* <br>
+        **Language:** English. (SUB)<br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/letstream/letstream.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/letstream/letstream.json
+
+        </details>
+
     </details>
 
   - <details>
@@ -102,7 +124,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         <summary>
 
-        ### 4️⃣ Autoembed
+        ### 1️⃣ Autoembed
 
         </summary>
 
@@ -123,7 +145,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         <summary>
 
-        ### 5️⃣ HopCorn+
+        ### 2️⃣ HopCorn+
 
         </summary>
 
