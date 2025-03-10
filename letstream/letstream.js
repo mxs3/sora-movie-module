@@ -129,9 +129,9 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
+    // "2embed",
+
     const providers = [
-        // "2embed",
-        // "embedsu",
         "hindiscraper",
     ];
 
