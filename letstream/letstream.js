@@ -4,15 +4,6 @@ async function searchResults(keyword) {
         const responseText = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=653bb8af90162bd98fc7ee32bcbbfb3d&query=${encodedKeyword}`);
         const data = JSON.parse(responseText);
 
-        // // Filter results to include only movies
-        // const transformedResults = data.results
-        //     .filter(result => result.media_type === "movie") // Ensure only movies
-        //     .map(result => ({
-        //         title: result.title || result.name,
-        //         image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-        //         href: `https://letstream.site/watch/movie/${result.id}`
-        //     }));
-
 
         const transformedResults = data.results.map(result => {
             // For movies, TMDB returns "title" and media_type === "movie"
@@ -146,16 +137,16 @@ async function extractStreamUrl(url) {
             const movieId = match[1];
 
             try {
-                const responseText = await fetch(`https://play2.123embed.net/server/3?path=/movie/${movieId}`);
+                const responseText = await fetch(`https://vidstream.site/api/getmovie?type=movie&id=${movieId}&server=2embed`);
                 const data = JSON.parse(responseText);
 
                 if (data) {
-                    const hlsSource = data.playlist.find(source => source.type === 'hls');
+                    const hlsSource = data.newurl;
                     
-                    if (hlsSource && hlsSource.file) return hlsSource.file;
+                    if (hlsSource) return hlsSource;
                 }
             } catch (err) {
-                console.log(`Fetch error on endpoint https://play2.123embed.net/server/3?path=/movie/ for movie ${movieId}:`, err);
+                console.log(`Fetch error on endpoint https://vidstream.site/api/getmovie?type=movie&id=${movieId}&server=2embed for movie ${movieId}:`, err);
             }
 
             return null;
