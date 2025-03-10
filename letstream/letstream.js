@@ -130,8 +130,8 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     const providers = [
-        "2embed",
-        "embedsu",
+        // "2embed",
+        // "embedsu",
         "hindiscraper",
     ];
 
@@ -149,23 +149,36 @@ async function extractStreamUrl(url) {
                 
                     if (data && data.newurl) {
                         const hlsResponse = await fetch(data.newurl);
-                        const hlsSourceText = hlsResponse;
-                
-                        // Regex to match any URL that contains "index-v1-a1.m3u8"
-                        const indexRegex = /(https?:\/\/[^\n]+index-v1-a1\.m3u8[^\n]*)/;
-                        const indexMatch = hlsSourceText.match(indexRegex);
-                
-                        if (indexMatch && indexMatch[1]) {
-                            let indexStreamUrl = indexMatch[1];
+                        const hlsSourceText = await hlsResponse;
 
-                            console.log("Found index stream URL:", indexStreamUrl);
+                        const regex = /^\.\/(\d+)\/index\.m3u8$/gm;
+                        const resolutionPaths = [];
+                        let match;
 
-                            indexStreamUrl = decodeURIComponent(indexStreamUrl);
+                        while ((match = regex.exec(hlsSourceText)) !== null) {
+                            // match[1] is the numeric part of the path, e.g. "360", "480", "720", "1080"
+                            const resNumber = parseInt(match[1], 10);
+                            // Build a proper path, e.g. "/360/index.m3u8"
+                            const path = `/${match[1]}/index.m3u8`;
+                            resolutionPaths.push({ resolution: resNumber, path });
+                        }
 
-                            console.log("Decoded index stream URL:", indexStreamUrl);
+                        if (resolutionPaths.length === 0) {
+                            console.error("No resolution paths found.");
+                        } else {
+                            resolutionPaths.sort((a, b) => b.resolution - a.resolution);
+                            const highestResolutionPath = resolutionPaths[0].path;
+                            console.log("Highest resolution path:", highestResolutionPath);
 
-                            console.log("Found index stream URL:", indexStreamUrl);
-                            return indexStreamUrl;
+                            let newUrl = data.newurl;
+
+                            newUrl = newUrl.replace(/i-cdn-0/g, 'cdn4506');
+
+                            newUrl = newUrl.replace(/index\.m3u8[^\/]*\.m3u8$/, highestResolutionPath);
+                            
+                            console.log("Modified URL:", newUrl);
+
+                            return newUrl;
                         }
                     }
                 } catch (err) {
