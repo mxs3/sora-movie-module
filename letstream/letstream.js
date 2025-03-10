@@ -211,7 +211,7 @@ async function extractStreamUrl(url) {
                     const responseText = await fetch(`https://www.vidstream.site/api/getmovie?type=tv&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&server=hindiscraper`);
                     const data = JSON.parse(responseText);
 
-                    const responseSubtitle = await fetch(`https://demo.autoembed.cc/api/server?id=${movieId}&sr=1`);
+                    const responseSubtitle = await fetch(`https://demo.autoembed.cc/api/server?id=${showId}&sr=1&ep=${episodeNumber}&ss=${seasonNumber}`);
                     const subtitleData = JSON.parse(responseSubtitle);
 
                     const subtitleTrack = subtitleData.tracks?.find(track =>
@@ -259,7 +259,7 @@ async function extractStreamUrl(url) {
                         }
                     }
                 } catch (err) {
-                    console.log(`Fetch error on endpoint https://play2.123embed.net/server/3?path=/tv/ for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
+                    console.log(`Fetch error on endpoint https://www.vidstream.site/api/getmovie?type=tv&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&server=hindiscraper for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
                 }
             }
         } else {
