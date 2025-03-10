@@ -129,6 +129,12 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
+    const providers = [
+        "2embed",
+        "embedsu",
+        "hindiscraper",
+    ];
+
     try {
         if (url.includes('/stream/movie/')) {
             const match = url.match(/https:\/\/letstream\.site\/stream\/movie\/([^\/]+)/);
@@ -136,20 +142,36 @@ async function extractStreamUrl(url) {
 
             const movieId = match[1];
 
-            try {
-                const responseText = await fetch(`https://vidstream.site/api/getmovie?type=movie&id=${movieId}&server=2embed`);
-                const data = JSON.parse(responseText);
-
-                if (data) {
-                    const hlsSource = data.newurl;
-                    
-                    if (hlsSource) return hlsSource;
+            for (let i = 0; i < providers.length; i++) {
+                try {
+                    const responseText = await fetch(`https://vidstream.site/api/getmovie?type=movie&id=${movieId}&server=${providers[i]}`);
+                    const data = await responseText.json();
+                
+                    if (data && data.newurl) {
+                        const hlsResponse = await fetch(data.newurl);
+                        const hlsSourceText = await hlsResponse.text();
+                
+                        // Regex to extract a URL that contains "master.m3u8"
+                        const masterRegex = /(https?:\/\/[^\n]+master\.m3u8[^\n]*)/;
+                        const masterMatch = hlsSourceText.match(masterRegex);
+                
+                        if (masterMatch && masterMatch[1]) {
+                            const masterUrl = masterMatch[1];
+                            console.log("Master stream found:", masterUrl);
+                            return masterUrl;
+                        }
+                
+                        // Fallback: if no master stream URL is found, return the original URL
+                        console.log("No master stream found; returning default URL:", data.newurl);
+                        return data.newurl;
+                    }
+                } catch (err) {
+                    console.log(
+                        `Fetch error on endpoint https://vidstream.site/api/getmovie?type=movie&id=${movieId}&server=${providers[i]} for movie ${movieId}:`,
+                        err
+                    );
                 }
-            } catch (err) {
-                console.log(`Fetch error on endpoint https://vidstream.site/api/getmovie?type=movie&id=${movieId}&server=2embed for movie ${movieId}:`, err);
-            }
-
-            return null;
+            }  
         } else if (url.includes('/stream/tv/')) {
             const match = url.match(/https:\/\/letstream\.site\/stream\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
