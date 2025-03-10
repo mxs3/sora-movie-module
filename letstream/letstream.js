@@ -146,6 +146,13 @@ async function extractStreamUrl(url) {
                 try {
                     const responseText = await fetch(`https://vidstream.site/api/getmovie?type=movie&id=${movieId}&server=${providers[i]}`);
                     const data = JSON.parse(responseText);
+
+                    const responseSubtitle = await fetch(`https://demo.autoembed.cc/api/server?id=${movieId}&sr=1`);
+                    const subtitleData = JSON.parse(responseSubtitle);
+
+                    const subtitleTrack = subtitleData.tracks?.find(track =>
+                        track.lang.startsWith('English')
+                    );
                 
                     if (data && data.newurl) {
                         const hlsResponse = await fetch(data.newurl);
@@ -156,9 +163,8 @@ async function extractStreamUrl(url) {
                         let match;
 
                         while ((match = regex.exec(hlsSourceText)) !== null) {
-                            // match[1] is the numeric part of the path, e.g. "360", "480", "720", "1080"
                             const resNumber = parseInt(match[1], 10);
-                            // Build a proper path, e.g. "/360/index.m3u8"
+
                             const path = `/${match[1]}/index.m3u8`;
                             resolutionPaths.push({ resolution: resNumber, path });
                         }
@@ -178,7 +184,14 @@ async function extractStreamUrl(url) {
                             
                             console.log("Modified URL:", newUrl);
 
-                            return newUrl;
+                            const result = {
+                                stream: newUrl,
+                                subtitles: subtitleTrack ? subtitleTrack.url : ""
+                            };
+
+                            console.log(result);
+                    
+                            return JSON.stringify(result);
                         }
                     }
                 } catch (err) {
@@ -193,20 +206,62 @@ async function extractStreamUrl(url) {
             const seasonNumber = match[2];
             const episodeNumber = match[3];
 
-            try {
-                const responseText = await fetch(`https://play2.123embed.net/server/3?path=/tv/${showId}/${seasonNumber}/${episodeNumber}`);
-                const data = JSON.parse(responseText);
+            for (let i = 0; i < providers.length; i++) {
+                try {
+                    const responseText = await fetch(`https://www.vidstream.site/api/getmovie?type=tv&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&server=hindiscraper`);
+                    const data = JSON.parse(responseText);
 
-                if (data) {
-                    const hlsSource = data.playlist.find(source => source.type === 'hls');
+                    const responseSubtitle = await fetch(`https://demo.autoembed.cc/api/server?id=${movieId}&sr=1`);
+                    const subtitleData = JSON.parse(responseSubtitle);
+
+                    const subtitleTrack = subtitleData.tracks?.find(track =>
+                        track.lang.startsWith('English')
+                    );
+                
+                    if (data && data.newurl) {
+                        const hlsResponse = await fetch(data.newurl);
+                        const hlsSourceText = await hlsResponse;
+
+                        const regex = /^\.\/(\d+)\/index\.m3u8$/gm;
+                        const resolutionPaths = [];
+                        let match;
+
+                        while ((match = regex.exec(hlsSourceText)) !== null) {
+                            const resNumber = parseInt(match[1], 10);
+
+                            const path = `/${match[1]}/index.m3u8`;
+                            resolutionPaths.push({ resolution: resNumber, path });
+                        }
+
+                        if (resolutionPaths.length === 0) {
+                            console.error("No resolution paths found.");
+                        } else {
+                            resolutionPaths.sort((a, b) => b.resolution - a.resolution);
+                            const highestResolutionPath = resolutionPaths[0].path;
+                            console.log("Highest resolution path:", highestResolutionPath);
+
+                            let newUrl = data.newurl;
+
+                            newUrl = newUrl.replace(/i-cdn-0/g, 'cdn4506');
+
+                            newUrl = newUrl.replace(/index\.m3u8[^\/]*\.m3u8$/, highestResolutionPath);
+                            
+                            console.log("Modified URL:", newUrl);
+
+                            const result = {
+                                stream: newUrl,
+                                subtitles: subtitleTrack ? subtitleTrack.url : ""
+                            };
+
+                            console.log(result);
                     
-                    if (hlsSource && hlsSource.file) return hlsSource.file;
+                            return JSON.stringify(result);
+                        }
+                    }
+                } catch (err) {
+                    console.log(`Fetch error on endpoint https://play2.123embed.net/server/3?path=/tv/ for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
                 }
-            } catch (err) {
-                console.log(`Fetch error on endpoint https://play2.123embed.net/server/3?path=/tv/ for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
             }
-
-            return null;
         } else {
             throw new Error("Invalid URL format");
         }
