@@ -156,9 +156,13 @@ async function extractStreamUrl(url) {
                         const indexMatch = hlsSourceText.match(indexRegex);
                 
                         if (indexMatch && indexMatch[1]) {
-                            const indexStreamUrl = indexMatch[1];
+                            let indexStreamUrl = indexMatch[1];
+
+                            console.log("Found index stream URL:", indexStreamUrl);
 
                             indexStreamUrl = decodeURIComponent(indexStreamUrl);
+
+                            console.log("Decoded index stream URL:", indexStreamUrl);
 
                             console.log("Found index stream URL:", indexStreamUrl);
                             return indexStreamUrl;
