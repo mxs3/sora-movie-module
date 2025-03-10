@@ -157,6 +157,9 @@ async function extractStreamUrl(url) {
                 
                         if (indexMatch && indexMatch[1]) {
                             const indexStreamUrl = indexMatch[1];
+
+                            indexStreamUrl = decodeURIComponent(indexStreamUrl);
+
                             console.log("Found index stream URL:", indexStreamUrl);
                             return indexStreamUrl;
                         }
