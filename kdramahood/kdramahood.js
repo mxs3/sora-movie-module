@@ -95,10 +95,12 @@ function extractEpisodes(html) {
 
 
 function extractStreamUrl(html) {
-    const streamMatch = html.match(/<li>Right click and choose "Save link as..." : &nbsp <a rel="nofollow" target="_blank" href="([^<]+)"/);
+    // Match the stream URL until the next double quote
+    const streamMatch = html.match(/<li>\s*Right click and choose "Save link as\.\.\." :\s*&nbsp;?\s*<a [^>]*href="([^"]+)"/);
     const stream = streamMatch ? streamMatch[1].trim() : 'N/A';
 
-    const subtitlesMatch = html.match(/Download Subtitle :&nbsp  <a rel="nofollow" target="_blank" href="([^<]+)"/);
+    // Match the subtitles URL until the next double quote
+    const subtitlesMatch = html.match(/Download Subtitle :&nbsp;?\s*<a [^>]*href="([^"]+)"/);
     const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : 'N/A';
 
     const result = {
