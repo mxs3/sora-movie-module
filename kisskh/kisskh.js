@@ -55,17 +55,19 @@ async function extractEpisodes(url) {
         const showId = match[2];
         
         const showResponseText = await fetch(`https://kisskh.co/api/DramaList/Drama/${showId}?isq=false`);
-        const showData = JSON.parse(showResponseText);
+        const showData = await showResponseText.json();
 
-        const episodesData = showData.episodes.reverse();
-
-        const episodes = episodesData.map(episode => ({
+        const episodes = showData.episodes?.map(episode => ({
             href: `https://kisskh.co/Drama/True-Beauty/Episode-${episode.number}?id=${showId}&ep=${episode.id}`,
-            number: episode.episode_number,
-            title: episode.name || `Episode ${episode.number}` ||  ""
+            number: episode.number,
+            // title: episode.name || `Episode ${episode.number}` ||  ""
         }));
 
-        return JSON.stringify(episodes);
+        const reversedEpisodes = episodes.reverse();
+
+        console.log(reversedEpisodes);
+    
+        return JSON.stringify(reversedEpisodes);
     } catch (error) {
         console.log('Fetch error in extractEpisodes:', error);
         return JSON.stringify([]);
@@ -81,8 +83,6 @@ async function extractStreamUrl(url) {
         const episodeNumber = match[2];
         const showId = match[3];
         try {
-            const responseText = await fetch(`https://hls.streamsub.top/hls07/${showId}/Ep${episodeNumber}_index.m3u8`);
-
             const result = {
                 stream: `https://hls.streamsub.top/hls07/${showId}/Ep${episodeNumber}_index.m3u8`,
                 subtitles: `https://sub.streamsub.top/${showTitle}.Ep${episodeNumber}.en.srt` ||  "",
@@ -99,3 +99,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractEpisodes(`https://kisskh.co/Drama/First-Love--2022----First-Time-Love-You?id=6680`);
