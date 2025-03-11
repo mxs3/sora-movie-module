@@ -90,7 +90,7 @@ function extractEpisodes(html) {
     episodes.reverse();
 
     console.log(episodes);
-    return JSON.stringify(episodes);
+    return episodes;
 }
 
 
@@ -107,6 +107,6 @@ function extractStreamUrl(html) {
     };
 
     console.log(result);
-    return JSON.stringify(result);
+    return result;
 }
 
