@@ -29,7 +29,7 @@ function searchResults(html) {
     }
 
     console.log(results);
-    return JSON.stringify(results);
+    return results;
 }
 
 function extractDetails(html) {
