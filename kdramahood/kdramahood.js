@@ -112,5 +112,5 @@ function extractStreamUrl(html) {
     };
 
     console.log(result);
-    return result;
+    return JSON.stringify(result);
 }
