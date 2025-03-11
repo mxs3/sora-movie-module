@@ -103,14 +103,11 @@ function extractStreamUrl(html) {
     const subtitlesMatch = html.match(/Download Subtitle :&nbsp  <a rel="nofollow" target="_blank" href="([^"]+)"/);
     const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : 'N/A';
 
-    console.log(stream);
-    console.log(subtitles);
-
     const result = {
         stream: stream,
         subtitles: subtitles,
     };
 
-    console.log(result);
+    console.log(JSON.stringify(result));
     return JSON.stringify(result);
 }
