@@ -189,7 +189,7 @@ async function extractStreamUrl(url) {
                 console.log(`Fetch error on endpoint https://vidjoy.pro/embed/api/fastfetch/${movieId}?sr=0 for movie ${movieId}:`, err);
             }
         } else if (url.includes('/watch/tv/')) {
-            const match = url.match(/https:\/\/hexa\.watch\/watch\/tv\/iframe\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
+            const match = url.match(/https:\/\/flickystream\.com\/watch\/tv\/([^\/]+)\?s=([^&]+)&ep=([^&]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
@@ -254,5 +254,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractStreamUrl(`https://flickystream.com/watch/movie/696506`);
