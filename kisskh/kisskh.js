@@ -99,5 +99,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractEpisodes(`https://kisskh.co/Drama/First-Love--2022----First-Time-Love-You?id=6680`);
