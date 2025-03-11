@@ -140,7 +140,7 @@ async function extractStreamUrl(url) {
 
             try {
                 const responseText = await fetch(`https://vidjoy.pro/embed/api/fastfetch/${movieId}?sr=0`);
-                const data = await responseText.json();
+                const data = JSON.parse(responseText);
 
                 const hlsSource = data.url?.find(source => source.type === 'hls');
                 const subtitleTrack = data.tracks?.find(track =>
