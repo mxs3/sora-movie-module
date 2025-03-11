@@ -157,16 +157,12 @@ async function extractStreamUrl(url) {
                 let match;
 
                 while ((match = streamRegex.exec(hlsSourceText)) !== null) {
-                    // match[1]: resolution string, e.g. "1920x1080"
-                    // match[2]: the following URL line
                     const resolutionStr = match[1];
                     const urlLine = match[2].trim();
 
-                    // Parse resolution numbers (width x height) and compute total pixels.
                     const [width, height] = resolutionStr.split('x').map(Number);
                     const pixels = width * height;
 
-                    // Update highest stream if current one has more pixels.
                     if (pixels > highestPixels) {
                         highestPixels = pixels;
                         highestStreamUrl = urlLine;
@@ -174,10 +170,9 @@ async function extractStreamUrl(url) {
                 }
 
                 if (highestStreamUrl) {
-                    // Optionally, decode the URL if it contains URL-encoded characters.
                     const decodedUrl = decodeURIComponent(highestStreamUrl);
+
                     console.log("Highest resolution stream URL with audio:", decodedUrl);
-                    // Use decodedUrl as needed (for example, return or assign it)
 
                     const result = {
                         stream: "https://vidjoy.pro" + highestStreamUrl,
@@ -187,9 +182,9 @@ async function extractStreamUrl(url) {
                     console.log(result);
                     
                     return JSON.stringify(result);
-                  } else {
-                    console.error("No stream with audio found.");
-                  }
+                } else {
+                    console.error("No stream found.");
+                }
             } catch (err) {
                 console.log(`Fetch error on endpoint https://vidjoy.pro/embed/api/fastfetch/${movieId}?sr=0 for movie ${movieId}:`, err);
             }
@@ -210,14 +205,44 @@ async function extractStreamUrl(url) {
                     track.lang.startsWith('English')
                 );
 
-                const result = {
-                    stream: hlsSource ? hlsSource.link : "",
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                };
+                const hlsSourceResponse = await fetch(hlsSource.link);
+                const hlsSourceText = await hlsSourceResponse;
 
-                console.log(result);
-                
-                return JSON.stringify(result);
+                const streamRegex = /#EXT-X-STREAM-INF:[^\n]*RESOLUTION=(\d+x\d+)[^\n]*AUDIO="audio0"[^\n]*\r?\n([^\r\n]+)/g;
+
+                let highestStreamUrl = null;
+                let highestPixels = 0;
+                let match;
+
+                while ((match = streamRegex.exec(hlsSourceText)) !== null) {
+                    const resolutionStr = match[1];
+                    const urlLine = match[2].trim();
+
+                    const [width, height] = resolutionStr.split('x').map(Number);
+                    const pixels = width * height;
+
+                    if (pixels > highestPixels) {
+                        highestPixels = pixels;
+                        highestStreamUrl = urlLine;
+                    }
+                }
+
+                if (highestStreamUrl) {
+                    const decodedUrl = decodeURIComponent(highestStreamUrl);
+
+                    console.log("Highest resolution stream URL with audio:", decodedUrl);
+
+                    const result = {
+                        stream: "https://vidjoy.pro" + highestStreamUrl,
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+    
+                    console.log(result);
+                    
+                    return JSON.stringify(result);
+                } else {
+                    console.error("No stream found.");
+                }
             } catch (err) {
                 console.log(`Fetch error on endpoint https://vidjoy.pro/embed/api/fastfetch/${showId}/${seasonNumber}/${episodeNumber}?sr=0 for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
             }
