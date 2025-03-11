@@ -108,7 +108,7 @@ function extractStreamUrl(html) {
 
     const result = {
         stream: stream,
-        subtitles: "https://cca.megafiles.store/1b/bf/1bbfaac3e6a4f842f7a43dba86f34ee2/1bbfaac3e6a4f842f7a43dba86f34ee2.vtt",
+        subtitles: subtitles,
     };
 
     console.log(JSON.stringify(result));
