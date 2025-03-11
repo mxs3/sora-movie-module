@@ -148,7 +148,7 @@ async function extractStreamUrl(url) {
                 );
 
                 const result = {
-                    stream: hlsSource,
+                    stream: hlsSource ? hlsSource.link : "",
                     subtitles: subtitleTrack ? subtitleTrack.url : ""
                 };
 
@@ -176,7 +176,7 @@ async function extractStreamUrl(url) {
                 );
 
                 const result = {
-                    stream: hlsSource,
+                    stream: hlsSource ? hlsSource.link : "",
                     subtitles: subtitleTrack ? subtitleTrack.url : ""
                 };
 
