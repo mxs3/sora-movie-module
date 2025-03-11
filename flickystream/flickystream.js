@@ -180,7 +180,7 @@ async function extractStreamUrl(url) {
                     // Use decodedUrl as needed (for example, return or assign it)
 
                     const result = {
-                        stream: highestStreamUrl,
+                        stream: "https://vidjoy.pro" + highestStreamUrl,
                         subtitles: subtitleTrack ? subtitleTrack.url : ""
                     };
     
