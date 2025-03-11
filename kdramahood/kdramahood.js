@@ -56,7 +56,7 @@ function extractDetails(html) {
     });
 
     console.log(details);
-    return JSON.stringify(details);
+    return details;
 }
 
 
