@@ -55,12 +55,12 @@ async function extractEpisodes(url) {
         const showId = match[2];
         
         const showResponseText = await fetch(`https://kisskh.co/api/DramaList/Drama/${showId}?isq=false`);
-        const showData = await showResponseText.json();
+        const showData = JSON.parse(showResponseText);
 
         const episodes = showData.episodes?.map(episode => ({
             href: `https://kisskh.co/Drama/True-Beauty/Episode-${episode.number}?id=${showId}&ep=${episode.id}`,
             number: episode.number,
-            // title: episode.name || `Episode ${episode.number}` ||  ""
+            title: episode.name || `Episode ${episode.number}` ||  ""
         }));
 
         const reversedEpisodes = episodes.reverse();
