@@ -108,6 +108,6 @@ function extractStreamUrl(html) {
         subtitles: subtitles,
     };
 
-    console.log(JSON.stringify(result));
-    return JSON.stringify(result);
+    console.log(stream);
+    return stream;
 }
