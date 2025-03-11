@@ -1,8 +1,13 @@
 function searchResults(html) {
     const results = [];
-    // Match all items: any div with id starting "mt-" and class "item"
-    const filmListRegex = /<div id="mt-\d+" class="item">[\s\S]*?<\/div>/g;
-    const items = html.match(filmListRegex) || [];
+    // Capture from the beginning of the item block up to the <div class="fixyear"> sibling
+    const filmListRegex = /<div id="mt-\d+" class="item">([\s\S]*?)(?=<div class="fixyear">)/g;
+    const items = [];
+    let match;
+    while ((match = filmListRegex.exec(html)) !== null) {
+        // match[0] contains the entire matched string (the item block)
+        items.push(match[0]);
+    }
 
     items.forEach((itemHtml) => {
         // Extract the first href from an <a> tag
@@ -17,20 +22,16 @@ function searchResults(html) {
         const imgMatch = itemHtml.match(/<img[^>]*src="([^"]+)"/);
         const imageUrl = imgMatch ? imgMatch[1] : '';
 
-        if (title && href) {
-            results.push({
-                title: title.trim(),
-                image: imageUrl.trim(),
-                href: href.trim(),
-            });
-        }
+        results.push({
+            title: title.trim(),
+            image: imageUrl.trim(),
+            href: href.trim(),
+        });
     });
 
     console.log(results);
-    
     return JSON.stringify(results);
 }
-
 
 function extractDetails(html) {
     const details = [];
@@ -109,3 +110,5 @@ async function extractStreamUrl(html) {
     console.log(result);
     return JSON.stringify(result);
 }
+
+searchResults(``);
