@@ -78,7 +78,7 @@ function extractEpisodes(html) {
                 const numMatch = li.match(/<div class="numerando">(\d+)<\/div>/);
                 if (hrefMatch && numMatch) {
                     episodes.push({
-                        href: "episode: " + hrefMatch[1].trim(),
+                        href: hrefMatch[1].trim(),
                         number: numMatch[1].trim()
                     });
                 }
@@ -109,4 +109,3 @@ function extractStreamUrl(html) {
     console.log(result);
     return result;
 }
-
