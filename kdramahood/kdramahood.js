@@ -1,129 +1,111 @@
-async function searchResults(keyword) {
-    try {
-        const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetch(`https://sudatchi-api.vercel.app/api/search?q=${encodedKeyword}`);
-        const data = JSON.parse(responseText);
+function searchResults(html) {
+    const results = [];
+    // Match all items: any div with id starting "mt-" and class "item"
+    const filmListRegex = /<div id="mt-\d+" class="item">[\s\S]*?<\/div>/g;
+    const items = html.match(filmListRegex) || [];
 
-        const transformedResults = data.media.map(result => {
-            return {
-                title: result.title.english || result.title.romaji || result.title.native,
-                image: result.coverImage.large || result.coverImage.extraLarge || result.coverImage.medium,
-                href: `https://sudatchi.com/anime/${result.id}`
-            };
-        });
+    items.forEach((itemHtml) => {
+        // Extract the first href from an <a> tag
+        const hrefMatch = itemHtml.match(/<a href="([^"]+)"/);
+        const href = hrefMatch ? hrefMatch[1] : '';
 
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log('Fetch error in searchResults:', error);
-        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
-    }
-}
+        // Extract title from <span class="tt">TITLE</span>
+        const titleMatch = itemHtml.match(/<span class="tt">([\s\S]*?)<\/span>/);
+        const title = titleMatch ? titleMatch[1] : '';
 
-async function extractDetails(url) {
-    try {
-        const match = url.match(/https:\/\/sudatchi\.com\/anime\/([^\/]+)/);
-        if (!match) throw new Error("Invalid URL format");
+        // Extract image URL from <img ... src="...">
+        const imgMatch = itemHtml.match(/<img[^>]*src="([^"]+)"/);
+        const imageUrl = imgMatch ? imgMatch[1] : '';
 
-        const showId = match[1];
-        const responseText = await fetch(`https://sudatchi.com/api/anime/${showId}`);
-        const data = JSON.parse(responseText);
-
-        const transformedResults = [{
-            description: data.description || 'No description available',
-            aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : "Unknown"}`,
-            airdate: `Aired: ${data.startDate.day}.${data.startDate.month}.${data.startDate.year}` || 'Aired: Unknown'
-        }];
-
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log('Details error:', error);
-        return JSON.stringify([{
-            description: 'Error loading description',
-            aliases: 'Duration: Unknown',
-            airdate: 'Aired/Released: Unknown'
-        }]);
-    }
-}
-
-async function extractEpisodes(url) {
-    try {
-        const match = url.match(/https:\/\/sudatchi\.com\/anime\/([^\/]+)/);
-            
-        if (!match) throw new Error("Invalid URL format");
-            
-        const showId = match[1];
-        const responseText = await fetch(`https://sudatchi.com/api/anime/${showId}`);
-        const data = JSON.parse(responseText);
-
-        const transformedResults = data.episodes.map(episode => {
-            return {
-                href: `https://sudatchi.com/watch/${showId}/${episode.number}`,
-                number: episode.number,
-                title: episode.title || ""
-            };
-        });
-            
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log('Fetch error in extractEpisodes:', error);
-        return JSON.stringify([]);
-    }    
-}
-
-async function extractStreamUrl(url) {
-    try {
-        const match = url.match(/https:\/\/sudatchi\.com\/watch\/([^\/]+)\/([^\/]+)/);
-        if (!match) throw new Error("Invalid URL format");
-
-        const showId = match[1];
-        const episodeNumber = match[2];
-
-        try {
-            const episodesApiUrl = `https://sudatchi.com/api/episode/${showId}/${episodeNumber}`;
-
-            const responseTextEpisodes = await fetch(episodesApiUrl);
-            const episodesData = JSON.parse(responseTextEpisodes);
-
-            const episode = episodesData?.episodes?.find(episode => String(episode.number) === episodeNumber);
-
-            const streamApiUrl = `https://sudatchi.com/api/streams?episodeId=${episode.id}`;
-            
-            const responseTextStream = await fetch(streamApiUrl);
-            const streamData = JSON.parse(responseTextStream);
-
-            const hlsSource = `https://sudatchi.com/${streamData.url}`;
-
-            const responseFile = await fetch(hlsSource);
-            const fileData = responseFile;
-
-            const audioRegex = /#EXT-X-MEDIA:[^\n]*TYPE=AUDIO[^\n]*URI="(https?:\/\/[^"]+)"/;
-            const audioMatch = fileData.match(audioRegex);
-
-            if (audioMatch && audioMatch[1]) {
-                const audioUrl = audioMatch[1];
-
-                console.log(audioUrl);
-
-                return audioUrl;
-            }
-
-            //const subtitleTrack = episodesData.subtitlesMap["1"];
-
-            // const result = {
-            //     stream: hlsSource ? hlsSource : null,
-            //     subtitles: subtitleTrack ? `https://ipfs.sudatchi.com${subtitleTrack}` : null,
-            // };
-            
-            // return hlsSource;
-        } catch (err) {
-            console.log(`Fetch error for show ${showId}:`, err);
+        if (title && href) {
+            results.push({
+                title: title.trim(),
+                image: imageUrl.trim(),
+                href: href.trim(),
+            });
         }
-        
-        return null;
-    } catch (error) {
-        console.log('Fetch error in extractStreamUrl:', error);
-        return null;
-    }
+    });
+
+    console.log(results);
+    
+    return JSON.stringify(results);
 }
 
-extractStreamUrl(`https://sudatchi.com/watch/167143/1`);
+
+function extractDetails(html) {
+    const details = [];
+
+    // Extract description from the <div itemprop="description"> and remove any HTML tags
+    const descriptionMatch = html.match(/<div itemprop="description">([\s\S]*?)<\/div>/);
+    let description = descriptionMatch 
+        ? descriptionMatch[1].replace(/<[^>]+>/g, '').trim() 
+        : '';
+
+    // Extract original name (alias) from its corresponding div
+    const aliasMatch = html.match(/<div class="metadatac"><b>Firt air date<\/b><span[^>]*>([^<]+)<\/span>/);
+    let alias = aliasMatch ? aliasMatch[1].trim() : 'N/A';
+
+    // Extract airdate from the "Firt air date" field
+    const airdateMatch = html.match(/<b>Firt air date<\/b><span[^>]*>([^<]+)<\/span>/);
+    let airdate = airdateMatch ? airdateMatch[1].trim() : 'N/A';
+
+    details.push({
+        description: description,
+        alias: alias,
+        airdate: airdate
+    });
+
+    console.log(details);
+    return JSON.stringify(details);
+}
+
+
+function extractEpisodes(html) {
+    const episodes = [];
+
+    // Attempt to extract episodes from the <ul class="episodios"> list
+    const episodesMatch = html.match(/<ul class="episodios">([\s\S]*?)<\/ul>/);
+
+    if (episodesMatch) {
+        // Match all <li> items within the episodios list
+        const liMatches = episodesMatch[1].match(/<li>([\s\S]*?)<\/li>/g);
+        
+        if (liMatches) {
+            liMatches.forEach(li => {
+                // Extract the href from the <a> tag
+                const hrefMatch = li.match(/<a href="([^"]+)"/);
+                // Extract the episode number from the <div class="numerando">
+                const numMatch = li.match(/<div class="numerando">(\d+)<\/div>/);
+                if (hrefMatch && numMatch) {
+                    episodes.push({
+                        href: "episode: " + hrefMatch[1].trim(),
+                        number: numMatch[1].trim()
+                    });
+                }
+            });
+        }
+    }
+
+    // Reverse the order so episodes are in ascending order (if needed)
+    episodes.reverse();
+
+    console.log(episodes);
+    return JSON.stringify(episodes);
+}
+
+
+async function extractStreamUrl(html) {
+    const streamMatch = html.match(/<li>Right click and choose "Save link as..." : &nbsp <a rel="nofollow" target="_blank" href="([^<]+)"/);
+    const stream = streamMatch ? streamMatch[1].trim() : 'N/A';
+
+    const subtitlesMatch = html.match(/Download Subtitle :&nbsp  <a rel="nofollow" target="_blank" href="([^<]+)"/);
+    const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : 'N/A';
+
+    const result = {
+        stream: stream,
+        subtitles: subtitles,
+    };
+
+    console.log(result);
+    return JSON.stringify(result);
+}
