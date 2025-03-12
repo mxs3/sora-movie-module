@@ -16,11 +16,11 @@ function searchResults(html) {
 
         if (hrefMatch && titleMatch && imgMatch) {
             const href = hrefMatch[1];
-            const title = titleMatch[1];
+            const title = decodeHTMLEntities(titleMatch[1]);
             const imageUrl = imgMatch[1];
             
             results.push({
-                title: decodeHTMLEntities(title.trim()),
+                title: title.trim(),
                 image: imageUrl.trim(),
                 href: href.trim()
             });
