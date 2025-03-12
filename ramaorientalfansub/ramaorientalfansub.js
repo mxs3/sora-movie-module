@@ -15,14 +15,14 @@ function searchResults(html) {
         const hrefMatch = block.match(/<h3>[\s\S]*?<a href="([^"]+)"/);
 
         if (hrefMatch && titleMatch && imgMatch) {
-            const href = hrefMatch[1];
-            const title = decodeHTMLEntities(titleMatch[1]);
-            const imageUrl = imgMatch[1];
+            const href = hrefMatch[1].trim();
+            const title = decodeHTMLEntities(titleMatch[1].trim());
+            const imageUrl = imgMatch[1].trim();
             
             results.push({
-                title: title.trim(),
-                image: imageUrl.trim(),
-                href: href.trim()
+                title: title,
+                image: imageUrl,
+                href: href
             });
         }
     });
