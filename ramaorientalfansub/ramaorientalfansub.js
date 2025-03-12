@@ -1,28 +1,22 @@
 function searchResults(html) {
     const results = [];
-
-    const itemBlocks = html.split('<div class="w-full bg-gradient-to-t from-primary to-transparent rounded overflow-hidden shadow shadow-primary">');
+    // This regex attempts to capture each item block.
+    const regex = /<div class="w-full bg-gradient-to-t from-primary to-transparent rounded overflow-hidden shadow shadow-primary">([\s\S]*?)<\/div>\s*<\/div>/g;
+    const matches = html.matchAll(regex);
     
-    // Remove the first element as it contains content before the first item.
-    itemBlocks.shift();
-    
-    itemBlocks.forEach(block => {
+    for (const match of matches) {
+        const block = match[1];
         const titleMatch = block.match(/<h3>[\s\S]*?<a [^>]+>([\s\S]*?)<\/a>/);
         const imgMatch = block.match(/<img[^>]*src="([^"]+)"/);
         const hrefMatch = block.match(/<h3>[\s\S]*?<a href="([^"]+)"/);
-
         if (hrefMatch && titleMatch && imgMatch) {
-            const href = hrefMatch[1].trim();
-            const title = decodeHTMLEntities(titleMatch[1].trim());
-            const imageUrl = imgMatch[1].trim();
-            
             results.push({
-                title: title,
-                image: imageUrl,
-                href: href
+                title: decodeHTMLEntities(titleMatch[1].trim()),
+                image: imgMatch[1].trim(),
+                href: hrefMatch[1].trim()
             });
         }
-    });
+    }
     
     console.log(results);
     return results;
