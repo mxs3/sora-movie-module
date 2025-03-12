@@ -164,6 +164,58 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
     </details>
 
+  - <details>
+
+    <summary>
+
+    ### 🎥 ONLY Movies
+
+    </summary>
+
+      - <details>
+
+        <summary>
+
+        ### 1️⃣ KissKH
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/icon.png" width="125px"><br>
+
+        **File:** `KissKH.json`<br>
+        **Type:** `K-Dramas`<br>
+        **Language:** English. (SUB)<br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/kisskh.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/kisskh.json
+
+        </details>
+
+      - <details>
+
+        <summary>
+
+        ### 2️⃣ Rama Oriental Fansub
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ramaorientalfansub/icon.png" width="125px"><br>
+
+        **File:** `RamaOrientalFansub.json`<br>
+        **Type:** `K-Dramas`<br>
+        **Language:** Italian. (SUB)<br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ramaorientalfansub/ramaorientalfansub.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ramaorientalfansub/ramaorientalfansub.json
+
+        </details>
+
+    </details>
+
 </details>
 
 <details>
