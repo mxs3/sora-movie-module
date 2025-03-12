@@ -1,15 +1,12 @@
 function searchResults(html) {
     const results = [];
 
-    const filmListRegex = /<div class="w-full bg-gradient-to-t from-primary to-transparent rounded overflow-hidden shadow shadow-primary">([\s\S]*?)(?=<span class="inline-block md:mlb-3">)/g;
-    const items = html.matchAll(filmListRegex);
-
-    for (const item of items) {
-        const itemHtml = item[1];
-
-        const titleMatch = itemHtml.match(/<h3>[\s\S]*?<a [^>]+>([\s\S]*?)<\/a>/);
-        const imgMatch = itemHtml.match(/<img[^>]*src="([^"]+)"/);
-        const hrefMatch = itemHtml.match(/<h3>[\s\S]*?<a href="([^"]+)"/);
+    const itemBlocks = html.split('<div class="w-full bg-gradient-to-t from-primary to-transparent rounded overflow-hidden shadow shadow-primary">');
+    
+    itemBlocks.forEach(block => {
+        const titleMatch = block.match(/<h3>[\s\S]*?<a [^>]+>([\s\S]*?)<\/a>/);
+        const imgMatch = block.match(/<img[^>]*data-src="([^"]+)"/);
+        const hrefMatch = block.match(/<h3>[\s\S]*?<a href="([^"]+)"/);
 
         if (hrefMatch && titleMatch && imgMatch) {
             const href = hrefMatch[1].trim();
@@ -22,7 +19,7 @@ function searchResults(html) {
                 href: href
             });
         }
-    }
+    });
     
     console.log(results);
     return results;
