@@ -1,36 +1,32 @@
 function searchResults(html) {
     const results = [];
     // Split by the unique item container start.
-
     const itemBlocks = html.split('<div class="w-full bg-gradient-to-t from-primary to-transparent rounded overflow-hidden shadow shadow-primary">');
-
+    
     // Remove the first element as it contains content before the first item.
     itemBlocks.shift();
 
     itemBlocks.forEach(block => {
-        // Extract the title from the same <a> element.
-        const titleMatch = block.match(/<h3>[\s\S]*?<a [^>]+>([\s\S]*?)<\/a>/);
-        // Extract the image URL from the first <img> tag.
-        const imgMatch = block.match(/<img[^>]*data-src="([^"]+)"/);
         // Extract the href from the <h3> tag's <a> element.
         const hrefMatch = block.match(/<h3>[\s\S]*?<a href="([^"]+)"/);
+        // Extract the title from the same <a> element.
+        const titleMatch = block.match(/<h3>[\s\S]*?<a [^>]+>([\s\S]*?)<\/a>/);
+        // Extract the image URL from the first <img> tag, making it more flexible
+        const imgMatch = block.match(/<img[^>]+data-src=['"]([^'"]+)['"]/);
 
         if (hrefMatch && titleMatch && imgMatch) {
             const href = hrefMatch[1].trim();
-            const title = decodeHTMLEntities(titleMatch[1].trim());
+            const title = titleMatch[1].trim();
             const imageUrl = imgMatch[1].trim();
-
-            results.push({
-                title: title,
-                image: imageUrl,
-                href: href
-            });
+            
+            results.push({ title, image: imageUrl, href });
         }
     });
 
     console.log(results);
     return results;
 }
+
 
 function extractDetails(html) {
     const details = [];
