@@ -20,7 +20,7 @@ function searchResults(html) {
             const imageUrl = imgMatch[1];
             
             results.push({
-                title: title.trim(),
+                title: decodeHTMLEntities(title.trim()),
                 image: imageUrl.trim(),
                 href: href.trim()
             });
