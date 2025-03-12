@@ -168,7 +168,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
     <summary>
 
-    ### 🎥 ONLY Movies
+    ### 🎞️ K-Dramas
 
     </summary>
 
