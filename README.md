@@ -5,7 +5,7 @@
 
 # 🍿 TV Show and Movie Modules for [Sora](https://github.com/cranci1/Sora) 🎥
 
-Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collection includes modules for ***Sora*** (app version V2 and up) featuring TV shows and movies with English subtitles. (🌸 Anime modules may be added in the future. 🍥 🍜)
+Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collection includes modules for ***Sora*** (app version V2 and up) featuring TV shows and movies with English subtitles. (Anime modules may be added in the future.)
 
 ## 📦 Available Modules
 
@@ -37,7 +37,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         **File:** `Hexa.json`<br>
         **Type:** `TV Shows and Movies`<br>
-        **Language:** English. (SUB)<br>
+        **Language:** English. 🇺🇸 (SUB)<br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hexa/hexa.json)
@@ -58,7 +58,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         **File:** `Rive.json`<br>
         **Type:** `TV Shows and Movies`<br>
-        **Language:** English. (SUB)<br>
+        **Language:** English. 🇺🇸 (SUB)<br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/rive.json)
@@ -79,7 +79,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         **File:** `Bingeflex.json`<br>
         **Type:** `TV Shows and Movies`<br>
-        **Language:** English. (SUB)<br>
+        **Language:** English. 🇺🇸 (SUB)<br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/bingeflex.json)
@@ -101,7 +101,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
         **File:** `LetStream.json`<br>
         **Type:** `TV Shows and Movies`<br>
         **Note:** *⚠️ Some TV Shows or Movies will be in Hindi* <br>
-        **Language:** English. (SUB)<br>
+        **Language:** English. 🇺🇸 (SUB)<br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/letstream/letstream.json)
@@ -132,7 +132,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         **File:** `Autoembed.json`<br>
         **Type:** `ONLY Movies`<br>
-        **Language:** English. (SUB)<br>
+        **Language:** English. 🇺🇸 (SUB)<br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/autoembed.json)
@@ -153,7 +153,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         **File:** `HopCorn.json`<br>
         **Type:** `ONLY Movies`<br>
-        **Language:** English. (SUB)<br>
+        **Language:** English. 🇺🇸 (SUB)<br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json)
@@ -184,7 +184,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         **File:** `KissKH.json`<br>
         **Type:** `K-Dramas`<br>
-        **Language:** English. (SUB)<br>
+        **Language:** English. 🇺🇸 (SUB)<br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/kisskh.json)
@@ -205,7 +205,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         **File:** `RamaOrientalFansub.json`<br>
         **Type:** `K-Dramas`<br>
-        **Language:** Italian. (SUB)<br>
+        **Language:** Italian. 🇮🇹 (SUB)<br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ramaorientalfansub/ramaorientalfansub.json)
@@ -238,7 +238,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
     **File:** `Ableflix.json`<br>
     **Type:** `ONLY Movies`<br>
-    **Language:** English. <br>
+    **Language:** English. 🇺🇸 <br>
     **App version:** V2 and up <br>
     **Author:** ibro <br><br>
     [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json)
