@@ -37,7 +37,7 @@ function extractDetails(html) {
     // Extract description from the synopsis div (data-synopsis attribute)
     const descriptionMatch = html.match(/<span class="block w-full max-h-24 overflow-scroll mlb-3 overflow-x-hidden text-xs text-gray-200">([^<]+)<\/span>/);
     let description = descriptionMatch 
-        ? descriptionMatch[1].trim() 
+        ? decodeHTMLEntities(descriptionMatch[1].trim())
         : 'N/A';
 
     // Extract the duration (alias) from the metadata list (e.g. "24M")
@@ -92,4 +92,21 @@ function extractStreamUrl(html) {
 
     console.log(stream);
     return stream;
+}
+
+function decodeHTMLEntities(text) {
+    // Replace numeric entities (e.g., &#039;) with the corresponding character.
+    text = text.replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec));
+    // Replace some common named entities.
+    const entities = {
+      '&quot;': '"',
+      '&amp;': '&',
+      '&apos;': "'",
+      '&lt;': '<',
+      '&gt;': '>'
+    };
+    for (const entity in entities) {
+      text = text.replace(new RegExp(entity, 'g'), entities[entity]);
+    }
+    return text;
 }
