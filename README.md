@@ -176,7 +176,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         <summary>
 
-        ### 1️⃣ KissKH
+        ### 1️⃣ KissKH (⚠️ Read note)
 
         </summary>
 
@@ -184,6 +184,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         **File:** `KissKH.json`<br>
         **Type:** `K-Dramas`<br>
+        **Note:** *⚠️ Some streams I wasn't able to scrape* <br>
         **Language:** English. 🇺🇸 (SUB)<br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
