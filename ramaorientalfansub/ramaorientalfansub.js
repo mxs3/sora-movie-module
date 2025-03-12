@@ -35,9 +35,9 @@ function extractDetails(html) {
     const details = [];
 
     // Extract description from the synopsis div (data-synopsis attribute)
-    const descriptionMatch = html.match(/<div[^>]*data-synopsis[^>]*class="line-clamp-3"[^>]*>([\s\S]*?)<\/div>/);
+    const descriptionMatch = html.match(/<span class="block w-full max-h-24 overflow-scroll mlb-3 overflow-x-hidden text-xs text-gray-200">([^<]+)<\/span>/);
     let description = descriptionMatch 
-        ? descriptionMatch[1].replace(/<[^>]+>/g, '').trim() 
+        ? descriptionMatch[1].trim() 
         : 'N/A';
 
     // Extract the duration (alias) from the metadata list (e.g. "24M")
@@ -59,37 +59,31 @@ function extractDetails(html) {
 
 function extractEpisodes(html) {
     const episodes = [];
+    // Regex to match each swiper-slide block with an <a> tag containing an href and title.
+    const slideRegex = /<div class="swiper-slide[^"]*"[\s\S]*?<a href="([^"]+)"[^>]*title="([^"]+)"/g;
+    let match;
     
-    // Capture the content inside the swiper-wrapper
-    const wrapperMatch = html.match(/<div class="swiper-wrapper">([\s\S]*?)<\/div>/);
-    if (wrapperMatch) {
-        const wrapperContent = wrapperMatch[1];
-        // Match all swiper-slide blocks
-        const slideRegex = /<div class="swiper-slide[^"]*"[\s\S]*?<\/div>\s*(?=<div|$)/g;
-        const slides = wrapperContent.match(slideRegex);
-        
-        if (slides) {
-            slides.forEach(slide => {
-                // Extract the href attribute from the <a> tag
-                const hrefMatch = slide.match(/<a href="([^"]+)"/);
-                // Look for text that contains "episodio" followed by a number (case-insensitive)
-                const epNumMatch = slide.match(/episodio\s*(\d+)/i);
-                
-                if (hrefMatch && epNumMatch) {
-                    episodes.push({
-                        href: hrefMatch[1].trim(),
-                        number: epNumMatch[1].trim()
-                    });
-                }
+    while ((match = slideRegex.exec(html)) !== null) {
+        const href = match[1].trim();
+        const title = match[2].trim();
+        // Extract episode number from the title (e.g., "Episodio 3" or "episodio 3")
+        const epNumMatch = title.match(/episodio\s*(\d+)/i);
+        if (epNumMatch) {
+            episodes.push({
+                href: href,
+                number: epNumMatch[1].trim()
             });
         }
     }
-    
-    // Reverse the order if needed
-    episodes.reverse();
+
+    if (episodes[0].number !== "1") {
+        episodes.reverse();
+    }
+
     console.log(episodes);
     return episodes;
 }
+
 
 function extractStreamUrl(html) {
     // Match the iframe tag and extract the src attribute.
