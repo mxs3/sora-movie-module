@@ -231,21 +231,63 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
     <summary>
 
-    ### 1️⃣ Ableflix (ONLY Movies)
+    ### 📺 TV Shows and Movies
 
     </summary>
 
-    <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/icon.png" width="125px"><br>
+    - <details>
 
-    **File:** `Ableflix.json`<br>
-    **Type:** `ONLY Movies`<br>
-    **Language:** English. 🇺🇸 <br>
-    **App version:** V2 and up <br>
-    **Author:** ibro <br><br>
-    [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json)
+      <summary>
 
-    https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json
+      ### 1️⃣ KinoGer (⚠️ Read note)
 
+      </summary>
+
+      <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kinoger/icon.png" width="125px"><br>
+
+      **File:** `KinoGer.json`<br>
+      **Type:** `TV Shows and Movies`<br>
+      **Note:** *⚠️ Some streams I wasn't able to scrape* <br>
+      **Language:** German. 🇺🇸 <br>
+      **App version:** V2 and up <br>
+      **Author:** ibro <br><br>
+      [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kinoger/kinoger.json)
+
+      https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kinoger/kinoger.json
+
+      </details>
+    
+    </details>
+
+  - <details>
+
+    <summary>
+
+    ### 🎥 ONLY Movies
+
+    </summary>
+
+    - <details>
+
+      <summary>
+
+      ### 1️⃣ Ableflix
+
+      </summary>
+
+      <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/icon.png" width="125px"><br>
+
+      **File:** `Ableflix.json`<br>
+      **Type:** `ONLY Movies`<br>
+      **Language:** English. 🇺🇸 <br>
+      **App version:** V2 and up <br>
+      **Author:** ibro <br><br>
+      [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json)
+
+      https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json
+
+      </details>
+      
     </details>
 
 </details>
