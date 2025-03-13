@@ -50,6 +50,8 @@ function extractEpisodes(html) {
     // Match all instances of .show() containing video URLs
     const showMatches = html.match(/\.show\(\d+,\s*\[\[(.*?)\]\]/g);
 
+    console.log(showMatches);
+
     if (showMatches) {
         showMatches.forEach(match => {
             // Extract URLs from within the double brackets [[ ]]
@@ -62,7 +64,7 @@ function extractEpisodes(html) {
                         episodes.push(
                             {
                                 href: cleanUrl,
-                                number: i + 1
+                                number: `${i + 1}`
                             }
                         );
                     }
