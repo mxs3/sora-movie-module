@@ -2,7 +2,7 @@ async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
         const responseText = await fetch(`https://frembed.xyz/api/public/search?query=${encodedKeyword}`);
-        const data = await responseText.json();
+        const data = JSON.parse(responseText);
 
         console.log(data);
 
