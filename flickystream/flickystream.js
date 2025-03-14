@@ -140,51 +140,59 @@ async function extractStreamUrl(url) {
 
             try {
                 const responseText = await fetch(`https://vidjoy.pro/embed/api/fastfetch/${movieId}?sr=0`);
-                const data = JSON.parse(responseText);
+                const data = await responseText.json();
 
                 const hlsSource = data.url?.find(source => source.type === 'hls');
                 const subtitleTrack = data.tracks?.find(track =>
                     track.lang.startsWith('English')
                 );
 
-                const hlsSourceResponse = await fetch(hlsSource.link);
-                const hlsSourceText = await hlsSourceResponse;
+                const result = {
+                    stream: hlsSource ? hlsSource.link : "",
+                    subtitles: subtitleTrack ? subtitleTrack.url : ""
+                };
 
-                const streamRegex = /#EXT-X-STREAM-INF:[^\n]*RESOLUTION=(\d+x\d+)[^\n]*AUDIO="audio0"[^\n]*\r?\n([^\r\n]+)/g;
+                console.log(result);
+                
+                return JSON.stringify(result);
 
-                let highestStreamUrl = null;
-                let highestPixels = 0;
-                let match;
+                // console.log("HLS Playlist Text:\n", hlsSourceText);
 
-                while ((match = streamRegex.exec(hlsSourceText)) !== null) {
-                    const resolutionStr = match[1];
-                    const urlLine = match[2].trim();
+                // const streamRegex = /^#EXT-X-STREAM-INF:.*RESOLUTION=(\d+x\d+).*$(?:\r?\n)(.*)/gm;
 
-                    const [width, height] = resolutionStr.split('x').map(Number);
-                    const pixels = width * height;
+                // let highestStreamUrl = null;
+                // let highestPixels = 0;
+                // let match;
 
-                    if (pixels > highestPixels) {
-                        highestPixels = pixels;
-                        highestStreamUrl = urlLine;
-                    }
-                }
+                // while ((match = streamRegex.exec(hlsSourceText)) !== null) {
+                //     const resolutionStr = match[1];
+                //     const urlLine = match[2].trim();
 
-                if (highestStreamUrl) {
-                    const decodedUrl = decodeURIComponent(highestStreamUrl);
+                //     const [width, height] = resolutionStr.split('x').map(Number);
+                //     const pixels = width * height;
 
-                    console.log("Highest resolution stream URL with audio:", decodedUrl);
+                //     if (pixels > highestPixels) {
+                //         highestPixels = pixels;
+                //         highestStreamUrl = urlLine;
+                //     }
+                // }
 
-                    const result = {
-                        stream: "https://vidjoy.pro" + highestStreamUrl,
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
+                // if (highestStreamUrl) {
+                //     const decodedUrl = decodeURIComponent(highestStreamUrl);
+
+                //     console.log("Highest resolution stream URL with audio:", decodedUrl);
+
+                //     const result = {
+                //         stream: "https://vidjoy.pro" + highestStreamUrl,
+                //         subtitles: subtitleTrack ? subtitleTrack.url : ""
+                //     };
     
-                    console.log(result);
+                //     console.log(result);
                     
-                    return JSON.stringify(result);
-                } else {
-                    console.error("No stream found.");
-                }
+                //     return JSON.stringify(result);
+                // } else {
+                //     console.error("No stream found.");
+                // }
             } catch (err) {
                 console.log(`Fetch error on endpoint https://vidjoy.pro/embed/api/fastfetch/${movieId}?sr=0 for movie ${movieId}:`, err);
             }
@@ -205,44 +213,53 @@ async function extractStreamUrl(url) {
                     track.lang.startsWith('English')
                 );
 
-                const hlsSourceResponse = await fetch(hlsSource.link);
-                const hlsSourceText = await hlsSourceResponse;
+                const result = {
+                    stream: hlsSource ? hlsSource.link : "",
+                    subtitles: subtitleTrack ? subtitleTrack.url : ""
+                };
 
-                const streamRegex = /#EXT-X-STREAM-INF:[^\n]*RESOLUTION=(\d+x\d+)[^\n]*AUDIO="audio0"[^\n]*\r?\n([^\r\n]+)/g;
+                console.log(result);
+                
+                return JSON.stringify(result);
 
-                let highestStreamUrl = null;
-                let highestPixels = 0;
-                let match;
+                // const hlsSourceResponse = await fetch(hlsSource.link);
+                // const hlsSourceText = await hlsSourceResponse;
 
-                while ((match = streamRegex.exec(hlsSourceText)) !== null) {
-                    const resolutionStr = match[1];
-                    const urlLine = match[2].trim();
+                // const streamRegex = /#EXT-X-STREAM-INF:[^\n]*RESOLUTION=(\d+x\d+)[^\n]*AUDIO="audio0"[^\n]*\r?\n([^\r\n]+)/g;
 
-                    const [width, height] = resolutionStr.split('x').map(Number);
-                    const pixels = width * height;
+                // let highestStreamUrl = null;
+                // let highestPixels = 0;
+                // let match;
 
-                    if (pixels > highestPixels) {
-                        highestPixels = pixels;
-                        highestStreamUrl = urlLine;
-                    }
-                }
+                // while ((match = streamRegex.exec(hlsSourceText)) !== null) {
+                //     const resolutionStr = match[1];
+                //     const urlLine = match[2].trim();
 
-                if (highestStreamUrl) {
-                    const decodedUrl = decodeURIComponent(highestStreamUrl);
+                //     const [width, height] = resolutionStr.split('x').map(Number);
+                //     const pixels = width * height;
 
-                    console.log("Highest resolution stream URL with audio:", decodedUrl);
+                //     if (pixels > highestPixels) {
+                //         highestPixels = pixels;
+                //         highestStreamUrl = urlLine;
+                //     }
+                // }
 
-                    const result = {
-                        stream: "https://vidjoy.pro" + highestStreamUrl,
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
+                // if (highestStreamUrl) {
+                //     const decodedUrl = decodeURIComponent(highestStreamUrl);
+
+                //     console.log("Highest resolution stream URL with audio:", decodedUrl);
+
+                //     const result = {
+                //         stream: "https://vidjoy.pro" + highestStreamUrl,
+                //         subtitles: subtitleTrack ? subtitleTrack.url : ""
+                //     };
     
-                    console.log(result);
+                //     console.log(result);
                     
-                    return JSON.stringify(result);
-                } else {
-                    console.error("No stream found.");
-                }
+                //     return JSON.stringify(result);
+                // } else {
+                //     console.error("No stream found.");
+                // }
             } catch (err) {
                 console.log(`Fetch error on endpoint https://vidjoy.pro/embed/api/fastfetch/${showId}/${seasonNumber}/${episodeNumber}?sr=0 for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
             }
