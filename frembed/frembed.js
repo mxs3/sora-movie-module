@@ -14,9 +14,10 @@ async function searchResults(keyword) {
             }
         });
 
+        console.log('Search results:', JSON.stringify(movieData));
         console.log('Search results:', movieData);
 
-        return JSON.stringify(movieData);
+        return movieData;
     } catch (error) {
         console.log('Fetch error in searchResults:', error);
         return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
@@ -76,5 +77,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-searchResults(`naruto`);
