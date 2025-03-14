@@ -38,7 +38,9 @@ async function extractDetails(url) {
             airdate: 'N/A'
         }];
 
-        return JSON.stringify(transformedResults);
+        console.log(JSON.stringify(transformedResults));
+
+        return transformedResults;
     } catch (error) {
         console.log('Details error:', error);
         return JSON.stringify([{
@@ -76,3 +78,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractDetails(`https://play.frembed.xyz/api/film.php?id=11`);
