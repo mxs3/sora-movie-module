@@ -17,7 +17,7 @@ async function searchResults(keyword) {
         console.log('Search results:', JSON.stringify(movieData));
         console.log('Search results:', movieData);
 
-        return movieData;
+        return JSON.stringify(movieData);
     } catch (error) {
         console.log('Fetch error in searchResults:', error);
         return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
@@ -33,10 +33,9 @@ async function extractDetails(url) {
         const data = JSON.parse(responseText);
 
         const transformedResults = [{
-            description: data.overview || 'No description available',
-            // Movies use runtime (in minutes)
-            aliases: '',
-            airdate: ''
+            description: data.overview || 'N/A',
+            aliases: 'N/A',
+            airdate: 'N/A'
         }];
 
         return JSON.stringify(transformedResults);
