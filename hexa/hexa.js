@@ -202,7 +202,9 @@ async function extractStreamUrl(url) {
                 );
 
                 const responseFile = await fetch(hlsSource.link);
-                const fileData = responseFile;
+                const fileData = await responseFile;
+
+                console.log(fileData);
 
                 const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+x\d+)[\r\n]+(https?:\/\/[^\r\n]+)/g;
 
@@ -246,3 +248,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractStreamUrl(`https://hexa.watch/watch/tv/iframe/95557/1/1`);
