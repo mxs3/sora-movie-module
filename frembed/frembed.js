@@ -78,5 +78,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractDetails(`https://play.frembed.xyz/api/film.php?id=11`);
