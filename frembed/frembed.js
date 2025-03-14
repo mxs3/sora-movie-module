@@ -2,15 +2,19 @@ async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
         const responseText = await fetch(`https://frembed.xyz/api/public/search?query=${encodedKeyword}`);
-        const data = JSON.parse(responseText);
+        const data = await responseText.json();
+
+        console.log(data);
 
         const movieData = data.movies.map(movie => {
             return {
-                title: movie.db-title || movie.original_title || movie.title || movie.name,
+                title: movie.title || movie.name || movie.original_title,
                 image: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
                 href: `https://play.frembed.xyz/api/film.php?id=${movie.id}`
             }
         });
+
+        console.log('Search results:', movieData);
 
         return JSON.stringify(movieData);
     } catch (error) {
@@ -72,3 +76,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+searchResults(`naruto`);
