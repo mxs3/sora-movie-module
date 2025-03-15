@@ -320,5 +320,5 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
 </details>
 
-> [!TIP]
+> [!NOTE]
 > **If something is wrong, open an issue or @mention me on the sora discord server.**
