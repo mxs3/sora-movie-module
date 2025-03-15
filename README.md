@@ -1,7 +1,7 @@
 > [!CAUTION]
 > **ONLY USE THE BELOW MODULES**<br>
 > **IF A MODULE IN MY REPO ISN'T LISTED BELOW THEN IT'S NOT WORKING**<br>
-> <i>(e.g., Sudatchi and FlickyStream)</i>
+> <i>(e.g., Sudatchi and VidAPI)</i>
 
 # 🍿 TV Show and Movie Modules for [Sora](https://github.com/cranci1/Sora) 🎥
 
@@ -319,3 +319,6 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
     </details>
 
 </details>
+
+> [!TIP]
+> **Something going wrong, open an issue or @mention me on the sora discord server.**
