@@ -315,7 +315,59 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
       https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json
 
       </details>
+
+    - <details>
+
+      <summary>
+
+      ### 1️⃣ Frembed
+
+      </summary>
+
+      <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/frembed/icon.png" width="125px"><br>
+
+      **File:** `Frembed.json`<br>
+      **Type:** `ONLY Movies`<br>
+      **Language:** French. 🇫🇷 <br>
+      **App version:** V2 and up <br>
+      **Author:** ibro <br><br>
+      [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/frembed/frembed.json)
+
+      https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/frembed/frembed.json
+
+      </details>
       
+    </details>
+
+  - <details>
+
+    <summary>
+
+    ### 🎞️ K-Dramas
+
+    </summary>
+
+      - <details>
+
+        <summary>
+
+        ### 1️⃣ KDramaHood
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kdramahood/icon.png" width="125px"><br>
+
+        **File:** `KDramaHood.json`<br>
+        **Type:** `K-Dramas`<br>
+        **Language:** Korean. 🇰🇷 <br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kdramahood/kdramahood.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kdramahood/kdramahood.json
+
+        </details>
+
     </details>
 
 </details>
