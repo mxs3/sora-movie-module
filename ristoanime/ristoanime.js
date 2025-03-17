@@ -1,10 +1,9 @@
 function searchResults(html) {
     const results = [];
 
-    // Adjust regex to capture each <div class="MovieItem"> including nested content
     const itemBlocks = html.match(/<div class="MovieItem">[\s\S]*?<h4>(.*?)<\/h4>[\s\S]*?<\/a>/g);
 
-    if (!itemBlocks) return results; // Ensure we don't try to loop over null
+    if (!itemBlocks) return results;
 
     itemBlocks.forEach(block => {
         const hrefMatch = block.match(/<a href="([^"]+)"/);
@@ -73,22 +72,26 @@ function extractEpisodes(html) {
 }
 
 async function extractStreamUrl(html) {
-    const serverMatch = html.match(/<li[^>]+data-watch="([^"]+mp4upload\.com[^"]+)"/);
+    const serverMatch = html.match(/<li[^>]+data-watch="([^"]+)"[^>]*class="ISActive"/);
     const embedUrl = serverMatch ? serverMatch[1].trim() : 'N/A';
-
+    
     let streamUrl = "";
 
     if (embedUrl !== 'N/A') {
         const response = await fetch(embedUrl);
-        const fetchedHtml = await response;
+        const fetchedHtml = await response.text();
         
-        const streamMatch = fetchedHtml.match(/player\.src\(\{\s*type:\s*["']video\/mp4["'],\s*src:\s*["']([^"']+)["']\s*\}\)/i);
+        const streamMatch = fetchedHtml.match(/sources:\s*\[\s*["']([^"']+\.mp4)["']/i);
         if (streamMatch) {
             streamUrl = streamMatch[1].trim();
+        } else {
+            console.log("No stream URL found in Clappr setup.");
         }
+    } else {
+        console.log("No active server embed URL found.");
     }
 
-    console.log(streamUrl);
+    console.log("Extracted stream URL:", streamUrl);
     return streamUrl;
 }
 

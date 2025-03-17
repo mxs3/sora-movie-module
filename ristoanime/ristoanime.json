@@ -9,7 +9,7 @@
     "language": "Arabic",
     "streamType": "MP4",
     "quality": "1080p",
-    "baseUrl": "https://www.mp4upload.com/",
+    "baseUrl": "https://uqload.net/",
     "searchBaseUrl": "https://ristoanime.com/?s=%s",
     "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ristoanime/ristoanime.js",
     "streamAsyncJS": true
