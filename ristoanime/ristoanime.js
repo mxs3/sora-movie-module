@@ -72,10 +72,21 @@ function extractEpisodes(html) {
     return episodes;
 }
 
-function extractStreamUrl(html) {
-    const serverMatch = html.match(/<li[^>]+data-watch="([^"]+vidmoly\.to[^"]+)"/);
+async function extractStreamUrl(html) {
+    const serverMatch = html.match(/<li[^>]+data-watch="([^"]+mp4upload\.com[^"]+)"/);
+    const embedUrl = serverMatch ? serverMatch[1].trim() : 'N/A';
 
-    const streamUrl = serverMatch ? serverMatch[1].trim() : 'N/A';
+    let streamUrl = "";
+
+    if (embedUrl !== 'N/A') {
+        const response = await fetch(embedUrl);
+        const fetchedHtml = await response.text();
+        
+        const streamMatch = fetchedHtml.match(/player\.src\(\{\s*type:\s*["']video\/mp4["'],\s*src:\s*["']([^"']+)["']\s*\}\)/i);
+        if (streamMatch) {
+            streamUrl = streamMatch[1].trim();
+        }
+    }
 
     console.log(streamUrl);
     return streamUrl;
