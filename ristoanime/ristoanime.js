@@ -1,16 +1,19 @@
 function searchResults(html) {
     const results = [];
 
-    const itemBlocks = html.match(/<div class="MovieItem">[\s\S]*?<\/a><\/div>/g);
+    // Adjust regex to capture each <div class="MovieItem"> including nested content
+    const itemBlocks = html.match(/<div class="MovieItem">[\s\S]*?<h4>(.*?)<\/h4>[\s\S]*?<\/a>/g);
+
+    if (!itemBlocks) return results; // Ensure we don't try to loop over null
 
     itemBlocks.forEach(block => {
         const hrefMatch = block.match(/<a href="([^"]+)"/);
-        const titleMatch = block.match(/<h4>([\s\S]*?)<\/h4>/);
-        const imgMatch = block.match(/background-image: url\(&quot;([^&]+)&quot;\)/);
+        const titleMatch = block.match(/<h4>(.*?)<\/h4>/);
+        const imgMatch = block.match(/background-image:\s*url\(([^)]+)\)/);
 
         if (hrefMatch && titleMatch && imgMatch) {
             const href = hrefMatch[1].trim();
-            const title = decodeHTMLEntities(titleMatch[1].trim());
+            const title = titleMatch[1].trim();
             const image = imgMatch[1].trim();
 
             results.push({ title, image, href });
