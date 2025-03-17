@@ -79,7 +79,7 @@ async function extractStreamUrl(html) {
 
     if (embedUrl !== 'N/A') {
         const response = await fetch(embedUrl);
-        const fetchedHtml = await response.text();
+        const fetchedHtml = await response;
         
         const streamMatch = fetchedHtml.match(/player\.src\(\{\s*type:\s*["']video\/mp4["'],\s*src:\s*["']([^"']+)["']\s*\}\)/i);
         if (streamMatch) {
@@ -108,5 +108,3 @@ function decodeHTMLEntities(text) {
 
     return text;
 }
-
-extractStreamUrl(`<ul id="watch"><li data-watch="https://vidmoly.to/embed-tg3m13b6h3mp.html" class=""><span>0</span>سيرفر 1 <noscript><iframe src="" allowfullscreen></iframe></noscript></li><li data-watch="https://mega.nz/embed/E1wTyKqB#QNWmdJu1MofT6cBAbgsVt53dXmJFHGmZpbMHeZ7jfbo.html" class=""><span>1</span>سيرفر 1.2 <noscript><iframe src="" allowfullscreen></iframe></noscript></li><li data-watch="https://video.sibnet.ru/shell.php?videoid=5801147.html" class=""><span>2</span>سيرفر 2 <noscript><iframe src="" allowfullscreen></iframe></noscript></li><li data-watch="https://sendvid.com/embed/s6b587n6.html" class=""><span>3</span>سيرفر 3.1 <noscript><iframe src="" allowfullscreen></iframe></noscript></li><li data-watch="https://listeamed.net/e/3Q0lxBbjj8nxj1J" class=""><span>4</span>سيرفر 3 <noscript><iframe src="" allowfullscreen></iframe></noscript></li><li data-watch="https://www.mp4upload.com/embed-7zgvunri22wk.html" class=""><span>5</span>سيرفر 4 <noscript><iframe src="" allowfullscreen></iframe></noscript></li><li data-watch="https://uqload.net/embed-u9qr2bk48203.html" class="ISActive"><span>6</span>سيرفر 5 <noscript><iframe src="" allowfullscreen></iframe></noscript></li><li data-watch="https://ghbrisk.com/e/oqis9bikzybm.html" class=""><span>7</span>سيرفر احتياطي 1 <noscript><iframe src="" allowfullscreen></iframe></noscript></li></ul>`);
