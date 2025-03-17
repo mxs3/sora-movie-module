@@ -140,7 +140,7 @@ async function extractStreamUrl(url) {
 
             try {
                 const responseText = await fetch(`https://vidapi.xyz/embed/movie/${movieId}`);
-                const data = responseText;
+                const data = await responseText;
 
                 // 2. Find the iframe and extract its src.
                 const iframeMatch = data.match(/<iframe[^>]+src=["']([^"']+)["']/);
@@ -157,7 +157,7 @@ async function extractStreamUrl(url) {
                 
                 // 3. Fetch the HTML from the iframe.
                 const iframeResponse = await fetch(iframeSrc);
-                const iframeHtml = iframeResponse;
+                const iframeHtml = await iframeResponse;
 
                 // 4. Look for the packed script using a regex.
                 const packedScriptMatch = iframeHtml.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
@@ -191,7 +191,7 @@ async function extractStreamUrl(url) {
 
             try {
                 const responseText = await fetch(`https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber}`);
-                const data = responseText;
+                const data = await responseText;
 
                 let streamUrl = null;
                 
@@ -217,7 +217,7 @@ async function extractStreamUrl(url) {
                         console.log("Fetching iframe URL with headers:", iframeSrc);
 
                         const iframeResponse = await fetch(`https://decompress-zstd.vercel.app/api/${encodeURIComponent(iframeSrc)}`);
-                        const iframeHtml = iframeResponse;
+                        const iframeHtml = await iframeResponse;
 
                         console.log("Fetched iframe HTML:", iframeHtml);
                         
@@ -378,4 +378,4 @@ class zstdDecompressor {
     }
 } 
 
-extractStreamUrl(`https://vidapi.xyz/embed/tv/60735&s=9&e=1`);
+// extractStreamUrl(`https://vidapi.xyz/embed/tv/60735&s=9&e=1`);
