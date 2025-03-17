@@ -3,8 +3,6 @@ function searchResults(html) {
 
     const itemBlocks = html.match(/<div class="MovieItem">[\s\S]*?<\/a><\/div>/g);
 
-    if (!itemBlocks) return results;
-
     itemBlocks.forEach(block => {
         const hrefMatch = block.match(/<a href="([^"]+)"/);
         const titleMatch = block.match(/<h4>([\s\S]*?)<\/h4>/);
