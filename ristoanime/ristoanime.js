@@ -80,7 +80,7 @@ async function extractStreamUrl(html) {
 
     if (embedUrl !== 'N/A') {
         const response = await fetch(embedUrl);
-        const fetchedHtml = await response.text();
+        const fetchedHtml = await response;
         
         const streamMatch = fetchedHtml.match(/player\.src\(\{\s*type:\s*["']video\/mp4["'],\s*src:\s*["']([^"']+)["']\s*\}\)/i);
         if (streamMatch) {

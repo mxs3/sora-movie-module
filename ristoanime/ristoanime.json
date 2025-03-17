@@ -7,7 +7,7 @@
     },
     "version": "1.0.1",
     "language": "Arabic",
-    "streamType": "HLS",
+    "streamType": "MP4",
     "quality": "1080p",
     "baseUrl": "https://www.mp4upload.com/",
     "searchBaseUrl": "https://ristoanime.com/?s=%s",
