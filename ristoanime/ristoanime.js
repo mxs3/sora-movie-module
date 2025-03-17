@@ -1,0 +1,99 @@
+function searchResults(html) {
+    const results = [];
+
+    const itemBlocks = html.match(/<div class="MovieItem">[\s\S]*?<\/a><\/div>/g);
+
+    if (!itemBlocks) return results;
+
+    itemBlocks.forEach(block => {
+        const hrefMatch = block.match(/<a href="([^"]+)"/);
+        const titleMatch = block.match(/<h4>([\s\S]*?)<\/h4>/);
+        const imgMatch = block.match(/background-image: url\(&quot;([^&]+)&quot;\)/);
+
+        if (hrefMatch && titleMatch && imgMatch) {
+            const href = hrefMatch[1].trim();
+            const title = decodeHTMLEntities(titleMatch[1].trim());
+            const image = imgMatch[1].trim();
+
+            results.push({ title, image, href });
+        }
+    });
+
+    console.log(results);
+    return results;
+}
+
+function extractDetails(html) {
+    const details = [];
+
+    const descriptionMatch = html.match(/<p[^>]*>(.*?)<\/p>/s);
+    let description = descriptionMatch 
+        ? decodeHTMLEntities(descriptionMatch[1].trim()) 
+        : 'N/A';
+
+    const aliasMatch = html.match(/<li>\s*<div class="icon">\s*<i class="far fa-clock"><\/i>\s*<\/div>\s*<span>\s*مدة العرض\s*:\s*<\/span>\s*<a[^>]*>\s*(\d+)\s*<\/a>/);
+    let alias = aliasMatch ? aliasMatch[1].trim() : 'N/A';
+
+    const airdateMatch = html.match(/<li>\s*<div class="icon">\s*<i class="far fa-calendar"><\/i>\s*<\/div>\s*<span>\s*تاريخ الاصدار\s*:\s*<\/span>\s*<a[^>]*?>\s*(\d{4})\s*<\/a>/);
+    let airdate = airdateMatch ? airdateMatch[1].trim() : 'N/A';
+
+    details.push({
+        description: description,
+        alias: alias,
+        airdate: airdate
+    });
+
+    console.log(details);
+    return details;
+}
+
+function extractEpisodes(html) {
+    const episodes = [];
+
+    const episodeRegex = /<a href="([^"]+)">\s*الحلقة\s*<em>(\d+)<\/em>\s*<\/a>/g;
+    let match;
+
+    while ((match = episodeRegex.exec(html)) !== null) {
+        const href = match[1].trim() + "/watch/";
+        const number = match[2].trim();
+
+        episodes.push({
+            href: href,
+            number: number
+        });
+    }
+
+    if (episodes.length > 0 && episodes[0].number !== "1") {
+        episodes.reverse();
+    }
+
+    console.log(episodes);
+    return episodes;
+}
+
+function extractStreamUrl(html) {
+    const serverMatch = html.match(/<li[^>]+data-watch="([^"]+vidmoly\.to[^"]+)"/);
+
+    const streamUrl = serverMatch ? serverMatch[1].trim() : 'N/A';
+
+    console.log(streamUrl);
+    return streamUrl;
+}
+
+function decodeHTMLEntities(text) {
+    text = text.replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec));
+    
+    const entities = {
+        '&quot;': '"',
+        '&amp;': '&',
+        '&apos;': "'",
+        '&lt;': '<',
+        '&gt;': '>'
+    };
+    
+    for (const entity in entities) {
+        text = text.replace(new RegExp(entity, 'g'), entities[entity]);
+    }
+
+    return text;
+}
