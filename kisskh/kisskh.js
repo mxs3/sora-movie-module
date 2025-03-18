@@ -82,7 +82,27 @@ async function extractStreamUrl(url) {
         const showTitle = match[1];
         const episodeNumber = match[2];
         const showId = match[3];
+
+        const streamUrls = [
+            `https://hls12.kisskh.cloud/hls12/${showTitle}.Ep${episodeNumber}/index.m3u8`,
+            `https://hls12.kisskh.cloud/hls12/${showTitle}-Ep${episodeNumber}/index.m3u8`,
+            `https://hls.streamsub.top/hls07/${showId}/Ep${episodeNumber}_index.m3u8`,
+            `https://hls03.loadfast.site/${showTitle}Ep${episodeNumber}.m3u8`,
+            `https://hls03.videodelivery.top/${showId}/${showTitle}.Ep${episodeNumber}.mp4`,
+            `https://videodelivery.top/${showTitle}.Ep${episodeNumber}.mp4`,
+            `https://hls12.kisskh.cloud/hls12/${showTitle}-episode-${episodeNumber}.v0/index.m3u8`,
+            `https://hls03.loadfast.site/${showTitle}Ep${episodeNumber}.m3u8`,
+        ];
+
         try {
+            const responseText = await fetch(`https://hls.streamsub.top/hls07/${showId}/Ep${episodeNumber}_index.m3u8`);
+            const data = JSON.parse(responseText);
+
+            if (!data) {
+                console.log(`Stream does not exist for show ${showId} and episode ${episodeNumber}`);
+                return JSON.stringify({ stream: 'https://www.google.com/', subtitles: 'https://www.google.com/' });
+            }
+
             const result = {
                 stream: `https://hls.streamsub.top/hls07/${showId}/Ep${episodeNumber}_index.m3u8`,
                 subtitles: `https://sub.streamsub.top/${showTitle}.Ep${episodeNumber}.en.srt` ||  "",
@@ -96,6 +116,59 @@ async function extractStreamUrl(url) {
         }
     } catch (error) {
         console.log('Fetch error in extractStreamUrl:', error);
+        return null;
+    }
+}
+
+async function extractStreamUrl(url) {
+    try {
+        const match = url.match(/https:\/\/kisskh\.co\/Drama\/([^\/]+)\/Episode-([^\/]+)\?id=([^\/]+)\&ep=([^\/]+)/);
+        
+        if (!match) {
+            throw new Error("Invalid URL format");
+        }
+        
+        const showTitle = match[1];
+        const episodeNumber = match[2];
+        const showId = match[3];
+
+        const streamUrls = [
+            `https://hls12.kisskh.cloud/hls12/${showTitle}.Ep${episodeNumber}/index.m3u8`,
+            `https://hls12.kisskh.cloud/hls12/${showTitle}-Ep${episodeNumber}/index.m3u8`,
+            `https://hls.streamsub.top/hls07/${showId}/Ep${episodeNumber}_index.m3u8`,
+            `https://hls03.loadfast.site/${showTitle}Ep${episodeNumber}.m3u8`,
+            `https://hls03.videodelivery.top/${showId}/${showTitle}.Ep${episodeNumber}.mp4`,
+            `https://videodelivery.top/${showTitle}.Ep${episodeNumber}.mp4`,
+            `https://hls12.kisskh.cloud/hls12/${showTitle}-episode-${episodeNumber}.v0/index.m3u8`,
+            `https://hls03.loadfast.site/${showTitle}Ep${episodeNumber}.m3u8`,
+        ];
+
+        let workingStream = null;
+
+        for (const streamUrl of streamUrls) {
+            try {
+                const response = await fetch(streamUrl, { method: 'HEAD' });
+                if (response.ok) {
+                    workingStream = streamUrl;
+                    console.log(`Working stream found: ${streamUrl}`);
+                    break;
+                }
+            } catch (err) {
+                console.log(`Error checking stream URL ${streamUrl}:`, err);
+            }
+        }
+
+        const subtitleUrl = `https://sub.streamsub.top/${showTitle}.Ep${episodeNumber}.en.srt`;
+
+        const result = {
+            stream: workingStream,
+            subtitles: subtitleUrl
+        };
+
+        console.log(result);
+        return JSON.stringify(result);
+    } catch (error) {
+        console.log('Error in extractStreamUrl:', error);
         return null;
     }
 }
