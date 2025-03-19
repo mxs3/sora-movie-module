@@ -177,8 +177,13 @@ async function extractStreamUrl(url) {
                         const response = await fetch(apiUrl);
                         const data = JSON.parse(response);
 
+                        console.log(data);
+
                         const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
                         const subtitleTrackData = JSON.parse(subtitleTrackResponse);
+
+                        console.log(subtitleTrackData);
+
                         const subtitleTrack = subtitleTrackData.find(track =>
                             track.display.startsWith('English')
                         );
@@ -190,7 +195,9 @@ async function extractStreamUrl(url) {
 
                             if (hlsSource?.url) {
                             const playlistResponse = await fetch(hlsSource.url);
-                            const playlistText = await playlistResponse;
+                            const playlistText = playlistResponse;
+
+                            console.log("HLS Playlist Text:\n", playlistText);
 
                             const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)\n/g);
                                 if (streamMatches) {
@@ -212,6 +219,8 @@ async function extractStreamUrl(url) {
                                     .sort((a, b) => b.width - a.width);
 
                                     const highestResStream = streams[0];
+
+                                    console.log("Highest resolution stream:", highestResStream);
 
                                     if (highestResStream) {
                                         const baseUrl = new URL(hlsSource.url).origin + '/';
@@ -250,8 +259,12 @@ async function extractStreamUrl(url) {
                         const response = await fetch(apiUrl);
                         const data = JSON.parse(response);
 
+                        console.log(data);
+
                         const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
                         const subtitleTrackData = JSON.parse(subtitleTrackResponse);
+
+                        console.log(subtitleTrackData);
 
                         const subtitleTrack = subtitleTrackData.find(track =>
                             track.display.startsWith('English')
@@ -262,14 +275,15 @@ async function extractStreamUrl(url) {
 
                             if (hlsSource?.url) {
                                 const playlistResponse = await fetch(hlsSource.url);
-                                const playlistText = await playlistResponse;
+                                const playlistText = playlistResponse;
+
+                                console.log(playlistText);
 
                                 const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)\n/g);
                                 if (streamMatches) {
                                     const streams = streamMatches
                                         .map(matchStr => {
                                             const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
-                                            // Extract URL by splitting on newline and taking the second part
                                             const lines = matchStr.split('\n').filter(Boolean);
                                             const relativeUrl = lines[1];
                                             if (resolutionMatch && relativeUrl) {
@@ -285,6 +299,8 @@ async function extractStreamUrl(url) {
                                         .sort((a, b) => b.width - a.width);
 
                                     const highestResStream = streams[0];
+
+                                    console.log(highestResStream);
 
                                     if (highestResStream) {
                                         const baseUrl = new URL(hlsSource.url).origin + '/';
