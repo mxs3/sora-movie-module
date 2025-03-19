@@ -177,6 +177,13 @@ async function extractStreamUrl(url) {
                         const response = await fetch(apiUrl);
                         const data = JSON.parse(response);
 
+                        const ks = data.data?.sources?.find(source =>
+                            source.format === 'hls' && !source.url.includes("uwu")
+                        );
+
+                        console.log("Found HLS source:", ks);
+                        console.log("URL:", JSON.stringify(ks));
+
                         const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
                         const subtitleTrackData = JSON.parse(subtitleTrackResponse);
 
