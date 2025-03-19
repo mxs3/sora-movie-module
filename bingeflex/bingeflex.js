@@ -175,22 +175,22 @@ async function extractStreamUrl(url) {
 
                     try {
                         const response = await fetch(apiUrl);
-                        const data = await response.json();
+                        const data = JSON.parse(response);
 
                         const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
-                        const subtitleTrackData = await subtitleTrackResponse.json();
+                        const subtitleTrackData = JSON.parse(subtitleTrackResponse);
                         const subtitleTrack = subtitleTrackData.find(track =>
                             track.display.startsWith('English')
                         );
 
                         if (data && data.error !== "Internal Server Error") {
                             const hlsSource = data.data?.sources?.find(source =>
-                            source.format === 'hls' && !source.url.includes("uwu")
+                                source.format === 'hls' && !source.url.includes("uwu")
                             );
 
                             if (hlsSource?.url) {
                             const playlistResponse = await fetch(hlsSource.url);
-                            const playlistText = await playlistResponse.text();
+                            const playlistText = await playlistResponse;
 
                             const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)\n/g);
                                 if (streamMatches) {
