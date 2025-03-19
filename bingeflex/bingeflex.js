@@ -225,18 +225,20 @@ async function extractStreamUrl(url) {
 
                                     console.log("Highest resolution stream:" + highestResStream.url);
 
-                                    const baseUrl = new URL(hlsSource.url).origin + '/';
-                                    const finalStreamUrl = baseUrl + highestResStream.url;
+                                    if (highestResStream) {
+                                        const parts = hlsSource.url.split('/');
+                                        const baseUrl = parts[0] + '//' + parts[2] + '/';
 
-                                    console.log("Final stream URL:" + finalStreamUrl);
+                                        const finalStreamUrl = baseUrl + highestResStream.url;
 
-                                    const result = {
-                                        stream: finalStreamUrl || "",
-                                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                                    };
+                                        const result = {
+                                            stream: finalStreamUrl || "",
+                                            subtitles: subtitleTrack ? subtitleTrack.url : ""
+                                        };
 
-                                    console.log(result);
-                                    return JSON.stringify(result);
+                                        console.log(result);
+                                        return JSON.stringify(result);
+                                    }
                                 }
                             }
                         }
