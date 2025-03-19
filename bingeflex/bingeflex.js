@@ -131,11 +131,7 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     // "hyvax" is with .srt captions
-  
-    const servicesWithCaption = [
-        "ghost",
-    ];
-  
+
     const servicesWithoutCaption = [
         "guru",
         "halo",
@@ -144,7 +140,6 @@ async function extractStreamUrl(url) {
         "alpha",
         "fastx",
         "astra",
-        "anime",
         "ninja",
         "catflix",
         "hyvax",
@@ -155,6 +150,8 @@ async function extractStreamUrl(url) {
         "asiacloud",
         "zenith",
         "kage",
+        "anime",
+        "ghost",
         "filmecho",
         "kinoecho",
         "ee3",
@@ -173,11 +170,10 @@ async function extractStreamUrl(url) {
     
             const movieId = match[1];
     
-            // Try services with captions
             loopWithCaptions:
-            for (let i = 0; i < servicesWithCaption.length; i++) {
+            for (let i = 0; i < servicesWithoutCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
-                    const service = servicesWithCaption[i];
+                    const service = servicesWithoutCaption[i];
                     const apiUrl = `https://rivestream.org/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
 
                     try {
@@ -186,11 +182,15 @@ async function extractStreamUrl(url) {
                         
                         if (data && data.error !== "Internal Server Error") {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
-                            const subtitleTrack = data.data?.captions?.find(track =>
-                                track.label.startsWith('English')
+
+                            const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
+                            const subtitleTrackData = await subtitleTrackResponse.json();
+
+                            const subtitleTrack = subtitleTrackData.find(track =>
+                                track.display.startsWith('English')
                             );
 
-                            subtitles = subtitleTrack ? subtitleTrack.file : "";
+                            subtitles = subtitleTrack ? subtitleTrack.url : "";
 
                             if (hlsSource?.url) {
                                 const checkedUrl = await fetch(hlsSource.url);
@@ -208,7 +208,7 @@ async function extractStreamUrl(url) {
 
                                 const result = {
                                     stream: hlsSource ? hlsSource.url : "",
-                                    subtitles: subtitleTrack ? subtitleTrack.file : ""
+                                    subtitles: subtitleTrack ? subtitleTrack.url : ""
                                 };
                                     
                                 return JSON.stringify(result);
@@ -219,52 +219,6 @@ async function extractStreamUrl(url) {
                     }
                 }
             }
-    
-            // Try services without captions
-            loopWithoutCaptions:
-            for (let i = 0; i < servicesWithoutCaption.length; i++) {
-                for (let j = 0; j < secretKey.length; j++) {
-                    const service = servicesWithoutCaption[i];
-                    const apiUrl = `https://rivestream.org/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
-                    
-                    try {
-                        const responseText = await fetch(apiUrl);
-                        const data = JSON.parse(responseText);
-
-                        if (data && data.error !== "Internal Server Error") {
-                            const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
-
-                            if (hlsSource?.url) {
-                                const checkedUrl = await fetch(hlsSource.url);
-                                const html = checkedUrl;
-
-                                const titleRegex = /<title>400 Bad Request<\/title>/i;
-                                const match = html.match(titleRegex);
-
-                                if (match) {
-                                    console.log("Error: 400 Bad Request");
-                                    continue loopWithoutCaptions;
-                                } else {
-                                    console.log(html);
-                                }
-
-                                const result = {
-                                    stream: hlsSource ? hlsSource.url : "",
-                                    subtitles: subtitles
-                                };
-
-                                console.log(JSON.stringify(result));
-
-                                return JSON.stringify(result);
-                            }
-                        }
-                    } catch (err) {
-                        console.log(`Fetch error on endpoint ${apiUrl} for movie ${movieId}:`, err);
-                    }
-                }
-            }
-
-            return null;
         } else if (url.includes('/tv/')) {
             const match = url.match(/https:\/\/bingeflex\.vercel\.app\/tv\/([^\/]+)\?season=([^\/]+)&episode=([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
@@ -275,9 +229,9 @@ async function extractStreamUrl(url) {
     
             // Try services with captions
             loopWithCaptions:
-            for (let i = 0; i < servicesWithCaption.length; i++) {
+            for (let i = 0; i < servicesWithoutCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
-                    const service = servicesWithCaption[i];
+                    const service = servicesWithoutCaption[i];
                     const apiUrl = `https://rivestream.org/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
                     
                     try {
@@ -286,11 +240,15 @@ async function extractStreamUrl(url) {
                         
                         if (data && data.error !== "Internal Server Error") {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
-                            const subtitleTrack = data.data?.captions?.find(track =>
-                                track.label.startsWith('English')
+
+                            const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+                            const subtitleTrackData = await subtitleTrackResponse.json();
+
+                            const subtitleTrack = subtitleTrackData.find(track =>
+                                track.display.startsWith('English')
                             );
 
-                            subtitles = subtitleTrack ? subtitleTrack.file : "";
+                            subtitles = subtitleTrack ? subtitleTrack.url : "";
 
                             if (hlsSource?.url) {
                                 const checkedUrl = await fetch(hlsSource.url);
@@ -308,7 +266,7 @@ async function extractStreamUrl(url) {
 
                                 const result = {
                                     stream: hlsSource ? hlsSource.url : "",
-                                    subtitles: subtitleTrack ? subtitleTrack.file : ""
+                                    subtitles: subtitleTrack ? subtitleTrack.url : ""
                                 };
                                 
                                 return JSON.stringify(result);
@@ -319,50 +277,6 @@ async function extractStreamUrl(url) {
                     }
                 }
             }
-    
-            // Try services without captions
-            loopWithoutCaptions:
-            for (let i = 0; i < servicesWithoutCaption.length; i++) {
-                for (let j = 0; j < secretKey.length; j++) {
-                    const service = servicesWithoutCaption[i];
-                    const apiUrl = `https://rivestream.org/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
-                    
-                    try {
-                        const responseText = await fetch(apiUrl);
-                        const data = JSON.parse(responseText);
-                        
-                        if (data && data.error !== "Internal Server Error") {
-                            const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
-                            
-                            if (hlsSource?.url) {
-                                const checkedUrl = await fetch(hlsSource.url);
-                                const html = checkedUrl;
-
-                                const titleRegex = /<title>400 Bad Request<\/title>/i;
-                                const match = html.match(titleRegex);
-
-                                if (match) {
-                                    console.log("Error: 400 Bad Request");
-                                    continue loopWithoutCaptions;
-                                } else {
-                                    console.log(html);
-                                }
-
-                                const result = {
-                                    stream: hlsSource ? hlsSource.url : "",
-                                    subtitles: subtitles
-                                };
-
-                                return JSON.stringify(result);
-                            }
-                        }
-                    } catch (err) {
-                        console.log(`Fetch error on endpoint ${apiUrl} for show ${showId}:`, err);
-                    }
-                }
-            }
-
-            return null;
         } else {
             throw new Error("Invalid URL format");
         }

@@ -132,16 +132,77 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        let apiUrl;
-        
         if (url.includes('/watch/movie/')) {
             const match = url.match(/https:\/\/flickystream\.com\/watch\/movie\/([^\/]+)/);
 
             if (!match) throw new Error("Invalid URL format");
             
             const movieId = match[1];
+
+            const apiUrl = `https://vidjoy.pro/embed/api/fastfetch/${movieId}?sr=0`;
+
+            const response = await fetch(apiUrl, { headers: { 'Referer': `https://vidjoy.pro/embed/movie/${movieId}?adFree=true` } });
+            const data = await response.json();
+
+            const hlsSource = data.url?.find(source => source.type === 'hls');
             
-            apiUrl = `https://vidjoy.pro/embed/api/fastfetch/${movieId}?sr=0`;
+            if (!hlsSource) throw new Error("HLS source not found");
+            
+            // Fetch the HLS playlist text.
+            const hlsResponse = await fetch(hlsSource.link);
+            const hlsSourceText = await hlsResponse.text();
+            
+            console.log("HLS Playlist Text:\n", hlsSourceText);
+            
+            let finalStreamUrl = "";
+            
+            // Check if it's a master playlist (contains multiple stream options).
+            if (hlsSourceText.includes("#EXT-X-STREAM-INF:")) {
+                // This regex matches the resolution from the EXT-X-STREAM-INF line and then captures the URL in the next line.
+                const streamRegex = /^#EXT-X-STREAM-INF:.*RESOLUTION=(\d+x\d+).*$(?:\r?\n)(.*)/gm;
+                
+                let highestStreamUrl = null;
+                let highestPixels = 0;
+                let regexMatch;
+                
+                while ((regexMatch = streamRegex.exec(hlsSourceText)) !== null) {
+                    const resolutionStr = regexMatch[1];
+                    const urlLine = regexMatch[2].trim();
+
+                    const [width, height] = resolutionStr.split('x').map(Number);
+                    const pixels = width * height;
+
+                    if (pixels > highestPixels) {
+                        highestPixels = pixels;
+                        highestStreamUrl = urlLine;
+                    }
+                }
+                
+                if (highestStreamUrl) {
+                    finalStreamUrl = "https://vidjoy.pro" + highestStreamUrl;
+                } else {
+                    console.log("No stream found in master playlist.");
+                    return null;
+                }
+            } else {
+                // Media playlist (with TS segments) – use the original HLS source link.
+                finalStreamUrl = hlsSource.link;
+            }
+            
+            const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
+            const subtitleTrackData = await subtitleTrackResponse.json();
+
+            const subtitleTrack = subtitleTrackData.find(track =>
+                track.display.startsWith('English')
+            );
+
+            const result = {
+                stream: finalStreamUrl,
+                subtitles: subtitleTrack ? subtitleTrack.url : ""
+            };
+            
+            console.log("Final result:", result);
+            return JSON.stringify(result);
         } else if (url.includes('/watch/tv/')) {
             const match = url.match(/https:\/\/flickystream\.com\/watch\/tv\/([^\/]+)\?s=([^&]+)&ep=([^&]+)/);
             
@@ -150,73 +211,282 @@ async function extractStreamUrl(url) {
             const showId = match[1];
             const seasonNumber = match[2];
             const episodeNumber = match[3];
+
+            const response = await fetch(apiUrl, { headers: { 'Referer': `https://vidjoy.pro/embed/movie/${showId}?adFree=true` } });
+            const data = await response.json();
+
+            const hlsSource = data.url?.find(source => source.type === 'hls');
             
-            apiUrl = `https://vidjoy.pro/embed/api/fastfetch/${showId}/${seasonNumber}/${episodeNumber}?sr=0`;
+            if (!hlsSource) throw new Error("HLS source not found");
+            
+            // Fetch the HLS playlist text.
+            const hlsResponse = await fetch(hlsSource.link);
+            const hlsSourceText = await hlsResponse.text();
+            
+            console.log("HLS Playlist Text:\n", hlsSourceText);
+            
+            let finalStreamUrl = "";
+            
+            // Check if it's a master playlist (contains multiple stream options).
+            if (hlsSourceText.includes("#EXT-X-STREAM-INF:")) {
+                // This regex matches the resolution from the EXT-X-STREAM-INF line and then captures the URL in the next line.
+                const streamRegex = /^#EXT-X-STREAM-INF:.*RESOLUTION=(\d+x\d+).*$(?:\r?\n)(.*)/gm;
+                
+                let highestStreamUrl = null;
+                let highestPixels = 0;
+                let regexMatch;
+                
+                while ((regexMatch = streamRegex.exec(hlsSourceText)) !== null) {
+                    const resolutionStr = regexMatch[1];
+                    const urlLine = regexMatch[2].trim();
+
+                    const [width, height] = resolutionStr.split('x').map(Number);
+                    const pixels = width * height;
+
+                    if (pixels > highestPixels) {
+                        highestPixels = pixels;
+                        highestStreamUrl = urlLine;
+                    }
+                }
+                
+                if (highestStreamUrl) {
+                    finalStreamUrl = "https://vidjoy.pro" + highestStreamUrl;
+                } else {
+                    console.log("No stream found in master playlist.");
+                    return null;
+                }
+            } else {
+                // Media playlist (with TS segments) – use the original HLS source link.
+                finalStreamUrl = hlsSource.link;
+            }
+            
+            const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
+            const subtitleTrackData = await subtitleTrackResponse.json();
+
+            const subtitleTrack = subtitleTrackData.find(track =>
+                track.display.startsWith('English')
+            );
+
+            const result = {
+                stream: finalStreamUrl,
+                subtitles: subtitleTrack ? subtitleTrack.url : ""
+            };
+            
+            console.log("Final result:", result);
+            return JSON.stringify(result);
         } else {
             throw new Error("Invalid URL format");
         }
-        
-        // Fetch API data and parse as JSON.
-        const response = await fetch(apiUrl);
-        const data = JSON.parse(response);
-        
-        const hlsSource = data.url?.find(source => source.type === 'hls');
-        const subtitleTrack = data.tracks?.find(track =>
-            track.lang.startsWith('English')
-        );
-        
-        if (!hlsSource) throw new Error("HLS source not found");
-        
-        // Fetch the HLS playlist text.
-        const hlsResponse = await fetch(hlsSource.link);
-        const hlsSourceText = await hlsResponse;
-        
-        console.log("HLS Playlist Text:\n", hlsSourceText);
-        
-        let finalStreamUrl = "";
-        
-        // Check if it's a master playlist (contains multiple stream options).
-        if (hlsSourceText.includes("#EXT-X-STREAM-INF:")) {
-            // This regex matches the resolution from the EXT-X-STREAM-INF line and then captures the URL in the next line.
-            const streamRegex = /^#EXT-X-STREAM-INF:.*RESOLUTION=(\d+x\d+).*$(?:\r?\n)(.*)/gm;
-            
-            let highestStreamUrl = null;
-            let highestPixels = 0;
-            let regexMatch;
-            
-            while ((regexMatch = streamRegex.exec(hlsSourceText)) !== null) {
-                const resolutionStr = regexMatch[1];
-                const urlLine = regexMatch[2].trim();
 
-                const [width, height] = resolutionStr.split('x').map(Number);
-                const pixels = width * height;
-
-                if (pixels > highestPixels) {
-                    highestPixels = pixels;
-                    highestStreamUrl = urlLine;
-                }
-            }
+        // const response = await fetch(apiUrl, { headers: { 'Referer': "https://www.vidsrc.wtf/" } });
+        // const data = JSON.parse(response);
+        
+        // const hlsSource = data.url?.find(source => source.type === 'hls');
+        // const subtitleTrack = data.tracks?.find(track =>
+        //     track.lang.startsWith('English')
+        // );
+        
+        // if (!hlsSource) throw new Error("HLS source not found");
+        
+        // // Fetch the HLS playlist text.
+        // const hlsResponse = await fetch(hlsSource.link);
+        // const hlsSourceText = await hlsResponse;
+        
+        // console.log("HLS Playlist Text:\n", hlsSourceText);
+        
+        // let finalStreamUrl = "";
+        
+        // // Check if it's a master playlist (contains multiple stream options).
+        // if (hlsSourceText.includes("#EXT-X-STREAM-INF:")) {
+        //     // This regex matches the resolution from the EXT-X-STREAM-INF line and then captures the URL in the next line.
+        //     const streamRegex = /^#EXT-X-STREAM-INF:.*RESOLUTION=(\d+x\d+).*$(?:\r?\n)(.*)/gm;
             
-            if (highestStreamUrl) {
-                finalStreamUrl = "https://vidjoy.pro" + highestStreamUrl;
-            } else {
-                console.error("No stream found in master playlist.");
-                return null;
-            }
-        } else {
-            // Media playlist (with TS segments) – use the original HLS source link.
-            finalStreamUrl = hlsSource.link;
-        }
+        //     let highestStreamUrl = null;
+        //     let highestPixels = 0;
+        //     let regexMatch;
+            
+        //     while ((regexMatch = streamRegex.exec(hlsSourceText)) !== null) {
+        //         const resolutionStr = regexMatch[1];
+        //         const urlLine = regexMatch[2].trim();
+
+        //         const [width, height] = resolutionStr.split('x').map(Number);
+        //         const pixels = width * height;
+
+        //         if (pixels > highestPixels) {
+        //             highestPixels = pixels;
+        //             highestStreamUrl = urlLine;
+        //         }
+        //     }
+            
+        //     if (highestStreamUrl) {
+        //         finalStreamUrl = "https://vidjoy.pro" + highestStreamUrl;
+        //     } else {
+        //         console.log("No stream found in master playlist.");
+        //         return null;
+        //     }
+        // } else {
+        //     // Media playlist (with TS segments) – use the original HLS source link.
+        //     finalStreamUrl = hlsSource.link;
+        // }
         
-        const result = {
-            stream: finalStreamUrl,
-            subtitles: subtitleTrack ? subtitleTrack.url : ""
-        };
+        // const result = {
+        //     stream: finalStreamUrl,
+        //     subtitles: subtitleTrack ? subtitleTrack.url : ""
+        // };
         
-        console.log("Final result:", result);
-        return JSON.stringify(result);
+        // console.log("Final result:", result);
+        // return JSON.stringify(result);
+
+        // // Fetch API data and parse as JSON.
+        // const response = await fetch(apiUrl);
+        // const data = JSON.parse(response);
+        
+        // const hlsSource = data.url?.find(source => source.type === 'hls');
+        // const subtitleTrack = data.tracks?.find(track =>
+        //     track.lang.startsWith('English')
+        // );
+        
+        // if (!hlsSource) throw new Error("HLS source not found");
+        
+        // // Fetch the HLS playlist text.
+        // const hlsResponse = await fetch(hlsSource.link);
+        // const hlsSourceText = await hlsResponse;
+        
+        // console.log("HLS Playlist Text:\n", hlsSourceText);
+        
+        // let finalStreamUrl = "";
+        
+        // // Check if it's a master playlist (contains multiple stream options).
+        // if (hlsSourceText.includes("#EXT-X-STREAM-INF:")) {
+        //     // This regex matches the resolution from the EXT-X-STREAM-INF line and then captures the URL in the next line.
+        //     const streamRegex = /^#EXT-X-STREAM-INF:.*RESOLUTION=(\d+x\d+).*$(?:\r?\n)(.*)/gm;
+            
+        //     let highestStreamUrl = null;
+        //     let highestPixels = 0;
+        //     let regexMatch;
+            
+        //     while ((regexMatch = streamRegex.exec(hlsSourceText)) !== null) {
+        //         const resolutionStr = regexMatch[1];
+        //         const urlLine = regexMatch[2].trim();
+
+        //         const [width, height] = resolutionStr.split('x').map(Number);
+        //         const pixels = width * height;
+
+        //         if (pixels > highestPixels) {
+        //             highestPixels = pixels;
+        //             highestStreamUrl = urlLine;
+        //         }
+        //     }
+            
+        //     if (highestStreamUrl) {
+        //         finalStreamUrl = "https://vidjoy.pro" + highestStreamUrl;
+        //     } else {
+        //         console.log("No stream found in master playlist.");
+        //         return null;
+        //     }
+        
+        // for (const apiUrl of apiUrls) {
+        //     if (apiUrl.includes("https://api.rgshows.me")) {
+        //         const response = await fetch(apiUrl, { headers: { 'Referer': "https://www.vidsrc.wtf/" } });
+        //         const data = await response.json();
+                
+        //         const hlsSource = data.stream?.url;
+        //         const subtitleTrack = `https://sub.wyzie.ru/search?id=696506`
+                
+        //         const result = {
+        //             stream: hlsSource,
+        //             subtitles: subtitleTrack
+        //         };
+                
+        //         console.log("Result: ", result);
+        //         return JSON.stringify(result);
+        //     } else if (apiUrl.includes("https://vidjoy.pro")) {    
+        //         // Fetch API data and parse as JSON.
+        //         const response = await fetch(apiUrl);
+        //         const data = JSON.parse(response);
+                
+        //         const hlsSource = data.url?.find(source => source.type === 'hls');
+        //         const subtitleTrack = data.tracks?.find(track =>
+        //             track.lang.startsWith('English')
+        //         );
+                
+        //         if (!hlsSource) throw new Error("HLS source not found");
+                
+        //         // Fetch the HLS playlist text.
+        //         const hlsResponse = await fetch(hlsSource.link);
+        //         const hlsSourceText = await hlsResponse;
+                
+        //         console.log("HLS Playlist Text:\n", hlsSourceText);
+                
+        //         let finalStreamUrl = "";
+                
+        //         // Check if it's a master playlist (contains multiple stream options).
+        //         if (hlsSourceText.includes("#EXT-X-STREAM-INF:")) {
+        //             // This regex matches the resolution from the EXT-X-STREAM-INF line and then captures the URL in the next line.
+        //             const streamRegex = /^#EXT-X-STREAM-INF:.*RESOLUTION=(\d+x\d+).*$(?:\r?\n)(.*)/gm;
+                    
+        //             let highestStreamUrl = null;
+        //             let highestPixels = 0;
+        //             let regexMatch;
+                    
+        //             while ((regexMatch = streamRegex.exec(hlsSourceText)) !== null) {
+        //                 const resolutionStr = regexMatch[1];
+        //                 const urlLine = regexMatch[2].trim();
+    
+        //                 const [width, height] = resolutionStr.split('x').map(Number);
+        //                 const pixels = width * height;
+    
+        //                 if (pixels > highestPixels) {
+        //                     highestPixels = pixels;
+        //                     highestStreamUrl = urlLine;
+        //                 }
+        //             }
+                    
+        //             if (highestStreamUrl) {
+        //                 finalStreamUrl = "https://vidjoy.pro" + highestStreamUrl;
+        //             } else {
+        //                 console.log("No stream found in master playlist.");
+        //                 return null;
+        //             }
+        //         } else {
+        //             // Media playlist (with TS segments) – use the original HLS source link.
+        //             finalStreamUrl = hlsSource.link;
+        //         }
+                
+        //         const result = {
+        //             stream: finalStreamUrl,
+        //             subtitles: subtitleTrack ? subtitleTrack.url : ""
+        //         };
+                
+        //         console.log("Final result:", result);
+        //         return JSON.stringify(result);
+        //     } else if (apiUrl.includes("https://vidzee.wtf")) {
+        //         const response = await fetch(apiUrl, { headers: { 'Referer': apiUrl } });
+        //         const text = await response.text();
+                
+        //         // Extract the stream URL from the Artplayer config (first .mp4 URL)
+        //         const streamUrlMatch = text.match(/url\s*:\s*['"]([^'"]+\.mp4[^'"]*)['"]/i);
+        //         const extractedStreamUrl = streamUrlMatch ? streamUrlMatch[1].trim() : "";
+                
+        //         // Extract the subtitle URL from the subtitle options block (first .srt URL)
+        //         const subtitleUrlMatch = text.match(/"url"\s*:\s*"([^"]+\.srt[^"]*)"/i);
+        //         const extractedSubtitleUrl = subtitleUrlMatch ? subtitleUrlMatch[1].trim() : "";
+                
+        //         const result = {
+        //             stream: extractedStreamUrl,
+        //             subtitles: extractedSubtitleUrl
+        //         };
+                
+        //         console.log("Final result from vidzee:", result);
+        //         return JSON.stringify(result);
+        //     } else {
+        //         throw new Error("Invalid URL format");
+        //     }
+        // }
     } catch (error) {
-        console.error("Error in extractStreamUrl:", error);
+        console.log("Error in extractStreamUrl:", error);
         return null;
     }
 }
+
+extractStreamUrl(`https://flickystream.com/watch/movie/696506`);
