@@ -132,8 +132,7 @@ async function extractStreamUrl(url) {
     // "2embed",
 
     const providers = [
-        "ntflx",
-        "amzn"
+        "hindiscraper",
     ];
 
     try {
@@ -145,65 +144,56 @@ async function extractStreamUrl(url) {
 
             for (let i = 0; i < providers.length; i++) {
                 try {
-                    const showResponse = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d`);
-                    const showData = JSON.parse(showResponse);
-
-                    const responseText = await fetch(`https://mirrors.whvx.net/scrape?title=${showData.original_title}&type=movie&releaseYear=${showData.release_date.split('-')[0]}&provider=${providers[i]}`);
+                    const responseText = await fetch(`https://vidstream.site/api/getmovie?type=movie&id=${movieId}&server=${providers[i]}`);
                     const data = JSON.parse(responseText);
 
-                    const hlsSource = data.stream?.find(stream =>
-                        stream.type === "hls"
+                    const responseSubtitle = await fetch(`https://demo.autoembed.cc/api/server?id=${movieId}&sr=1`);
+                    const subtitleData = JSON.parse(responseSubtitle);
+
+                    const subtitleTrack = subtitleData.tracks?.find(track =>
+                        track.lang.startsWith('English')
                     );
-
-                    // const result = {
-                    //     stream: hlsSource ? hlsSource.url : "",
-                    //     subtitle: subtitleTrack ? subtitleTrack.url : ""
-                    // }
-
-                    // console.log(result);
-                    
-                    return hlsSource ? hlsSource.url : "";
                 
-                    // if (data && data.newurl) {
-                    //     const hlsResponse = await fetch(data.newurl);
-                    //     const hlsSourceText = await hlsResponse;
+                    if (data && data.newurl) {
+                        const hlsResponse = await fetch(data.newurl);
+                        const hlsSourceText = await hlsResponse;
 
-                    //     const regex = /^\.\/(\d+)\/index\.m3u8$/gm;
-                    //     const resolutionPaths = [];
-                    //     let match;
+                        const regex = /^\.\/(\d+)\/index\.m3u8$/gm;
+                        const resolutionPaths = [];
+                        let match;
 
-                    //     while ((match = regex.exec(hlsSourceText)) !== null) {
-                    //         const resNumber = parseInt(match[1], 10);
+                        while ((match = regex.exec(hlsSourceText)) !== null) {
+                            const resNumber = parseInt(match[1], 10);
 
-                    //         const path = `/${match[1]}/index.m3u8`;
-                    //         resolutionPaths.push({ resolution: resNumber, path });
-                    //     }
+                            const path = `/${match[1]}/index.m3u8`;
+                            resolutionPaths.push({ resolution: resNumber, path });
+                        }
 
-                    //     if (resolutionPaths.length === 0) {
-                    //         console.error("No resolution paths found.");
-                    //     } else {
-                    //         resolutionPaths.sort((a, b) => b.resolution - a.resolution);
-                    //         const highestResolutionPath = resolutionPaths[0].path;
-                    //         console.log("Highest resolution path:", highestResolutionPath);
+                        if (resolutionPaths.length === 0) {
+                            console.error("No resolution paths found.");
+                        } else {
+                            resolutionPaths.sort((a, b) => b.resolution - a.resolution);
+                            const highestResolutionPath = resolutionPaths[0].path;
+                            console.log("Highest resolution path:", highestResolutionPath);
 
-                    //         let newUrl = data.newurl;
+                            let newUrl = data.newurl;
 
-                    //         newUrl = newUrl.replace(/i-cdn-0/g, 'cdn4506');
+                            newUrl = newUrl.replace(/i-cdn-0/g, 'cdn4506');
 
-                    //         newUrl = newUrl.replace(/index\.m3u8[^\/]*\.m3u8$/, highestResolutionPath);
+                            newUrl = newUrl.replace(/index\.m3u8[^\/]*\.m3u8$/, highestResolutionPath);
                             
-                    //         console.log("Modified URL:", newUrl);
+                            console.log("Modified URL:", newUrl);
 
-                    //         const result = {
-                    //             stream: newUrl,
-                    //             subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    //         };
+                            const result = {
+                                stream: newUrl,
+                                subtitles: subtitleTrack ? subtitleTrack.url : ""
+                            };
 
-                    //         console.log(result);
+                            console.log(result);
                     
-                    //         return JSON.stringify(result);
-                    //     }
-                    // }
+                            return JSON.stringify(result);
+                        }
+                    }
                 } catch (err) {
                     console.log(`Fetch error on endpoint https://vidstream.site/api/getmovie?type=movie&id=${movieId}&server=${providers[i]} for movie ${movieId}:`, err);
                 }
@@ -218,72 +208,56 @@ async function extractStreamUrl(url) {
 
             for (let i = 0; i < providers.length; i++) {
                 try {
-                    const showResponse = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d`);
-                    const showData = JSON.parse(showResponse);
-
-                    const responseText = await fetch(`https://mirrors.whvx.net/scrape?title=${showData.original_title}&type=show&releaseYear=${showData.release_date.split('-')[0]}&provider=${providers[i]}&season=${seasonNumber}&episode=${episodeNumber}`);
+                    const responseText = await fetch(`https://vidstream.site/api/getmovie?type=tv&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&server=${providers[i]}`);
                     const data = JSON.parse(responseText);
 
-                    // const responseSubtitle = await fetch(`https://demo.autoembed.cc/api/server?id=${showId}&sr=1&ep=${episodeNumber}&ss=${seasonNumber}`);
-                    // const subtitleData = JSON.parse(responseSubtitle);
+                    const responseSubtitle = await fetch(`https://demo.autoembed.cc/api/server?id=${showId}&sr=1&ep=${episodeNumber}&ss=${seasonNumber}`);
+                    const subtitleData = JSON.parse(responseSubtitle);
 
-                    const hlsSource = data.stream?.find(stream =>
-                        stream.type === "hls"
+                    const subtitleTrack = subtitleData.tracks?.find(track =>
+                        track.lang.startsWith('English')
                     );
-
-                    // const subtitleTrack = subtitleData.tracks?.find(track =>
-                    //     track.lang.startsWith('English')
-                    // );
-
-                    // const result = {
-                    //     stream: hlsSource ? hlsSource.url : "",
-                    //     subtitle: subtitleTrack ? subtitleTrack.url : ""
-                    // }
-
-                    // console.log(result);
-                    
-                    return hlsSource ? hlsSource.url : "";
                 
-                    // if (data && data.newurl) {
-                    //     const hlsResponse = await fetch(data.newurl);
-                    //     const hlsSourceText = await hlsResponse;
+                    if (data && data.newurl) {
+                        const hlsResponse = await fetch(data.newurl);
+                        const hlsSourceText = await hlsResponse;
 
-                    //     const regex = /^\.\/(\d+)\/index\.m3u8$/gm;
-                    //     const resolutionPaths = [];
-                    //     let match;
+                        const regex = /^\.\/(\d+)\/index\.m3u8$/gm;
+                        const resolutionPaths = [];
+                        let match;
 
-                    //     while ((match = regex.exec(hlsSourceText)) !== null) {
-                    //         const resNumber = parseInt(match[1], 10);
+                        while ((match = regex.exec(hlsSourceText)) !== null) {
+                            const resNumber = parseInt(match[1], 10);
 
-                    //         const path = `/${match[1]}/index.m3u8`;
-                    //         resolutionPaths.push({ resolution: resNumber, path });
-                    //     }
+                            const path = `/${match[1]}/index.m3u8`;
+                            resolutionPaths.push({ resolution: resNumber, path });
+                        }
 
-                    //     if (resolutionPaths.length === 0) {
-                    //         console.error("No resolution paths found.");
-                    //     } else {
-                    //         resolutionPaths.sort((a, b) => b.resolution - a.resolution);
-                    //         const highestResolutionPath = resolutionPaths[0].path;
-                    //         console.log("Highest resolution path:", highestResolutionPath);
+                        if (resolutionPaths.length === 0) {
+                            console.error("No resolution paths found.");
+                        } else {
+                            resolutionPaths.sort((a, b) => b.resolution - a.resolution);
+                            const highestResolutionPath = resolutionPaths[0].path;
+                            console.log("Highest resolution path:", highestResolutionPath);
 
-                    //         let newUrl = data.newurl;
+                            let newUrl = data.newurl;
 
-                    //         newUrl = newUrl.replace(/i-cdn-0/g, 'cdn4506');
+                            newUrl = newUrl.replace(/i-cdn-0/g, 'cdn4506');
 
-                    //         newUrl = newUrl.replace(/index\.m3u8[^\/]*\.m3u8$/, highestResolutionPath);
+                            newUrl = newUrl.replace(/index\.m3u8[^\/]*\.m3u8$/, highestResolutionPath);
                             
-                    //         console.log("Modified URL:", newUrl);
+                            console.log("Modified URL:", newUrl);
 
-                    //         const result = {
-                    //             stream: newUrl,
-                    //             subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    //         };
+                            const result = {
+                                stream: newUrl,
+                                subtitles: subtitleTrack ? subtitleTrack.url : ""
+                            };
 
-                    //         console.log(result);
+                            console.log(result);
                     
-                    //         return JSON.stringify(result);
-                    //     }
-                    // }
+                            return JSON.stringify(result);
+                        }
+                    }
                 } catch (err) {
                     console.log(`Fetch error on endpoint https://www.vidstream.site/api/getmovie?type=tv&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&server=hindiscraper for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
                 }
