@@ -177,13 +177,6 @@ async function extractStreamUrl(url) {
                         const response = await fetch(apiUrl);
                         const data = JSON.parse(response);
 
-                        const ks = data.data?.sources?.find(source =>
-                            source.format === 'hls' && !source.url.includes("uwu")
-                        );
-
-                        console.log("Found HLS source:" + ks);
-                        console.log("URL:" + JSON.stringify(ks));
-
                         const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
                         const subtitleTrackData = JSON.parse(subtitleTrackResponse);
 
@@ -230,20 +223,20 @@ async function extractStreamUrl(url) {
 
                                     const highestResStream = streams[0];
 
-                                    console.log("Highest resolution stream:" + highestResStream);
+                                    console.log("Highest resolution stream:" + highestResStream.url);
 
-                                    if (highestResStream) {
-                                        const baseUrl = new URL(hlsSource.url).origin + '/';
-                                        const finalStreamUrl = baseUrl + highestResStream.url;
+                                    const baseUrl = new URL(hlsSource.url).origin + '/';
+                                    const finalStreamUrl = baseUrl + highestResStream.url;
 
-                                        const result = {
-                                            stream: finalStreamUrl || "",
-                                            subtitles: subtitleTrack ? subtitleTrack.url : ""
-                                        };
+                                    console.log("Final stream URL:" + finalStreamUrl);
 
-                                        console.log(result);
-                                        return JSON.stringify(result);
-                                    }
+                                    const result = {
+                                        stream: finalStreamUrl || "",
+                                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                                    };
+
+                                    console.log(result);
+                                    return JSON.stringify(result);
                                 }
                             }
                         }
@@ -342,4 +335,4 @@ async function extractStreamUrl(url) {
     }
 }
 
-extractStreamUrl(``);
+extractStreamUrl(`https://bingeflex.vercel.app/movie/238`);
