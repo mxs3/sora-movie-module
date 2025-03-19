@@ -207,7 +207,7 @@ async function extractStreamUrl(url) {
                                 const playlistResponse = await fetch(hlsSource.url);
                                 const playlistText = await playlistResponse;
 
-                                console.log("HLS Playlist Text:\n", playlistText);
+                                console.log("HLS Playlist Text:\n" + playlistText);
 
                                 const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)\n/g);
                                 if (streamMatches) {
