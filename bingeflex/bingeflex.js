@@ -184,7 +184,7 @@ async function extractStreamUrl(url) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
 
                             const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
-                            const subtitleTrackData = await subtitleTrackResponse.json();
+                            const subtitleTrackData = JSON.parse(subtitleTrackResponse);
 
                             const subtitleTrack = subtitleTrackData.find(track =>
                                 track.display.startsWith('English')
@@ -242,7 +242,7 @@ async function extractStreamUrl(url) {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
 
                             const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
-                            const subtitleTrackData = await subtitleTrackResponse.json();
+                            const subtitleTrackData = JSON.parse(subtitleTrackResponse);
 
                             const subtitleTrack = subtitleTrackData.find(track =>
                                 track.display.startsWith('English')
