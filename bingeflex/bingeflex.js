@@ -162,56 +162,70 @@ async function extractStreamUrl(url) {
     const secretKey = ["I", "3LZu", "M2V3", "4EXX", "s4", "yRy", "oqMz", "ysE", "RT", "iSI", "zlc", "H", "YNp", "5vR6", "h9S", "R", "jo", "F", "h2", "W8", "i", "sz09", "Xom", "gpU", "q", "6Qvg", "Cu", "5Zaz", "VK", "od", "FGY4", "eu", "D5Q", "smH", "11eq", "QrXs", "3", "L3", "YhlP", "c", "Z", "YT", "bnsy", "5", "fcL", "L22G", "r8", "J", "4", "gnK"];
 
     try {
-        let subtitles = "";
-
         if (url.includes('/movie/')) {
             const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
-    
+
             const movieId = match[1];
-    
-            loopWithCaptions:
+
             for (let i = 0; i < servicesWithoutCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
                     const service = servicesWithoutCaption[i];
                     const apiUrl = `https://rivestream.org/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
 
                     try {
-                        const responseText = await fetch(apiUrl);
-                        const data = JSON.parse(responseText);
-                        
+                        const response = await fetch(apiUrl);
+                        const data = await response.json();
+
+                        const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
+                        const subtitleTrackData = await subtitleTrackResponse.json();
+                        const subtitleTrack = subtitleTrackData.find(track =>
+                            track.display.startsWith('English')
+                        );
+
                         if (data && data.error !== "Internal Server Error") {
-                            const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
-
-                            const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
-                            const subtitleTrackData = JSON.parse(subtitleTrackResponse);
-
-                            const subtitleTrack = subtitleTrackData.find(track =>
-                                track.display.startsWith('English')
+                            const hlsSource = data.data?.sources?.find(source =>
+                            source.format === 'hls' && !source.url.includes("uwu")
                             );
 
-                            subtitles = subtitleTrack ? subtitleTrack.url : "";
-
                             if (hlsSource?.url) {
-                                const checkedUrl = await fetch(hlsSource.url);
-                                const html = checkedUrl;
+                            const playlistResponse = await fetch(hlsSource.url);
+                            const playlistText = await playlistResponse.text();
 
-                                const titleRegex = /<title>400 Bad Request<\/title>/i;
-                                const match = html.match(titleRegex);
+                            const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)\n/g);
+                                if (streamMatches) {
+                                    const streams = streamMatches
+                                    .map(matchStr => {
+                                        const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
+                                        const lines = matchStr.split('\n').filter(Boolean);
+                                        const relativeUrl = lines[1];
+                                        if (resolutionMatch && relativeUrl) {
+                                            return {
+                                                width: parseInt(resolutionMatch[1], 10),
+                                                height: parseInt(resolutionMatch[2], 10),
+                                                url: relativeUrl
+                                            };
+                                        }
+                                        return null;
+                                    })
+                                    .filter(Boolean)
+                                    .sort((a, b) => b.width - a.width);
 
-                                if (match) {
-                                    console.log("Error: 400 Bad Request");
-                                    continue loopWithCaptions;
-                                } else {
-                                    console.log(html);
+                                    const highestResStream = streams[0];
+
+                                    if (highestResStream) {
+                                        const baseUrl = new URL(hlsSource.url).origin + '/';
+                                        const finalStreamUrl = baseUrl + highestResStream.url;
+
+                                        const result = {
+                                            stream: finalStreamUrl || "",
+                                            subtitles: subtitleTrack ? subtitleTrack.url : ""
+                                        };
+
+                                        console.log(result);
+                                        return JSON.stringify(result);
+                                    }
                                 }
-
-                                const result = {
-                                    stream: hlsSource ? hlsSource.url : "",
-                                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                                };
-                                    
-                                return JSON.stringify(result);
                             }
                         }
                     } catch (err) {
@@ -222,54 +236,70 @@ async function extractStreamUrl(url) {
         } else if (url.includes('/tv/')) {
             const match = url.match(/https:\/\/bingeflex\.vercel\.app\/tv\/([^\/]+)\?season=([^\/]+)&episode=([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
-    
+
             const showId = match[1];
             const seasonNumber = match[2];
             const episodeNumber = match[3];
-    
-            // Try services with captions
-            loopWithCaptions:
+
             for (let i = 0; i < servicesWithoutCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
                     const service = servicesWithoutCaption[i];
                     const apiUrl = `https://rivestream.org/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
-                    
+
                     try {
-                        const responseText = await fetch(apiUrl);
-                        const data = JSON.parse(responseText);
-                        
+                        const response = await fetch(apiUrl);
+                        const data = JSON.parse(response);
+
+                        const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+                        const subtitleTrackData = JSON.parse(subtitleTrackResponse);
+
+                        const subtitleTrack = subtitleTrackData.find(track =>
+                            track.display.startsWith('English')
+                        );
+
                         if (data && data.error !== "Internal Server Error") {
-                            const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
-
-                            const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
-                            const subtitleTrackData = JSON.parse(subtitleTrackResponse);
-
-                            const subtitleTrack = subtitleTrackData.find(track =>
-                                track.display.startsWith('English')
-                            );
-
-                            subtitles = subtitleTrack ? subtitleTrack.url : "";
+                            const hlsSource = data.data?.sources?.find(source => source.format === 'hls' && !source.url.includes("uwu"));
 
                             if (hlsSource?.url) {
-                                const checkedUrl = await fetch(hlsSource.url);
-                                const html = checkedUrl;
+                                const playlistResponse = await fetch(hlsSource.url);
+                                const playlistText = await playlistResponse;
 
-                                const titleRegex = /<title>400 Bad Request<\/title>/i;
-                                const match = html.match(titleRegex);
+                                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)\n/g);
+                                if (streamMatches) {
+                                    const streams = streamMatches
+                                        .map(matchStr => {
+                                            const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
+                                            // Extract URL by splitting on newline and taking the second part
+                                            const lines = matchStr.split('\n').filter(Boolean);
+                                            const relativeUrl = lines[1];
+                                            if (resolutionMatch && relativeUrl) {
+                                                return {
+                                                    width: parseInt(resolutionMatch[1], 10),
+                                                    height: parseInt(resolutionMatch[2], 10),
+                                                    url: relativeUrl
+                                                };
+                                            }
+                                            return null;
+                                        })
+                                        .filter(Boolean)
+                                        .sort((a, b) => b.width - a.width);
 
-                                if (match) {
-                                    console.log("Error: 400 Bad Request");
-                                    continue loopWithCaptions;
-                                } else {
-                                    console.log(html);
+                                    const highestResStream = streams[0];
+
+                                    if (highestResStream) {
+                                        const baseUrl = new URL(hlsSource.url).origin + '/';
+                                        const finalStreamUrl = baseUrl + highestResStream.url;
+                                        
+                                        const result = {
+                                            stream: finalStreamUrl || "",
+                                            subtitles: subtitleTrack ? subtitleTrack.url : ""
+                                        };
+
+                                        console.log(result);
+
+                                        return JSON.stringify(result);
+                                    }
                                 }
-
-                                const result = {
-                                    stream: hlsSource ? hlsSource.url : "",
-                                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                                };
-                                
-                                return JSON.stringify(result);
                             }
                         }
                     } catch (err) {
