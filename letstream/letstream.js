@@ -151,25 +151,18 @@ async function extractStreamUrl(url) {
                     const responseText = await fetch(`https://mirrors.whvx.net/scrape?title=${showData.original_title}&type=movie&releaseYear=${showData.release_date.split('-')[0]}&provider=${providers[i]}`);
                     const data = JSON.parse(responseText);
 
-                    const responseSubtitle = await fetch(`https://demo.autoembed.cc/api/server?id=${movieId}&sr=1`);
-                    const subtitleData = JSON.parse(responseSubtitle);
-
                     const hlsSource = data.stream?.find(stream =>
                         stream.type === "hls"
                     );
 
-                    const subtitleTrack = subtitleData.tracks?.find(track =>
-                        track.lang.startsWith('English')
-                    );
+                    // const result = {
+                    //     stream: hlsSource ? hlsSource.url : "",
+                    //     subtitle: subtitleTrack ? subtitleTrack.url : ""
+                    // }
 
-                    const result = {
-                        stream: hlsSource ? hlsSource.url : "",
-                        subtitle: subtitleTrack ? subtitleTrack.url : ""
-                    }
-
-                    console.log(result);
+                    // console.log(result);
                     
-                    return JSON.stringify(result);
+                    return hlsSource ? hlsSource.url : "";
                 
                     // if (data && data.newurl) {
                     //     const hlsResponse = await fetch(data.newurl);
@@ -231,25 +224,25 @@ async function extractStreamUrl(url) {
                     const responseText = await fetch(`https://mirrors.whvx.net/scrape?title=${showData.original_title}&type=show&releaseYear=${showData.release_date.split('-')[0]}&provider=${providers[i]}&season=${seasonNumber}&episode=${episodeNumber}`);
                     const data = JSON.parse(responseText);
 
-                    const responseSubtitle = await fetch(`https://demo.autoembed.cc/api/server?id=${showId}&sr=1&ep=${episodeNumber}&ss=${seasonNumber}`);
-                    const subtitleData = JSON.parse(responseSubtitle);
+                    // const responseSubtitle = await fetch(`https://demo.autoembed.cc/api/server?id=${showId}&sr=1&ep=${episodeNumber}&ss=${seasonNumber}`);
+                    // const subtitleData = JSON.parse(responseSubtitle);
 
                     const hlsSource = data.stream?.find(stream =>
                         stream.type === "hls"
                     );
 
-                    const subtitleTrack = subtitleData.tracks?.find(track =>
-                        track.lang.startsWith('English')
-                    );
+                    // const subtitleTrack = subtitleData.tracks?.find(track =>
+                    //     track.lang.startsWith('English')
+                    // );
 
-                    const result = {
-                        stream: hlsSource ? hlsSource.url : "",
-                        subtitle: subtitleTrack ? subtitleTrack.url : ""
-                    }
+                    // const result = {
+                    //     stream: hlsSource ? hlsSource.url : "",
+                    //     subtitle: subtitleTrack ? subtitleTrack.url : ""
+                    // }
 
-                    console.log(result);
+                    // console.log(result);
                     
-                    return JSON.stringify(result);
+                    return hlsSource ? hlsSource.url : "";
                 
                     // if (data && data.newurl) {
                     //     const hlsResponse = await fetch(data.newurl);
