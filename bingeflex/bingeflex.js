@@ -177,12 +177,12 @@ async function extractStreamUrl(url) {
                         const response = await fetch(apiUrl);
                         const data = JSON.parse(response);
 
-                        console.log(data);
+                        console.log(JSON.stringify(data));
 
                         const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
                         const subtitleTrackData = JSON.parse(subtitleTrackResponse);
 
-                        console.log(subtitleTrackData);
+                        console.log(JSON.stringify(subtitleTrackData));
 
                         const subtitleTrack = subtitleTrackData.find(track =>
                             track.display.startsWith('English')
@@ -259,12 +259,12 @@ async function extractStreamUrl(url) {
                         const response = await fetch(apiUrl);
                         const data = JSON.parse(response);
 
-                        console.log(data);
+                        console.log(JSON.stringify(data));
 
                         const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
                         const subtitleTrackData = JSON.parse(subtitleTrackResponse);
 
-                        console.log(subtitleTrackData);
+                        console.log(JSON.stringify(subtitleTrackData));
 
                         const subtitleTrack = subtitleTrackData.find(track =>
                             track.display.startsWith('English')
