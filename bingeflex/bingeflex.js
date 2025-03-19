@@ -192,6 +192,9 @@ async function extractStreamUrl(url) {
                             );
 
                             console.log("Found HLS source:", hlsSource);
+                            console.log("URL:", JSON.stringify(hlsSource));
+                            console.log("URL:", hlsSource?.url);
+                            console.log("URL:", JSON.stringify(hlsSource?.url));
 
                             if (hlsSource?.url) {
                                 const playlistResponse = await fetch(hlsSource.url);
