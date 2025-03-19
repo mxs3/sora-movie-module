@@ -181,8 +181,8 @@ async function extractStreamUrl(url) {
                             source.format === 'hls' && !source.url.includes("uwu")
                         );
 
-                        console.log("Found HLS source:", ks);
-                        console.log("URL:", JSON.stringify(ks));
+                        console.log("Found HLS source:" + ks);
+                        console.log("URL:" + JSON.stringify(ks));
 
                         const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
                         const subtitleTrackData = JSON.parse(subtitleTrackResponse);
@@ -198,14 +198,14 @@ async function extractStreamUrl(url) {
                                 source.format === 'hls' && !source.url.includes("uwu")
                             );
 
-                            console.log("Found HLS source:", hlsSource);
-                            console.log("URL:", JSON.stringify(hlsSource));
-                            console.log("URL:", hlsSource?.url);
-                            console.log("URL:", JSON.stringify(hlsSource?.url));
+                            console.log("Found HLS source:" + hlsSource);
+                            console.log("URL:" + JSON.stringify(hlsSource));
+                            console.log("URL:" + hlsSource?.url);
+                            console.log("URL:" + JSON.stringify(hlsSource?.url));
 
                             if (hlsSource?.url) {
                                 const playlistResponse = await fetch(hlsSource.url);
-                                const playlistText = playlistResponse;
+                                const playlistText = await playlistResponse;
 
                                 console.log("HLS Playlist Text:\n", playlistText);
 
@@ -230,7 +230,7 @@ async function extractStreamUrl(url) {
 
                                     const highestResStream = streams[0];
 
-                                    console.log("Highest resolution stream:", highestResStream);
+                                    console.log("Highest resolution stream:" + highestResStream);
 
                                     if (highestResStream) {
                                         const baseUrl = new URL(hlsSource.url).origin + '/';
@@ -341,3 +341,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractStreamUrl(``);
