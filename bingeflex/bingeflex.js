@@ -177,29 +177,29 @@ async function extractStreamUrl(url) {
                         const response = await fetch(apiUrl);
                         const data = JSON.parse(response);
 
-                        console.log(JSON.stringify(data));
-
                         const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
                         const subtitleTrackData = JSON.parse(subtitleTrackResponse);
-
-                        console.log(JSON.stringify(subtitleTrackData));
 
                         const subtitleTrack = subtitleTrackData.find(track =>
                             track.display.startsWith('English')
                         );
+
+                        console.log(JSON.stringify(subtitleTrack));
 
                         if (data && data.error !== "Internal Server Error") {
                             const hlsSource = data.data?.sources?.find(source =>
                                 source.format === 'hls' && !source.url.includes("uwu")
                             );
 
+                            console.log("Found HLS source:", hlsSource);
+
                             if (hlsSource?.url) {
-                            const playlistResponse = await fetch(hlsSource.url);
-                            const playlistText = playlistResponse;
+                                const playlistResponse = await fetch(hlsSource.url);
+                                const playlistText = playlistResponse;
 
-                            console.log("HLS Playlist Text:\n", playlistText);
+                                console.log("HLS Playlist Text:\n", playlistText);
 
-                            const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)\n/g);
+                                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)\n/g);
                                 if (streamMatches) {
                                     const streams = streamMatches
                                     .map(matchStr => {
