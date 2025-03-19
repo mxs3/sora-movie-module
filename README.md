@@ -46,7 +46,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         </details> -->
 
-      - <details>
+      <!-- - <details>
 
         <summary>
 
@@ -65,9 +65,9 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/rive/rive.json
 
-        </details>
+        </details> -->
 
-      - <details>
+      <!-- - <details>
 
         <summary>
 
@@ -86,13 +86,13 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/bingeflex.json
 
-        </details>
+        </details> -->
 
       - <details>
 
         <summary>
 
-        ### 3️⃣ Let's Stream (⚠️ Read note)
+        ### 1️⃣ Let's Stream (⚠️ Read note)
 
         </summary>
 
@@ -117,11 +117,11 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         </details>
 
-      - <details>
+      <!-- - <details>
 
         <summary>
 
-        ### 4️⃣ FlickyStream
+        ### 2️⃣ FlickyStream
 
         </summary>
 
@@ -136,11 +136,11 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/flickystream/flickystream.json
 
-        </details>
+        </details> -->
 
     </details>
 
-  - <details>
+  <!-- - <details>
 
     <summary>
 
@@ -169,7 +169,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         </details> -->
 
-      - <details>
+      <!-- - <details>
 
         <summary>
 
@@ -188,9 +188,9 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json
 
-        </details>
+        </details> -->
 
-    </details>
+    </details> -->
 
   - <details>
 

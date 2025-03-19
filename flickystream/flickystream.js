@@ -152,7 +152,7 @@ async function extractStreamUrl(url) {
             const hlsResponse = await fetch(hlsSource.link);
             const hlsSourceText = await hlsResponse.text();
             
-            console.log("HLS Playlist Text:\n", hlsSourceText);
+            console.log("HLS Playlist Text:\n" + hlsSourceText);
             
             let finalStreamUrl = "";
             
