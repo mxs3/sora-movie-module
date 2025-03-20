@@ -212,7 +212,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         **File:** `KDramaHood.json`<br>
         **Type:** `K-Dramas`<br>
-        **Language:** Korean. 🇰🇷 <br>
+        **Language:** English. 🇺🇸 (SUB) <br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kdramahood/kdramahood.json)
