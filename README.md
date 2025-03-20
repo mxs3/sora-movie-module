@@ -3,9 +3,9 @@
 > **IF A MODULE IN MY REPO ISN'T LISTED BELOW THEN IT'S NOT WORKING**<br>
 > <i>(e.g., Sudatchi and VidAPI)</i>
 
-# 🍿 TV Show and Movie Modules for [Sora](https://github.com/cranci1/Sora) 🎥
+# 🍿 TV Show, Movie and Anime Modules for [Sora](https://github.com/cranci1/Sora) 🎥
 
-Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collection includes modules for ***Sora*** (app version V2 and up) featuring TV shows and movies with English subtitles. (Anime modules may be added in the future.)
+Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This collection includes modules for ***Sora*** (app version V2 and up) featuring TV shows and movies with English subtitles.
 
 ## 📦 Available Modules
 
@@ -261,6 +261,37 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/kisskh.json)
 
         https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/kisskh.json
+
+        </details>
+
+    </details>
+
+     <details>
+
+    <summary>
+
+    ### 🍥 Anime
+
+    </summary>
+
+      - <details>
+
+        <summary>
+
+        ### 1️⃣ RistoAnime
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ristoanime/icon.png" width="125px"><br>
+
+        **File:** `RistoAnime.json`<br>
+        **Type:** `Animes`<br>
+        **Language:** Arabic. 🇸🇦 (SUB) <br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ristoanime/ristoanime.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ristoanime/ristoanime.json
 
         </details>
 
