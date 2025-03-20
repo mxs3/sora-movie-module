@@ -281,7 +281,7 @@ async function extractStreamUrl(url) {
                         );
 
                         if (data && data.error !== "Internal Server Error") {
-                            const hlsSource = data.data?.sources?.find(source => source.format === 'hls' && !source.url.includes("uwu"));
+                            const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
 
                             if (hlsSource?.url && !hlsSource.url.includes("uwu")) {
                                 const playlistResponse = await fetch(hlsSource.url);
