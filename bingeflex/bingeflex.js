@@ -305,16 +305,17 @@ async function extractStreamUrl(url) {
                                     console.log(highestResStream);
 
                                     if (highestResStream) {
-                                        const baseUrl = new URL(hlsSource.url).origin + '/';
+                                        const parts = hlsSource.url.split('/');
+                                        const baseUrl = parts[0] + '//' + parts[2] + '/';
+
                                         const finalStreamUrl = baseUrl + highestResStream.url;
-                                        
+
                                         const result = {
                                             stream: finalStreamUrl || "",
                                             subtitles: subtitleTrack ? subtitleTrack.url : ""
                                         };
 
                                         console.log(result);
-
                                         return JSON.stringify(result);
                                     }
                                 }
@@ -333,5 +334,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractStreamUrl(`https://bingeflex.vercel.app/movie/238`);
