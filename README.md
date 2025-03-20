@@ -148,7 +148,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
     </summary>
 
-      <!-- - <details>
+      - <details>
 
         <summary>
 
@@ -167,9 +167,9 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/autoembed.json
 
-        </details> -->
+        </details>
 
-      <!-- - <details>
+      - <details>
 
         <summary>
 
@@ -204,21 +204,20 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         <summary>
 
-        ### 1️⃣ KissKH (⚠️ Read note)
+        ### 1️⃣ KDramaHood
 
         </summary>
 
-        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/icon.png" width="125px"><br>
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kdramahood/icon.png" width="125px"><br>
 
-        **File:** `KissKH.json`<br>
+        **File:** `KDramaHood.json`<br>
         **Type:** `K-Dramas`<br>
-        **Note:** *⚠️ Some streams I wasn't able to scrape* <br>
-        **Language:** English. 🇺🇸 (SUB)<br>
+        **Language:** Korean. 🇰🇷 <br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
-        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/kisskh.json)
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kdramahood/kdramahood.json)
 
-        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/kisskh.json
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kdramahood/kdramahood.json
 
         </details>
 
@@ -240,6 +239,28 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ramaorientalfansub/ramaorientalfansub.json)
 
         https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ramaorientalfansub/ramaorientalfansub.json
+
+        </details>
+
+      - <details>
+
+        <summary>
+
+        ### 3️⃣ KissKH (⚠️ Read note)
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/icon.png" width="125px"><br>
+
+        **File:** `KissKH.json`<br>
+        **Type:** `K-Dramas`<br>
+        **Note:** *⚠️ Some streams I wasn't able to scrape* <br>
+        **Language:** English. 🇺🇸 (SUB)<br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/kisskh.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/kisskh.json
 
         </details>
 
