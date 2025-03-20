@@ -140,7 +140,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
     </details>
 
-  <!-- - <details>
+  - <details>
 
     <summary>
 
@@ -148,7 +148,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
     </summary>
 
-      - <details>
+      <!-- - <details>
 
         <summary>
 
@@ -167,7 +167,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/autoembed.json
 
-        </details>
+        </details> -->
 
       - <details>
 
@@ -190,7 +190,7 @@ Welcome to the **TV Show and Movie Modules for _Sora_** repository. This collect
 
         </details>
 
-    </details> -->
+    </details>
 
   - <details>
 
