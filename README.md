@@ -391,7 +391,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
       
     </details>
 
-  - <details>
+  <!-- - <details>
 
     <summary>
 
@@ -420,7 +420,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         </details>
 
-    </details>
+    </details> -->
 
 </details>
 
