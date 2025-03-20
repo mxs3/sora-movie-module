@@ -188,12 +188,12 @@ async function extractStreamUrl(url) {
 
                         if (data && data.error !== "Internal Server Error") {
                             const hlsSource = data.data?.sources?.find(source =>
-                                source.format === 'hls' && !source.url.includes("uwu")
+                                source.format === 'hls'
                             );
 
                             console.log("URL:" + JSON.stringify(hlsSource?.url));
 
-                            if (hlsSource?.url) {
+                            if (hlsSource?.url && !hlsSource.url.includes("uwu")) {
                                 const playlistResponse = await fetch(hlsSource.url);
                                 const playlistText = await playlistResponse.text();
 
@@ -237,6 +237,14 @@ async function extractStreamUrl(url) {
                                         return JSON.stringify(result);
                                     }
                                 }
+                            } else {
+                                const result = {
+                                    stream: hlsSource.url || "",
+                                    subtitles: subtitleTrack ? subtitleTrack.url : ""
+                                };
+
+                                console.log(result);
+                                return JSON.stringify(result);
                             }
                         }
                     } catch (err) {
@@ -275,7 +283,7 @@ async function extractStreamUrl(url) {
                         if (data && data.error !== "Internal Server Error") {
                             const hlsSource = data.data?.sources?.find(source => source.format === 'hls' && !source.url.includes("uwu"));
 
-                            if (hlsSource?.url) {
+                            if (hlsSource?.url && !hlsSource.url.includes("uwu")) {
                                 const playlistResponse = await fetch(hlsSource.url);
                                 const playlistText = playlistResponse;
 
@@ -319,6 +327,14 @@ async function extractStreamUrl(url) {
                                         return JSON.stringify(result);
                                     }
                                 }
+                            } else {
+                                const result = {
+                                    stream: hlsSource.url || "",
+                                    subtitles: subtitleTrack ? subtitleTrack.url : ""
+                                };
+
+                                console.log(result);
+                                return JSON.stringify(result);
                             }
                         }
                     } catch (err) {
