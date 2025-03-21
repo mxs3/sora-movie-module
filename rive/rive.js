@@ -175,11 +175,9 @@ async function extractStreamUrl(url) {
                 for (let j = 0; j < secretKey.length; j++) {
                     const service = servicesWithoutCaption[i];
                     const apiUrl = `https://rivestream.org/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+                    // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${movieId}&api_key=d64117f26031a428449f102ced3aba73`;
 
                     try {
-                        const response = await fetch(apiUrl);
-                        const data = JSON.parse(response);
-
                         const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
                         const subtitleTrackData = JSON.parse(subtitleTrackResponse);
 
@@ -189,8 +187,40 @@ async function extractStreamUrl(url) {
 
                         console.log(JSON.stringify(subtitleTrack));
 
-                        if (data && data.error !== "Internal Server Error") {
-                            const hlsSource = data.data?.sources?.find(source =>
+                        const C = movieId
+                            .toString()
+                            .split("")
+                            .map((digit) => {
+                                const encoding = "abcdefghij";
+                                return encoding[parseInt(digit)];
+                            })
+                            .join("");
+                        const B = C.split("").reverse().join("");
+                        const A = btoa(B);
+                        const D = btoa(A);
+                        const urlovo = `https://api.vid3c.site/allmvse2.php?id=${D}`;
+                        const response = await fetch(urlovo);
+                        const data = JSON.parse(response);
+
+                        console.log(JSON.stringify(data));
+
+                        if (data && data.source3) {
+                            const hlsSource = data.source3?.url;
+
+                            const result = {
+                                stream: hlsSource || "",
+                                subtitles: subtitleTrack ? subtitleTrack.url : ""
+                            };
+
+                            console.log(JSON.stringify(result));
+                            return JSON.stringify(result);
+                        }
+                        
+                        const response2 = await fetch(apiUrl);
+                        const data2 = JSON.parse(response2);
+
+                        if (data2 && data2.error !== "Internal Server Error") {
+                            const hlsSource = data2.data?.sources?.find(source =>
                                 source.format === 'hls'
                             );
 
@@ -246,7 +276,7 @@ async function extractStreamUrl(url) {
                                     subtitles: subtitleTrack ? subtitleTrack.url : ""
                                 };
 
-                                console.log(result);
+                                console.log(JSON.stringify(result));
                                 return JSON.stringify(result);
                             }
                         }
@@ -267,13 +297,9 @@ async function extractStreamUrl(url) {
                 for (let j = 0; j < secretKey.length; j++) {
                     const service = servicesWithoutCaption[i];
                     const apiUrl = `https://rivestream.org/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+                    // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&api_key=d64117f26031a428449f102ced3aba73`
 
                     try {
-                        const response = await fetch(apiUrl);
-                        const data = JSON.parse(response);
-
-                        console.log(JSON.stringify(data));
-
                         const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
                         const subtitleTrackData = JSON.parse(subtitleTrackResponse);
 
@@ -283,8 +309,35 @@ async function extractStreamUrl(url) {
                             track.display.startsWith('English')
                         );
 
-                        if (data && data.error !== "Internal Server Error") {
-                            const hlsSource = data.data?.sources?.find(source => source.format === 'hls');
+                        const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
+                        const reversedString = formattedString.split('').reverse().join('');
+                        const firstBase64 = btoa(reversedString);
+                        const secondBase64 = btoa(firstBase64);
+                        const url = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
+                        const response = await fetch(url);
+                        const data = JSON.parse(response);
+
+                        console.log(JSON.stringify(data));
+
+                        if (data && data.source3) {
+                            const hlsSource = data.source3?.url;
+
+                            const result = {
+                                stream: hlsSource || "",
+                                subtitles: subtitleTrack ? subtitleTrack.url : ""
+                            };
+
+                            console.log(result);
+                            return JSON.stringify(result);
+                        }
+                        
+                        const response2 = await fetch(apiUrl);
+                        const data2 = JSON.parse(response2);
+
+                        console.log(JSON.stringify(data2));
+
+                        if (data2 && data2.error !== "Internal Server Error") {
+                            const hlsSource = data2.data?.sources?.find(source => source.format === 'hls');
 
                             if (hlsSource?.url && !hlsSource.url.includes("uwu")) {
                                 const playlistResponse = await fetch(hlsSource.url);
@@ -352,4 +405,22 @@ async function extractStreamUrl(url) {
         console.log('Fetch error in extractStreamUrl:', error);
         return null;
     }
+}
+
+function btoa(input) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    let str = String(input);
+    let output = '';
+
+    for (let block = 0, charCode, i = 0, map = chars;
+        str.charAt(i | 0) || (map = '=', i % 1);
+        output += map.charAt(63 & (block >> (8 - (i % 1) * 8)))) {
+        charCode = str.charCodeAt(i += 3 / 4);
+        if (charCode > 0xFF) {
+            throw new Error("btoa failed: The string contains characters outside of the Latin1 range.");
+        }
+        block = (block << 8) | charCode;
+    }
+
+    return output;
 }
