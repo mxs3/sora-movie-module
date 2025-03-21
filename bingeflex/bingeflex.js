@@ -194,7 +194,7 @@ async function extractStreamUrl(url) {
 
                         console.log(JSON.stringify(data));
 
-                        if (data && data.source1) {
+                        if (data && data.source3) {
                             const hlsSource = data.source3?.url;
 
                             const result = {
@@ -202,7 +202,7 @@ async function extractStreamUrl(url) {
                                 subtitles: subtitleTrack ? subtitleTrack.url : ""
                             };
 
-                            console.log(result);
+                            console.log(JSON.stringify(result));
                             return JSON.stringify(result);
                         }
                         
@@ -266,7 +266,7 @@ async function extractStreamUrl(url) {
                                     subtitles: subtitleTrack ? subtitleTrack.url : ""
                                 };
 
-                                console.log(result);
+                                console.log(JSON.stringify(result));
                                 return JSON.stringify(result);
                             }
                         }
@@ -309,7 +309,7 @@ async function extractStreamUrl(url) {
 
                         console.log(JSON.stringify(data));
 
-                        if (data && data.source1) {
+                        if (data && data.source3) {
                             const hlsSource = data.source3?.url;
 
                             const result = {
@@ -395,4 +395,22 @@ async function extractStreamUrl(url) {
         console.log('Fetch error in extractStreamUrl:', error);
         return null;
     }
+}
+
+function btoa(input) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    let str = String(input);
+    let output = '';
+
+    for (let block = 0, charCode, i = 0, map = chars;
+        str.charAt(i | 0) || (map = '=', i % 1);
+        output += map.charAt(63 & (block >> (8 - (i % 1) * 8)))) {
+        charCode = str.charCodeAt(i += 3 / 4);
+        if (charCode > 0xFF) {
+            throw new Error("btoa failed: The string contains characters outside of the Latin1 range.");
+        }
+        block = (block << 8) | charCode;
+    }
+
+    return output;
 }
