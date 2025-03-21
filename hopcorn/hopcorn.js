@@ -105,10 +105,10 @@ async function extractStreamUrl(url) {
 
                 try {
                     const response = await fetch(apiUrl);
-                    const data = await response.json();
+                    const data = JSON.parse(response);
 
                     const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
-                    const subtitleTrackData = await subtitleTrackResponse.json();
+                    const subtitleTrackData = JSON.parse(subtitleTrackResponse);
 
                     const subtitleTrack = subtitleTrackData.find(track =>
                         track.display.startsWith('English')
@@ -125,7 +125,7 @@ async function extractStreamUrl(url) {
 
                         if (hlsSource?.url && !hlsSource.url.includes("uwu")) {
                             const playlistResponse = await fetch(hlsSource.url);
-                            const playlistText = await playlistResponse.text();
+                            const playlistText = await playlistResponse;
 
                             console.log("HLS Playlist Text:\n" + playlistText);
 
