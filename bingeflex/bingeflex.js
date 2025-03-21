@@ -184,12 +184,19 @@ async function extractStreamUrl(url) {
 
                         console.log(JSON.stringify(subtitleTrack));
 
-                        const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
-                        const reversedString = formattedString.split('').reverse().join('');
-                        const firstBase64 = btoa(reversedString);
-                        const secondBase64 = btoa(firstBase64);
-                        const url = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
-                        const response = await fetch(url);
+                        const C = movieId
+                            .toString()
+                            .split("")
+                            .map((digit) => {
+                                const encoding = "abcdefghij";
+                                return encoding[parseInt(digit)];
+                            })
+                            .join("");
+                        const B = C.split("").reverse().join("");
+                        const A = btoa(B);
+                        const D = btoa(A);
+                        const urlovo = `https://api.vid3c.site/allmvse2.php?id=${D}`;
+                        const response = await fetch(urlovo);
                         const data = JSON.parse(response);
 
                         console.log(JSON.stringify(data));
