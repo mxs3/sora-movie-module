@@ -184,27 +184,27 @@ async function extractStreamUrl(url) {
 
                         console.log(JSON.stringify(subtitleTrack));
 
-                        const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
-                        const reversedString = formattedString.split('').reverse().join('');
-                        const firstBase64 = btoa(reversedString);
-                        const secondBase64 = btoa(firstBase64);
-                        const url = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
-                        const response = await fetch(url);
-                        const data = JSON.parse(response);
+                        // const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
+                        // const reversedString = formattedString.split('').reverse().join('');
+                        // const firstBase64 = btoa(reversedString);
+                        // const secondBase64 = btoa(firstBase64);
+                        // const url = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
+                        // const response = await fetch(url);
+                        // const data = JSON.parse(response);
 
-                        console.log(JSON.stringify(data));
+                        // console.log(JSON.stringify(data));
 
-                        if (data && data.source1) {
-                            const hlsSource = data.source1.url;
+                        // if (data && data.source1) {
+                        //     const hlsSource = data.source1.url;
 
-                            const result = {
-                                stream: hlsSource || "",
-                                subtitles: subtitleTrack ? subtitleTrack.url : ""
-                            };
+                        //     const result = {
+                        //         stream: hlsSource || "",
+                        //         subtitles: subtitleTrack ? subtitleTrack.url : ""
+                        //     };
 
-                            console.log(result);
-                            return JSON.stringify(result);
-                        }
+                        //     console.log(result);
+                        //     return JSON.stringify(result);
+                        // }
                         
                         const response2 = await fetch(apiUrl);
                         const data2 = JSON.parse(response2);
@@ -299,27 +299,27 @@ async function extractStreamUrl(url) {
                             track.display.startsWith('English')
                         );
 
-                        const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
-                        const reversedString = formattedString.split('').reverse().join('');
-                        const firstBase64 = btoa(reversedString);
-                        const secondBase64 = btoa(firstBase64);
-                        const url = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
-                        const response = await fetch(url);
-                        const data = JSON.parse(response);
+                        // const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
+                        // const reversedString = formattedString.split('').reverse().join('');
+                        // const firstBase64 = btoa(reversedString);
+                        // const secondBase64 = btoa(firstBase64);
+                        // const url = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
+                        // const response = await fetch(url);
+                        // const data = JSON.parse(response);
 
-                        console.log(JSON.stringify(data));
+                        // console.log(JSON.stringify(data));
 
-                        if (data && data.source1) {
-                            const hlsSource = data.source1.url;
+                        // if (data && data.source1) {
+                        //     const hlsSource = data.source1.url;
 
-                            const result = {
-                                stream: hlsSource || "",
-                                subtitles: subtitleTrack ? subtitleTrack.url : ""
-                            };
+                        //     const result = {
+                        //         stream: hlsSource || "",
+                        //         subtitles: subtitleTrack ? subtitleTrack.url : ""
+                        //     };
 
-                            console.log(result);
-                            return JSON.stringify(result);
-                        }
+                        //     console.log(result);
+                        //     return JSON.stringify(result);
+                        // }
                         
                         const response2 = await fetch(apiUrl);
                         const data2 = JSON.parse(response2);
