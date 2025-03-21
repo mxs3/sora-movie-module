@@ -1,24 +1,24 @@
 function searchResults(html) {
     const results = [];
 
-    const itemBlocks = html.match(/<div class="MovieItem">[\s\S]*?<h4>(.*?)<\/h4>[\s\S]*?<\/a>/g);
-
+    const itemBlocks = html.match(/<li class="TPostMv">[\s\S]*?<\/li>/g);
+    
     if (!itemBlocks) return results;
-
+    
     itemBlocks.forEach(block => {
         const hrefMatch = block.match(/<a href="([^"]+)"/);
-        const titleMatch = block.match(/<h4>(.*?)<\/h4>/);
-        const imgMatch = block.match(/background-image:\s*url\(([^)]+)\)/);
-
+        const titleMatch = block.match(/<h2 class="Title">(.*?)<\/h2>/);
+        const imgMatch = block.match(/<img[^>]+src="([^"]+)"/);
+    
         if (hrefMatch && titleMatch && imgMatch) {
-            const href = hrefMatch[1].trim();
             const title = titleMatch[1].trim();
-            const image = imgMatch[1].trim();
-
+            const image = "https://animez.org/" + imgMatch[1].trim();
+            const href = "https://animez.org" + hrefMatch[1].trim();
+    
             results.push({ title, image, href });
         }
     });
-
+    
     console.log(results);
     return results;
 }
@@ -49,27 +49,28 @@ function extractDetails(html) {
 
 function extractEpisodes(html) {
     const episodes = [];
-
-    const episodeRegex = /<a href="([^"]+)">\s*الحلقة\s*<em>(\d+)<\/em>\s*<\/a>/g;
+    
+    const episodeRegex = /<a href="([^"]+)">\s*(\d+(?:-Dub)?)\s*<\/a>/g;
     let match;
-
+    
     while ((match = episodeRegex.exec(html)) !== null) {
         const href = match[1].trim() + "/watch/";
         const number = match[2].trim();
-
+    
         episodes.push({
             href: href,
             number: number
         });
     }
-
+    
     if (episodes.length > 0 && episodes[0].number !== "1") {
         episodes.reverse();
     }
-
+    
     console.log(episodes);
     return episodes;
 }
+
 
 async function extractStreamUrl(html) {
     const serverMatch = html.match(/<li[^>]+data-watch="([^"]+mp4upload\.com[^"]+)"/);
@@ -108,3 +109,22 @@ function decodeHTMLEntities(text) {
 
     return text;
 }
+
+extractEpisodes(`<nav class="mb-3">
+                                    <ul class="version-chap" id="list_chapter_id_detail">
+                                        <li class="wp-manga-chapter">
+                                            <a href="/naruto-9467/epi-220-116771/">220</a>
+                                            <span class="chapter-release-date"></span>
+                                        </li>
+                                        <li class="wp-manga-chapter">
+                                            <a href="/naruto-9467/epi-220dub-165487/">220-Dub</a>
+                                            <span class="chapter-release-date"></span>
+                                        </li>
+                                        <li class="wp-manga-chapter">
+                                            <a href="/naruto-9467/epi-219-116770/">219</a>
+                                            <span class="chapter-release-date"></span>
+                                        </li>
+                                        <li class="wp-manga-chapter">
+                                            <a href="/naruto-9467/epi-219dub-165488/">219-Dub</a>
+                                            <span class="chapter-release-date"></span>
+                                        </li>`);

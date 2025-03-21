@@ -5,12 +5,12 @@
         "name": "ibro",
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg"
     },
-    "version": "1.0.1",
+    "version": "1.0.0",
     "language": "English",
     "streamType": "HLS",
     "quality": "1080p",
-    "baseUrl": "https://www.mp4upload.com/",
-    "searchBaseUrl": "https://ristoanime.com/?s=%s",
+    "baseUrl": "https://animez.org/",
+    "searchBaseUrl": "https://animez.org/?act=search&f%5Bstatus%5D=all&f%5Bsortby%5D=lastest-chap&f%5Bkeyword%5D=%s",
     "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/animez/animez.js",
     "streamAsyncJS": true
 }
