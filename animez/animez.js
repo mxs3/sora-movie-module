@@ -1,26 +1,41 @@
-function searchResults(html) {
-    const results = [];
+async function searchResults(keyword) {
+    let results = [];
 
-    const itemBlocks = html.match(/<li class="TPostMv">[\s\S]*?<\/li>/g);
-    
-    if (!itemBlocks) return results;
-    
-    itemBlocks.forEach(block => {
-        const hrefMatch = block.match(/<a href="([^"]+)"/);
-        const titleMatch = block.match(/<h2 class="Title">(.*?)<\/h2>/);
-        const imgMatch = block.match(/<img[^>]+src="([^"]+)"/);
-    
-        if (hrefMatch && titleMatch && imgMatch) {
-            const title = titleMatch[1].trim();
-            const image = "https://animez.org/" + imgMatch[1].trim();
-            const href = "https://animez.org" + hrefMatch[1].trim();
-    
-            results.push({ title, image, href });
-        }
-    });
-    
-    console.log(results);
-    return results;
+    try {
+        const encodedKeyword = encodeURIComponent(keyword);
+        const responseText = await fetch(`https://animez.org/?act=search&f[status]=all&f[sortby]=lastest-chap&f[keyword]=${encodedKeyword}`, {
+            headers: {
+                'referer': 'https://animez.org/one-piece-7096/'
+            }
+        });
+        const html = await responseText.text();
+
+        console.log(html);
+
+        const itemBlocks = html.match(/<li class="TPostMv">[\s\S]*?<\/li>/g);
+        
+        if (!itemBlocks) return results;
+        
+        itemBlocks.forEach(block => {
+            const hrefMatch = block.match(/<a href="([^"]+)"/);
+            const titleMatch = block.match(/<h2 class="Title">(.*?)<\/h2>/);
+            const imgMatch = block.match(/<img[^>]+src="([^"]+)"/);
+        
+            if (hrefMatch && titleMatch && imgMatch) {
+                const title = titleMatch[1].trim();
+                const image = "https://animez.org/" + imgMatch[1].trim();
+                const href = "https://animez.org" + hrefMatch[1].trim();
+        
+                results.push({ title, image, href });
+            }
+        });
+        
+        console.log(JSON.stringify(results));
+        return JSON.stringify(results);
+    } catch (error) {
+        console.log('Fetch error in searchResults:', error);
+        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
+    }
 }
 
 function extractDetails(html) {
@@ -110,21 +125,23 @@ function decodeHTMLEntities(text) {
     return text;
 }
 
-extractEpisodes(`<nav class="mb-3">
-                                    <ul class="version-chap" id="list_chapter_id_detail">
-                                        <li class="wp-manga-chapter">
-                                            <a href="/naruto-9467/epi-220-116771/">220</a>
-                                            <span class="chapter-release-date"></span>
-                                        </li>
-                                        <li class="wp-manga-chapter">
-                                            <a href="/naruto-9467/epi-220dub-165487/">220-Dub</a>
-                                            <span class="chapter-release-date"></span>
-                                        </li>
-                                        <li class="wp-manga-chapter">
-                                            <a href="/naruto-9467/epi-219-116770/">219</a>
-                                            <span class="chapter-release-date"></span>
-                                        </li>
-                                        <li class="wp-manga-chapter">
-                                            <a href="/naruto-9467/epi-219dub-165488/">219-Dub</a>
-                                            <span class="chapter-release-date"></span>
-                                        </li>`);
+searchResults("https://animez.org/?act=search&f[status]=all&f[sortby]=lastest-chap&f[keyword]=naruto");
+
+// extractEpisodes(`<nav class="mb-3">
+//                                     <ul class="version-chap" id="list_chapter_id_detail">
+//                                         <li class="wp-manga-chapter">
+//                                             <a href="/naruto-9467/epi-220-116771/">220</a>
+//                                             <span class="chapter-release-date"></span>
+//                                         </li>
+//                                         <li class="wp-manga-chapter">
+//                                             <a href="/naruto-9467/epi-220dub-165487/">220-Dub</a>
+//                                             <span class="chapter-release-date"></span>
+//                                         </li>
+//                                         <li class="wp-manga-chapter">
+//                                             <a href="/naruto-9467/epi-219-116770/">219</a>
+//                                             <span class="chapter-release-date"></span>
+//                                         </li>
+//                                         <li class="wp-manga-chapter">
+//                                             <a href="/naruto-9467/epi-219dub-165488/">219-Dub</a>
+//                                             <span class="chapter-release-date"></span>
+//                                         </li>`);
