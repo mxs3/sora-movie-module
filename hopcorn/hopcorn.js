@@ -113,35 +113,6 @@ async function extractStreamUrl(url) {
                     );
 
                     console.log(JSON.stringify(subtitleTrack));
-
-                    const C = movieId
-                        .toString()
-                        .split("")
-                        .map((digit) => {
-                            const encoding = "abcdefghij";
-                            return encoding[parseInt(digit)];
-                        })
-                        .join("");
-                    const B = C.split("").reverse().join("");
-                    const A = btoa(B);
-                    const D = btoa(A);
-                    const urlovo = `https://api.vid3c.site/allmvse2.php?id=${D}`;
-                    const response = await fetch(urlovo);
-                    const data = JSON.parse(response);
-
-                    console.log(JSON.stringify(data));
-
-                    if (data && data.source3) {
-                        const hlsSource = data.source3?.url;
-
-                        const result = {
-                            stream: hlsSource || "",
-                            subtitles: subtitleTrack ? subtitleTrack.url : ""
-                        };
-
-                        console.log(JSON.stringify(result));
-                        return JSON.stringify(result);
-                    }
                     
                     const response2 = await fetch(apiUrl);
                     const data2 = JSON.parse(response2);
@@ -206,6 +177,35 @@ async function extractStreamUrl(url) {
                             console.log(JSON.stringify(result));
                             return JSON.stringify(result);
                         }
+                    }
+
+                    const C = movieId
+                        .toString()
+                        .split("")
+                        .map((digit) => {
+                            const encoding = "abcdefghij";
+                            return encoding[parseInt(digit)];
+                        })
+                        .join("");
+                    const B = C.split("").reverse().join("");
+                    const A = btoa(B);
+                    const D = btoa(A);
+                    const urlovo = `https://api.vid3c.site/allmvse2.php?id=${D}`;
+                    const response = await fetch(urlovo);
+                    const data = JSON.parse(response);
+
+                    console.log(JSON.stringify(data));
+
+                    if (data && data.source3) {
+                        const hlsSource = data.source3?.url;
+
+                        const result = {
+                            stream: hlsSource || "",
+                            subtitles: subtitleTrack ? subtitleTrack.url : ""
+                        };
+
+                        console.log(JSON.stringify(result));
+                        return JSON.stringify(result);
                     }
                 } catch (err) {
                     console.log(`Fetch error on endpoint ${apiUrl} for movie ${movieId}:`, err);
