@@ -5,12 +5,13 @@
         "name": "ibro",
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg"
     },
-    "version": "1.0.0",
+    "version": "1.0.1",
     "language": "English",
     "streamType": "HLS",
     "quality": "1080p",
     "baseUrl": "https://sudatchi-api.vercel.app/",
     "searchBaseUrl": "https://sudatchi-api.vercel.app/api/search?q=%s",
     "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/sudatchi/sudatchi.js",
+    "type": "anime",
     "asyncJS": true
 }

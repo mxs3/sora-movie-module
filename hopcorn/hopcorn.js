@@ -118,9 +118,17 @@ async function extractStreamUrl(url) {
                     const data2 = JSON.parse(response2);
 
                     if (data2 && data2.error !== "Internal Server Error") {
-                        const hlsSource = data2.data?.sources?.find(source =>
-                            source.format === 'hls'
-                        );
+                        const preferredQualities = ['HLS 7', 'HLS 10', 'HLS 13', 'HLS 15', 'HLS 4'];
+                        let hlsSource;
+
+                        for (const quality of preferredQualities) {
+                            hlsSource = data2.data?.sources?.find(source => source.format === 'hls' && source.quality === quality);
+                            if (hlsSource) break;
+                        }
+
+                        if (!hlsSource) {
+                            hlsSource = data2.data?.sources?.find(source => source.format === 'hls');
+                        }
 
                         console.log("URL:" + JSON.stringify(hlsSource?.url));
 
