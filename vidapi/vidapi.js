@@ -140,7 +140,7 @@ async function extractStreamUrl(url) {
 
             try {
                 const responseText = await fetch(`https://vidapi.xyz/embed/movie/${movieId}`);
-                const data = await responseText.text();
+                const data = await responseText;
 
                 const iframeMatch = data.match(/<iframe[^>]+src=["']([^"']+)["']/);
                 if (!iframeMatch) {
@@ -159,7 +159,7 @@ async function extractStreamUrl(url) {
                         'Referer': 'https://vidapi.xyz/'
                     }
                 });
-                const iframeHtml = await iframeResponse.text();
+                const iframeHtml = await iframeResponse;
 
                 const packedScriptMatch = iframeHtml.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
                 if (!packedScriptMatch) {
@@ -171,11 +171,19 @@ async function extractStreamUrl(url) {
                 const unpackedScript = unpack(packedScript);
                 console.log("Unpacked script:", unpackedScript);
 
-                const streamMatch = unpackedScript.match(/(?<=file:")[^"]+/);
-                const stream = streamMatch ? streamMatch[0].trim() : 'N/A';
+                const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
+                const streamMatch = unpackedScript.match(streamRegex);
+                const stream = streamMatch ? streamMatch[1].trim() : 'N/A';
                 console.log("Stream URL:", stream);
 
-                return stream;
+                const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
+                const subtitlesMatch = unpackedScript.match(subtitlesRegex);
+                const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : 'N/A';
+                console.log("Subtitles URL:", subtitles);
+
+                const result = { stream, subtitles };
+                console.log(JSON.stringify(result));
+                return JSON.stringify(result);
             } catch (err) {
                 console.log(`Fetch error on endpoint https://vidapi.xyz/embed/movie/${movieId} for movie ${movieId}:`, err);
             }
@@ -189,7 +197,7 @@ async function extractStreamUrl(url) {
 
             try {
                 const responseText = await fetch(`https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber}`);
-                const data = await responseText.text();
+                const data = await responseText;
 
                 const iframeMatch = data.match(/<iframe[^>]+src=["']([^"']+)["']/);
                 if (!iframeMatch) {
@@ -208,7 +216,7 @@ async function extractStreamUrl(url) {
                         'Referer': 'https://vidapi.xyz/'
                     }
                 });
-                const iframeHtml = await iframeResponse.text();
+                const iframeHtml = await iframeResponse;
 
                 const packedScriptMatch = iframeHtml.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
                 if (!packedScriptMatch) {
@@ -220,11 +228,19 @@ async function extractStreamUrl(url) {
                 const unpackedScript = unpack(packedScript);
                 console.log("Unpacked script:", unpackedScript);
 
-                const streamMatch = unpackedScript.match(/(?<=file:")[^"]+/);
-                const stream = streamMatch ? streamMatch[0].trim() : 'N/A';
+                const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
+                const streamMatch = unpackedScript.match(streamRegex);
+                const stream = streamMatch ? streamMatch[1].trim() : 'N/A';
                 console.log("Stream URL:", stream);
 
-                return stream;
+                const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
+                const subtitlesMatch = unpackedScript.match(subtitlesRegex);
+                const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : 'N/A';
+                console.log("Subtitles URL:", subtitles);
+
+                const result = { stream, subtitles };
+                console.log(JSON.stringify(result));
+                return JSON.stringify(result);
             } catch (err) {
                 console.log(`Fetch error on endpoint https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber} for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
             }
