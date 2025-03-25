@@ -139,8 +139,8 @@ async function extractStreamUrl(url) {
             const movieId = match[1];
 
             try {
-                const responseText = await fetchv2(`https://vidapi.xyz/embed/movie/${movieId}`);
-                const data = await responseText.text();
+                const responseText = await fetch(`https://vidapi.xyz/embed/movie/${movieId}`);
+                const data = await responseText;
 
                 const iframeMatch = data.match(/<iframe[^>]+src=["']([^"']+)["']/);
                 if (!iframeMatch) {
@@ -154,12 +154,14 @@ async function extractStreamUrl(url) {
 
                 console.log("Iframe src:", iframeSrc);
                 
-                const iframeResponse = await fetchv2(iframeSrc, {
-                    headers: {
-                        'Referer': 'https://vidapi.xyz/'
-                    }
-                });
-                const iframeHtml = await iframeResponse.text();
+                const headers = {
+                    'Referer': 'https://vidapi.xyz/',
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'application/json'
+                };
+                
+                const iframeResponse = await fetch(iframeSrc, headers);
+                const iframeHtml = await iframeResponse;
 
                 const packedScriptMatch = iframeHtml.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
                 if (!packedScriptMatch) {
@@ -196,8 +198,8 @@ async function extractStreamUrl(url) {
             const episodeNumber = match[3];
 
             try {
-                const responseText = await fetchv2(`https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber}`);
-                const data = await responseText.text();
+                const responseText = await fetch(`https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber}`);
+                const data = await responseText;
 
                 const iframeMatch = data.match(/<iframe[^>]+src=["']([^"']+)["']/);
                 if (!iframeMatch) {
@@ -210,13 +212,15 @@ async function extractStreamUrl(url) {
                 }
 
                 console.log("Iframe src:", iframeSrc);
+
+                const headers = {
+                    'Referer': 'https://vidapi.xyz/',
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'application/json'
+                };
                 
-                const iframeResponse = await fetchv2(iframeSrc, {
-                    headers: {
-                        'Referer': 'https://vidapi.xyz/'
-                    }
-                });
-                const iframeHtml = await iframeResponse.text();
+                const iframeResponse = await fetch(iframeSrc, headers);
+                const iframeHtml = await iframeResponse;
 
                 const packedScriptMatch = iframeHtml.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
                 if (!packedScriptMatch) {
