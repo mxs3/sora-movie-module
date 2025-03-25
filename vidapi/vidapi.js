@@ -142,24 +142,25 @@ async function extractStreamUrl(url) {
                 const responseText = await fetch(`https://vidapi.xyz/embed/movie/${movieId}`);
                 const data = await responseText.text();
 
-                // 2. Find the iframe and extract its src.
                 const iframeMatch = data.match(/<iframe[^>]+src=["']([^"']+)["']/);
                 if (!iframeMatch) {
                     throw new Error("No iframe found in the main page.");
                 }
                 let iframeSrc = iframeMatch[1].trim();
-                // If the iframe src is relative, prepend the base URL.
+
                 if (!iframeSrc.startsWith("http")) {
                     iframeSrc = "https://uqloads.xyz/e/" + iframeSrc;
                 }
 
                 console.log("Iframe src:", iframeSrc);
                 
-                // 3. Fetch the HTML from the iframe.
-                const iframeResponse = await fetch(iframeSrc);
+                const iframeResponse = await fetch(iframeSrc, {
+                    headers: {
+                        'Referer': 'https://vidapi.xyz/'
+                    }
+                });
                 const iframeHtml = await iframeResponse.text();
 
-                // 4. Look for the packed script using a regex.
                 const packedScriptMatch = iframeHtml.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
                 if (!packedScriptMatch) {
                     throw new Error("No packed script found in the iframe.");
@@ -167,12 +168,9 @@ async function extractStreamUrl(url) {
                 const packedScript = packedScriptMatch[1];
                 console.log("Packed script found.");
 
-                // 5. Unpack the script using our unpack function.
                 const unpackedScript = unpack(packedScript);
                 console.log("Unpacked script:", unpackedScript);
 
-                // 6. Extract the stream URL from the unpacked script.
-                // For example, assume the URL is defined as file:"https://..."
                 const streamMatch = unpackedScript.match(/(?<=file:")[^"]+/);
                 const stream = streamMatch ? streamMatch[0].trim() : 'N/A';
                 console.log("Stream URL:", stream);
@@ -193,55 +191,40 @@ async function extractStreamUrl(url) {
                 const responseText = await fetch(`https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber}`);
                 const data = await responseText.text();
 
-                let streamUrl = null;
-                
-                // Try to find and unpack a packed script
-                const packedScriptMatch = data.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
-                if (packedScriptMatch) {
-                    const unpackedScript = unpack(packedScriptMatch[1]);
-                    const streamMatch = unpackedScript.match(/(?<=file:")[^"]+/);
-                    if (streamMatch) {
-                        streamUrl = streamMatch[0].trim();
-                    }
+                const iframeMatch = data.match(/<iframe[^>]+src=["']([^"']+)["']/);
+                if (!iframeMatch) {
+                    throw new Error("No iframe found in the main page.");
                 }
-                
-                // Fallback: if no packed script is found, look for an iframe
-                if (!streamUrl) {
-                    const iframeMatch = data.match(/<iframe[^>]+src=["']([^"']+)["']/);
-                    if (iframeMatch) {
-                        let iframeSrc = iframeMatch[1].trim();
-                        // If iframeSrc is relative, prepend a base URL (adjust as needed)
-                        if (!iframeSrc.startsWith("http")) {
-                            iframeSrc = "https://uqloads.xyz/e/" + iframeSrc;
-                        }
-                        console.log("Fetching iframe URL with headers:", iframeSrc);
+                let iframeSrc = iframeMatch[1].trim();
 
-                        const iframeResponse = await fetch(`https://decompress-zstd.vercel.app/api/${encodeURIComponent(iframeSrc)}`);
-                        const iframeHtml = await iframeResponse.text();
-
-                        console.log("Fetched iframe HTML:", iframeHtml);
-                        
-                        // Look for a packed script in the iframe HTML and unpack it.
-                        const innerPackedScript = iframeHtml.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
-                        if (innerPackedScript) {
-                            const unpackedInnerScript = unpack(innerPackedScript[1]);
-                            const streamMatch = unpackedInnerScript.match(/(?<=file:")[^"]+/);
-                            if (streamMatch) {
-                                streamUrl = streamMatch[0].trim();
-                            }
-                        } else {
-                            // As a fallback, try to extract an iframe URL from within the iframe HTML.
-                            const innerIframeMatch = iframeHtml.match(/<iframe[^>]+src=["']([^"']+)["']/);
-                            if (innerIframeMatch) {
-                                streamUrl = innerIframeMatch[1].trim();
-                            }
-                        }
-                    }
+                if (!iframeSrc.startsWith("http")) {
+                    iframeSrc = "https://uqloads.xyz/e/" + iframeSrc;
                 }
 
-                console.log("Stream URL:", streamUrl);
+                console.log("Iframe src:", iframeSrc);
                 
-                return streamUrl;
+                const iframeResponse = await fetch(iframeSrc, {
+                    headers: {
+                        'Referer': 'https://vidapi.xyz/'
+                    }
+                });
+                const iframeHtml = await iframeResponse.text();
+
+                const packedScriptMatch = iframeHtml.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
+                if (!packedScriptMatch) {
+                    throw new Error("No packed script found in the iframe.");
+                }
+                const packedScript = packedScriptMatch[1];
+                console.log("Packed script found.");
+
+                const unpackedScript = unpack(packedScript);
+                console.log("Unpacked script:", unpackedScript);
+
+                const streamMatch = unpackedScript.match(/(?<=file:")[^"]+/);
+                const stream = streamMatch ? streamMatch[0].trim() : 'N/A';
+                console.log("Stream URL:", stream);
+
+                return stream;
             } catch (err) {
                 console.log(`Fetch error on endpoint https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber} for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
             }
@@ -367,15 +350,3 @@ function unpack(source) {
         return source;
     }
 }
-
-class zstdDecompressor {
-    constructor() {
-        this.decompressor = new ZstdDecompressor();
-    }
-    
-    decompress(data) {
-        return this.decompressor.decompress(data);
-    }
-} 
-
-extractStreamUrl(`https://vidapi.xyz/embed/tv/60735&s=9&e=1`);
