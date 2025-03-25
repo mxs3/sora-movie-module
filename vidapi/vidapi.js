@@ -154,18 +154,12 @@ async function extractStreamUrl(url) {
 
                 console.log("Iframe src:", iframeSrc);
 
-                // const headers = {
-                //     headers: {
-                //         'Referer': 'https://vidapi.xyz/',
-                //         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-                //         'Accept': 'application/json'
-                //     }
-                // };
-
                 const headers = {
-                    'Referer': 'https://vidapi.xyz/',
-                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-                    'Accept': 'application/json'
+                    headers: {
+                        'Referer': 'https://vidapi.xyz/',
+                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+                        'Accept': 'application/json'
+                    }
                 };
                 
                 const iframeResponse = await fetchv2(iframeSrc, headers);
@@ -221,18 +215,12 @@ async function extractStreamUrl(url) {
 
                 console.log("Iframe src:", iframeSrc);
 
-                // const headers = {
-                //     headers: {
-                //         'Referer': 'https://vidapi.xyz/',
-                //         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-                //         'Accept': 'application/json'
-                //     }
-                // };
-
                 const headers = {
-                    'Referer': 'https://vidapi.xyz/',
-                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-                    'Accept': 'application/json'
+                    headers: {
+                        'Referer': 'https://vidapi.xyz/',
+                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+                        'Accept': 'application/json'
+                    }
                 };
                 
                 const iframeResponse = await fetchv2(iframeSrc, headers);
