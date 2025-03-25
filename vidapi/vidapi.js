@@ -153,11 +153,13 @@ async function extractStreamUrl(url) {
                 }
 
                 console.log("Iframe src:", iframeSrc);
-                
+
                 const headers = {
-                    'Referer': 'https://vidapi.xyz/',
-                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Accept': 'application/json'
+                    headers: {
+                        'Referer': 'https://vidapi.xyz/',
+                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+                        'Accept': 'application/json'
+                    }
                 };
                 
                 const iframeResponse = await fetch(iframeSrc, headers);
@@ -214,15 +216,17 @@ async function extractStreamUrl(url) {
                 console.log("Iframe src:", iframeSrc);
 
                 const headers = {
-                    'Referer': 'https://vidapi.xyz/',
-                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Accept': 'application/json'
+                    headers: {
+                        'Referer': 'https://vidapi.xyz/',
+                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+                        'Accept': 'application/json'
+                    }
                 };
                 
                 const iframeResponse = await fetch(iframeSrc, headers);
                 const iframeHtml = await iframeResponse;
 
-                const packedScriptMatch = iframeHtml.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
+                const packedScriptMatch = iframeHtml.match(/(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
                 if (!packedScriptMatch) {
                     throw new Error("No packed script found in the iframe.");
                 }
