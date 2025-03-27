@@ -40,7 +40,7 @@ function extractDetails(html) {
 function extractEpisodes(html) {
     const episodes = [];
     
-    const slideRegex = /<div\s+class="swiper-slide">[\s\S]*?<a\s+href="([^"]+)"[^>]*title="([^"]+)".*?<\/a>[\s\S]*?<span[^>]*>\s*episodio\s*([^<]+)\s*<\/span>/gi;
+    const slideRegex = /<div\s+class="swiper-slide">[\s\S]*?<a\s+href="([^"]+)"[^>]*title="([^"]+)".*?<\/a>[\s\S]*?<span[^>]*>\s*(?:Episodi|Episodio)\s*(.*?)\s*<\/span>/gi;
     let match;
     
     while ((match = slideRegex.exec(html)) !== null) {
