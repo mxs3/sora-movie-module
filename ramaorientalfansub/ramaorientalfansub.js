@@ -1,28 +1,28 @@
 function searchResults(html) {
     const results = [];
     
-    const regex = /<div class="w-full bg-gradient-to-t from-primary to-transparent rounded overflow-hidden shadow shadow-primary">[\s\S]*?<img[^>]+(?:data-src|src)=['"]([^'"]+)['"][\s\S]*?<h3>[\s\S]*?<a\s+href="([^"]+)"[^>]*>(?:(?:\s*<span\s+data-en-title[^>]*>([^<]+)<\/span>)|([^<]+))/g;
+    const regex = /<div class="w-full bg-gradient-to-t from-primary to-transparent rounded overflow-hidden shadow shadow-primary">[\s\S]*?<img[^>]+(?:data-src|src)\s*=\s*['"]([^'"]+)['"][\s\S]*?<h3>[\s\S]*?<a\s+href="([^"]+)"[^>]*>(?:(?:\s*<span\s+data-en-title[^>]*>([^<]+)<\/span>)|([^<]+))/g;
     
     let match;
     
     while ((match = regex.exec(html)) !== null) {
         const image = match[1].trim();
         const href = match[2].trim();
-        const title = (match[3] || match[4] || "").trim();
+        const title = decodeHTMLEntities((match[3] || match[4] || "").trim());
         
         results.push({ title, image, href });
     }
     
     console.log(results);
     return results;
-}
+}  
 
 function extractDetails(html) {
     const details = [];
 
     const descRegex = /<div\s+data-synopsis\s+class="line-clamp-3\s*">(.*?)<\/div>/s;
     const descMatch = html.match(descRegex);
-    const description = descMatch ? descMatch[1].trim() : 'N/A';
+    const description = descMatch ? decodeHTMLEntities(descMatch[1].trim()) : 'N/A';
 
     const aliasRegex = /<li>\s*<span>\s*(\d+M)\s*<\/span>/;
     const aliasMatch = html.match(aliasRegex);
