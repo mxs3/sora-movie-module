@@ -1,7 +1,7 @@
 function searchResults(html) {
     const results = [];
     
-    const regex = /<div class="w-full bg-gradient-to-t from-primary to-transparent rounded overflow-hidden shadow shadow-primary">[\s\S]*?<img[^>]+(?:data-src|src)\s*=\s*['"]([^'"]+)['"][\s\S]*?<h3>[\s\S]*?<a\s+href="([^"]+)"[^>]*>(?:(?:\s*<span\s+data-en-title[^>]*>([^<]+)<\/span>)|([^<]+))/g;
+    const regex = /<div class="w-full bg-gradient-to-t from-primary to-transparent rounded overflow-hidden shadow shadow-primary">[\s\S]*?<img[^>]+(?:data-src|src)\s*=\s*['"]([^'"]+)['"][\s\S]*?<h3>[\s\S]*?<a\s+href="([^"]+)"[^>]*>(?:\s*(?:<span\s+data-en-title[^>]*>([^<]+)<\/span>)\s*|([^<]+?)\s*)<\/a>/g;
     
     let match;
     
