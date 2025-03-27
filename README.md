@@ -303,7 +303,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         </summary>
 
-        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/peak/icon.png" width="125px"><br>
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/peak/icon.jpg" width="125px"><br>
 
         **File:** `Peak.json`<br>
         **Type:** `Anime`<br>
