@@ -40,19 +40,26 @@ function extractDetails(html) {
 function extractEpisodes(html) {
     const episodes = [];
     
-    const slideRegex = /<div\s+class="swiper-slide">[\s\S]*?<a\s+href="([^"]+)"[^>]*>[\s\S]*?<span[^>]*>\s*(?:Episodi|Episodio)\s*([^<]+)\s*<\/span>/i;
+    const slideRegex = /<div\s+class="swiper-slide">[\s\S]*?<a\s+href="([^"]+)"[^>]*>[\s\S]*?<span[^>]*>\s*(?:Episodi|Episodio)\s*([^<]+?)\s*<\/span>/gi;
+    let match;
     
-    const match = slideRegex.exec(html);
-    if (match) {
+    while ((match = slideRegex.exec(html)) !== null) {
         const href = match[1].trim();
         const number = match[2].trim();
-        episodes.push({ href, number });
+        
+        episodes.push({
+            href,
+            number
+        });
+    }
+    
+    if (episodes.length > 0 && episodes[0].number !== "1") {
+      episodes.reverse();
     }
     
     console.log(episodes);
     return episodes;
-}
-  
+}  
 
 function extractStreamUrl(html) {
     const streamMatch = html.match(/<iframe[^>]+src=['"]([^'"]+)['"]/);
