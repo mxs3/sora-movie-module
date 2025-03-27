@@ -45,7 +45,7 @@ function extractEpisodes(html) {
     while ((match = slideRegex.exec(html)) !== null) {
         const href = match[1].trim();
         const title = match[2].trim();
-        const epNumMatch = title.match(/episodio\s*(\d+)/i);
+        const epNumMatch = title.match(/episodio\s*(\d+|Movie)/i);
         
         if (epNumMatch) {
             episodes.push({
@@ -61,7 +61,7 @@ function extractEpisodes(html) {
     
     console.log(episodes);
     return episodes;
-}  
+}
 
 function extractStreamUrl(html) {
     const streamMatch = html.match(/<iframe[^>]+src=['"]([^'"]+)['"]/);
