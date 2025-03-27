@@ -1,62 +1,50 @@
 function searchResults(html) {
     const results = [];
-
-    const itemBlocks = html.split('<div class="w-full bg-gradient-to-t from-primary to-transparent rounded overflow-hidden shadow shadow-primary">');
     
-    itemBlocks.shift();
-
-    itemBlocks.forEach(block => {
-        const hrefMatch = block.match(/<h3>[\s\S]*?<a href="([^"]+)"/);
-        const titleMatch = block.match(/<h3>[\s\S]*?<a [^>]+>([\s\S]*?)<\/a>/);
-        const imgMatch = block.match(/<img[^>]+data-src=['"]([^'"]+)['"]/);
-
-        if (hrefMatch && titleMatch && imgMatch) {
-            const href = hrefMatch[1].trim();
-            const title = decodeHTMLEntities(titleMatch[1].trim());
-            const image = imgMatch[1].trim();
-            
-            results.push({ title, image, href });
-        }
-    });
-
+    const regex = /<div class="w-full bg-gradient-to-t from-primary to-transparent rounded overflow-hidden shadow shadow-primary">[\s\S]*?<img[^>]+(?:data-src|src)=['"]([^'"]+)['"][\s\S]*?<h3>[\s\S]*?<a\s+href="([^"]+)"[^>]*>(?:(?:\s*<span\s+data-en-title[^>]*>([^<]+)<\/span>)|([^<]+))/g;
+    
+    let match;
+    
+    while ((match = regex.exec(html)) !== null) {
+        const image = match[1].trim();
+        const href = match[2].trim();
+        const title = (match[3] || match[4] || "").trim();
+        
+        results.push({ title, image, href });
+    }
+    
     console.log(results);
     return results;
 }
 
-
 function extractDetails(html) {
     const details = [];
 
-    const descriptionMatch = html.match(/<span class="block w-full max-h-24 overflow-scroll mlb-3 overflow-x-hidden text-xs text-gray-200">([^<]+)<\/span>/);
-    let description = descriptionMatch 
-        ? decodeHTMLEntities(descriptionMatch[1].trim())
-        : 'N/A';
+    const descRegex = /<div\s+data-synopsis\s+class="line-clamp-3\s*">(.*?)<\/div>/s;
+    const descMatch = html.match(descRegex);
+    const description = descMatch ? descMatch[1].trim() : 'N/A';
 
-    const aliasMatch = html.match(/<li>\s*<span>\s*(\d+M)\s*<\/span>/);
-    let alias = aliasMatch ? aliasMatch[1].trim() : 'N/A';
+    const aliasRegex = /<li>\s*<span>\s*(\d+M)\s*<\/span>/;
+    const aliasMatch = html.match(aliasRegex);
+    const alias = aliasMatch ? aliasMatch[1].trim() : 'N/A';
 
-    let airdate = 'N/A';
+    const airdateRegex = /<span[^>]*>\s*Trasmesso:\s*<\/span>\s*<span[^>]*>\s*([^<]+?)\s*<\/span>/;
+    const airdateMatch = html.match(airdateRegex);
+    const airdate = airdateMatch ? airdateMatch[1].trim() : 'N/A';
 
-    details.push({
-        description: description,
-        alias: alias,
-        airdate: airdate
-    });
-
+    details.push({ description, alias, airdate });
     console.log(details);
     return details;
-}
+}  
 
 function extractEpisodes(html) {
     const episodes = [];
-
-    const slideRegex = /<div class="swiper-slide[^"]*"[\s\S]*?<a href="([^"]+)"[^>]*title="([^"]+)"/g;
+    const slideRegex = /<div\s+class="swiper-slide"[\s\S]*?<a\s+href="([^"]+)"[^>]*\stitle="([^"]+)"/g;
     let match;
     
     while ((match = slideRegex.exec(html)) !== null) {
         const href = match[1].trim();
         const title = match[2].trim();
-
         const epNumMatch = title.match(/episodio\s*(\d+)/i);
         
         if (epNumMatch) {
@@ -66,23 +54,22 @@ function extractEpisodes(html) {
             });
         }
     }
-
-    if (episodes[0].number !== "1") {
+    
+    if (episodes.length > 0 && episodes[0].number !== "1") {
         episodes.reverse();
     }
-
+    
     console.log(episodes);
     return episodes;
-}
-
+}  
 
 function extractStreamUrl(html) {
     const streamMatch = html.match(/<iframe[^>]+src=['"]([^'"]+)['"]/);
-    const stream = streamMatch ? streamMatch[1].trim() : 'N/A';
-
+    const stream = streamMatch ? streamMatch[1].trim() : '';
+  
     console.log(stream);
     return stream;
-}
+}  
 
 function decodeHTMLEntities(text) {
     text = text.replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec));
