@@ -100,7 +100,7 @@ async function extractStreamUrl(url) {
         });
 
         const result = {
-            stream: highestResStream ? ` https://video2.cdnlibs.org${highestResStream.href}` : "",
+            stream: highestResStream ? `https://video2.cdnlibs.org${highestResStream.href}` : "",
             subtitles: subtitles ? subtitles.src : ""
         };
 
