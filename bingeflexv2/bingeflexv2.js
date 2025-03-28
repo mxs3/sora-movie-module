@@ -130,162 +130,191 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
-    // Helper: convert a quality value to a quality string.
-    // If the quality is numeric, use FHD/HD/SD labels; otherwise, return it as is.
-    function getQualityString(quality) {
-      let num = parseInt(quality, 10);
-      if (!isNaN(num)) {
-        if (num >= 1080) return `${num}p (FHD)`;
-        else if (num >= 720) return `${num}p (HD)`;
-        else if (num >= 480) return `${num}p (SD)`;
-        else return `${num}p`;
-      }
-      return quality;
-    }
-  
+    // "hyvax" is with .srt captions
+
     const servicesWithoutCaption = [
-      "guru"
-      // Other services can be added here if needed.
+        "guru",
+        // "halo",
+        // "g1",
+        // "g2",
+        // "alpha",
+        // "fastx",
+        // "astra",
+        // "ninja",
+        // "catflix",
+        // "hyvax",
+        // "vidcloud",
+        // "filmxyz",
+        // "shadow",
+        // "kaze",
+        // "asiacloud",
+        // "zenith",
+        // "kage",
+        // "anime",
+        // "ghost",
+        // "filmecho",
+        // "kinoecho",
+        // "ee3",
+        // "putafilme",
+        // "ophim",
     ];
-  
-    const secretKey = [
-      "I", "3LZu", "M2V3", "4EXX", "s4", "yRy", "oqMz", "ysE",
-      "RT", "iSI", "zlc", "H", "YNp", "5vR6", "h9S", "R", "jo",
-      "F", "h2", "W8", "i", "sz09", "Xom", "gpU", "q", "6Qvg",
-      "Cu", "5Zaz", "VK", "od", "FGY4", "eu", "D5Q", "smH", "11eq",
-      "QrXs", "3", "L3", "YhlP", "c", "Z", "YT", "bnsy", "5",
-      "fcL", "L22G", "r8", "J", "4", "gnK"
-    ];
-  
+
+    const secretKey = ["I", "3LZu", "M2V3", "4EXX", "s4", "yRy", "oqMz", "ysE", "RT", "iSI", "zlc", "H", "YNp", "5vR6", "h9S", "R", "jo", "F", "h2", "W8", "i", "sz09", "Xom", "gpU", "q", "6Qvg", "Cu", "5Zaz", "VK", "od", "FGY4", "eu", "D5Q", "smH", "11eq", "QrXs", "3", "L3", "YhlP", "c", "Z", "YT", "bnsy", "5", "fcL", "L22G", "r8", "J", "4", "gnK"];
+
     try {
-      if (url.includes('/movie/')) {
-        const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
-        if (!match) throw new Error("Invalid URL format");
-        const movieId = match[1];
-  
-        for (let i = 0; i < servicesWithoutCaption.length; i++) {
-          for (let j = 0; j < secretKey.length; j++) {
-            const service = servicesWithoutCaption[i];
-            const apiUrl = `https://rivestream.org/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
-  
-            try {
-              // Fetch subtitles
-              const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
-              const subtitleTrackData = await subtitleTrackResponse.json();
-              const subtitleTrack = subtitleTrackData.find(track =>
-                track.display && track.display.startsWith('English')
-              );
-  
-              // Fetch stream sources
-              const response2 = await fetch(apiUrl);
-              const data2 = await response2.json();
-  
-              if (data2 && data2.error !== "Internal Server Error") {
-                const sources = data2.data?.sources?.filter(source => source.format === 'hls');
-                if (sources && sources.length > 0) {
-                  // Map each hls source into a stream option.
-                  const streams = sources.map(source => ({
-                    title: getQualityString(source.quality),
-                    url: source.url
-                  }));
-                  const result = {
-                    streams: streams,
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                  };
-                  return JSON.stringify(result);
+        if (url.includes('/movie/')) {
+            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const movieId = match[1];
+
+            for (let i = 0; i < servicesWithoutCaption.length; i++) {
+                for (let j = 0; j < secretKey.length; j++) {
+                    const service = servicesWithoutCaption[i];
+                    const apiUrl = `https://rivestream.org/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+                    // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${movieId}&api_key=d64117f26031a428449f102ced3aba73`;
+
+                    try {
+                        const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
+                        const subtitleTrackData = JSON.parse(subtitleTrackResponse);
+
+                        const subtitleTrack = subtitleTrackData.find(track =>
+                            track.display.startsWith('English')
+                        );
+
+                        console.log(JSON.stringify(subtitleTrack));
+                        
+                        const response2 = await fetch(apiUrl);
+                        const data2 = JSON.parse(response2);
+
+                        if (data2 && data2.error !== "Internal Server Error") {
+                            const sources = data2.data?.sources?.filter(source => source.format === 'hls');
+                            if (sources && sources.length > 0) {
+                                const streams = sources.map(source => ({
+                                    title: source.quality,
+                                    url: source.url
+                                }));
+
+                                const result = {
+                                    streams: streams,
+                                    subtitles: subtitleTrack ? subtitleTrack.url : ""
+                                };
+
+                                return JSON.stringify(result);
+                            }
+                        }
+
+                        const C = movieId
+                            .toString()
+                            .split("")
+                            .map((digit) => {
+                                const encoding = "abcdefghij";
+                                return encoding[parseInt(digit)];
+                            })
+                            .join("");
+                        const B = C.split("").reverse().join("");
+                        const A = btoa(B);
+                        const D = btoa(A);
+                        const urlovo = `https://api.vid3c.site/allmvse2.php?id=${D}`;
+                        const response = await fetch(urlovo);
+                        const data = JSON.parse(response);
+
+                        console.log(JSON.stringify(data));
+
+                        if (data && data.source3) {
+                            const hlsSource = data.source3?.url;
+
+                            const result = {
+                                stream: hlsSource || "",
+                                subtitles: subtitleTrack ? subtitleTrack.url : ""
+                            };
+
+                            console.log(JSON.stringify(result));
+                            return JSON.stringify(result);
+                        }
+                    } catch (err) {
+                        console.log(`Fetch error on endpoint ${apiUrl} for movie ${movieId}:`, err);
+                    }
                 }
-              }
-  
-              // Fallback: use alternative endpoint
-              const C = movieId.toString().split("").map(digit => {
-                const encoding = "abcdefghij";
-                return encoding[parseInt(digit)];
-              }).join("");
-              const B = C.split("").reverse().join("");
-              const A = btoa(B);
-              const D = btoa(A);
-              const urlovo = `https://api.vid3c.site/allmvse2.php?id=${D}`;
-              const fallbackResponse = await fetch(urlovo);
-              const fallbackData = await fallbackResponse.json();
-  
-              if (fallbackData && fallbackData.source3) {
-                const hlsSource = fallbackData.source3.url;
-                const result = {
-                  streams: [{ title: "Default", url: hlsSource || "" }],
-                  subtitles: subtitleTrack ? subtitleTrack.url : ""
-                };
-                return JSON.stringify(result);
-              }
-            } catch (err) {
-              console.log(`Fetch error on endpoint ${apiUrl} for movie ${movieId}:`, err);
             }
-          }
-        }
-      } else if (url.includes('/tv/')) {
-        const match = url.match(/https:\/\/bingeflex\.vercel\.app\/tv\/([^\/]+)\?season=([^\/]+)&episode=([^\/]+)/);
-        if (!match) throw new Error("Invalid URL format");
-        const showId = match[1];
-        const seasonNumber = match[2];
-        const episodeNumber = match[3];
-  
-        for (let i = 0; i < servicesWithoutCaption.length; i++) {
-          for (let j = 0; j < secretKey.length; j++) {
-            const service = servicesWithoutCaption[i];
-            const apiUrl = `https://rivestream.org/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
-            try {
-              const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
-              const subtitleTrackData = await subtitleTrackResponse.json();
-              const subtitleTrack = subtitleTrackData.find(track =>
-                track.display && track.display.startsWith('English')
-              );
-              
-              const response2 = await fetch(apiUrl);
-              const data2 = await response2.json();
-  
-              if (data2 && data2.error !== "Internal Server Error") {
-                const sources = data2.data?.sources?.filter(source => source.format === 'hls');
-                if (sources && sources.length > 0) {
-                  const streams = sources.map(source => ({
-                    title: getQualityString(source.quality),
-                    url: source.url
-                  }));
-                  const result = {
-                    streams: streams,
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                  };
-                  return JSON.stringify(result);
+        } else if (url.includes('/tv/')) {
+            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/tv\/([^\/]+)\?season=([^\/]+)&episode=([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+            const seasonNumber = match[2];
+            const episodeNumber = match[3];
+
+            for (let i = 0; i < servicesWithoutCaption.length; i++) {
+                for (let j = 0; j < secretKey.length; j++) {
+                    const service = servicesWithoutCaption[i];
+                    const apiUrl = `https://rivestream.org/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+                    // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&api_key=d64117f26031a428449f102ced3aba73`
+
+                    try {
+                        const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+                        const subtitleTrackData = JSON.parse(subtitleTrackResponse);
+
+                        console.log(JSON.stringify(subtitleTrackData));
+
+                        const subtitleTrack = subtitleTrackData.find(track =>
+                            track.display.startsWith('English')
+                        );
+                        
+                        const response2 = await fetch(apiUrl);
+                        const data2 = JSON.parse(response2);
+
+                        console.log(JSON.stringify(data2));
+
+                        if (data2 && data2.error !== "Internal Server Error") {
+                            const sources = data2.data?.sources?.filter(source => source.format === 'hls');
+                            if (sources && sources.length > 0) {
+                                const streams = sources.map(source => ({
+                                    title: source.quality,
+                                    url: source.url
+                                }));
+                                const result = {
+                                    streams: streams,
+                                    subtitles: subtitleTrack ? subtitleTrack.url : ""
+                                };
+                                return JSON.stringify(result);
+                            }
+                        }
+
+                        const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
+                        const reversedString = formattedString.split('').reverse().join('');
+                        const firstBase64 = btoa(reversedString);
+                        const secondBase64 = btoa(firstBase64);
+                        const url = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
+                        const response = await fetch(url);
+                        const data = JSON.parse(response);
+
+                        console.log(JSON.stringify(data));
+
+                        if (data && data.source3) {
+                            const hlsSource = data.source3?.url;
+
+                            const result = {
+                                stream: hlsSource || "",
+                                subtitles: subtitleTrack ? subtitleTrack.url : ""
+                            };
+
+                            console.log(result);
+                            return JSON.stringify(result);
+                        }
+                    } catch (err) {
+                        console.log(`Fetch error on endpoint ${apiUrl} for show ${showId}:`, err);
+                    }
                 }
-              }
-  
-              const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
-              const reversedString = formattedString.split('').reverse().join('');
-              const firstBase64 = btoa(reversedString);
-              const secondBase64 = btoa(firstBase64);
-              const altUrl = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
-              const altResponse = await fetch(altUrl);
-              const altData = await altResponse.json();
-              if (altData && altData.source3) {
-                const hlsSource = altData.source3.url;
-                const result = {
-                  streams: [{ title: "Default", url: hlsSource || "" }],
-                  subtitles: subtitleTrack ? subtitleTrack.url : ""
-                };
-                return JSON.stringify(result);
-              }
-            } catch (err) {
-              console.log(`Fetch error on endpoint ${apiUrl} for show ${showId}:`, err);
             }
-          }
+        } else {
+            throw new Error("Invalid URL format");
         }
-      } else {
-        throw new Error("Invalid URL format");
-      }
     } catch (error) {
-      console.log('Fetch error in extractStreamUrl:', error);
-      return null;
+        console.log('Fetch error in extractStreamUrl:', error);
+        return null;
     }
-  }
-  
+}
 
 function btoa(input) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
