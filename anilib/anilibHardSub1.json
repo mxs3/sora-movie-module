@@ -5,7 +5,7 @@
         "name": "ibro",
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg"
     },
-    "version": "1.0.0",
+    "version": "1.0.1",
     "language": "Russian (Hard SUB)",
     "streamType": "MP4",
     "quality": "1080p",
@@ -13,6 +13,5 @@
     "searchBaseUrl": "https://api2.mangalib.me/api/anime?q=%s",
     "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibHardSub1.js",
     "type": "anime",
-    "asyncJS": true,
-    "softsub": true
+    "asyncJS": true
 }
