@@ -1,42 +1,37 @@
 function searchResults(html) {
     const results = [];
-    // Match each article with class "post-item"
-    const itemBlocks = html.match(/<article\s+class="post-item[\s\S]*?<\/article>/gi);
-    if (!itemBlocks) return results;
-  
-    itemBlocks.forEach(block => {
-        // Extract the href and title from the <h2 class="post-title"> block
-        const hrefMatch = block.match(/<h2\s+class="post-title">[\s\S]*?<a\s+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i);
-        // Extract the image URL from the <div class="post-thumbnail"> block
-        const imgMatch = block.match(/<div\s+class="post-thumbnail">[\s\S]*?<img[^>]+src="([^"]+)"/i);
+
+    const filmListRegex = /<div class="titlecontrol">[\s\S]*?<a href="([^"]+)">(.*?)<\/a>[\s\S]*?<div class="content_text searchresult_img">[\s\S]*?<img src="([^"]+)"/g;
     
-        if (hrefMatch && imgMatch) {
-            const href = hrefMatch[1].trim();
-            const title = hrefMatch[2].trim();
-            const image = imgMatch[1].trim();
+    let match;
+    while ((match = filmListRegex.exec(html)) !== null) {
+        const href = match[1].trim();
+        const title = match[2].trim();
+        const image = match[3].trim();
+
+        results.push({
+            title,
+            image,
+            href,
+        });
+    }
     
-            results.push({ title, image, href });
-        }
-    });
-  
-    console.log("sdasd");
     console.log(results);
     return results;
-}  
+}
 
 function extractDetails(html) {
     const details = [];
 
-    const descriptionMatch = html.match(/<p[^>]*>(.*?)<\/p>/s);
-    let description = descriptionMatch 
-        ? decodeHTMLEntities(descriptionMatch[1].trim()) 
+    const descriptionMatch = html.match(/<div class="images-border"[^>]*>([\s\S]*?)<br><br>/);
+    
+    const description = descriptionMatch 
+        ? descriptionMatch[1].replace(/<[^>]+>/g, '').trim()
         : 'N/A';
 
-    const aliasMatch = html.match(/<li>\s*<div class="icon">\s*<i class="far fa-clock"><\/i>\s*<\/div>\s*<span>\s*مدة العرض\s*:\s*<\/span>\s*<a[^>]*>\s*(\d+)\s*<\/a>/);
-    let alias = aliasMatch ? aliasMatch[1].trim() : 'N/A';
+    const alias = '';
 
-    const airdateMatch = html.match(/<li>\s*<div class="icon">\s*<i class="far fa-calendar"><\/i>\s*<\/div>\s*<span>\s*تاريخ الاصدار\s*:\s*<\/span>\s*<a[^>]*?>\s*(\d{4})\s*<\/a>/);
-    let airdate = airdateMatch ? airdateMatch[1].trim() : 'N/A';
+    const airdate = '';
 
     details.push({
         description: description,
@@ -51,132 +46,163 @@ function extractDetails(html) {
 function extractEpisodes(html) {
     const episodes = [];
 
-    const episodeRegex = /<a href="([^"]+)">\s*الحلقة\s*<em>(\d+)<\/em>\s*<\/a>/g;
-    let match;
+    // Match all instances of .show() containing video URLs
+    const showMatches = html.match(/\.show\(\d+,\s*\[\[(.*?)\]\]/g);
 
-    while ((match = episodeRegex.exec(html)) !== null) {
-        const href = match[1].trim() + "/watch/";
-        const number = match[2].trim();
+    console.log(showMatches);
 
-        episodes.push({
-            href: href,
-            number: number
+    if (showMatches) {
+        showMatches.forEach(match => {
+            // Extract URLs from within the double brackets [[ ]]
+            const urlMatches = match.match(/'([^']+)'/g);
+            
+            if (urlMatches) {
+                for (let i = 0; i < urlMatches.length; i++) {
+                    const cleanUrl = urlMatches[i].replace(/'/g, '').trim();
+                    if (cleanUrl.startsWith("https://supervideo")) {
+                        episodes.push(
+                            {
+                                href: cleanUrl,
+                                number: `${i + 1}`
+                            }
+                        );
+                    }
+                }
+            }
         });
     }
 
-    if (episodes.length > 0 && episodes[0].number !== "1") {
-        episodes.reverse();
-    }
-
-    console.log(episodes);
+    console.log("Episodes:", episodes);
+    
     return episodes;
 }
 
-async function extractStreamUrl(html) {
-    const serverMatch = html.match(/<li[^>]+data-watch="([^"]+mp4upload\.com[^"]+)"/);
-    const embedUrl = serverMatch ? serverMatch[1].trim() : 'N/A';
+function extractStreamUrl(html) {
+    const scriptMatch = html.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
+    if (!scriptMatch) {
+        console.log("No packed script found");
+        return JSON.stringify({ stream: 'N/A' });
+    }
+   
+    const unpackedScript = unpack(scriptMatch[1]);
+    
+    const streamMatch = unpackedScript.match(/(?<=file:")[^"]+/);
+    const stream = streamMatch ? streamMatch[0].trim() : 'N/A';
+    
+    console.log(stream);
+    return stream;
+}
 
-    let streamUrl = "";
-
-    if (embedUrl !== 'N/A') {
-        const response = await fetch(embedUrl);
-        const fetchedHtml = await response;
-        
-        const streamMatch = fetchedHtml.match(/player\.src\(\{\s*type:\s*["']video\/mp4["'],\s*src:\s*["']([^"']+)["']\s*\}\)/i);
-        if (streamMatch) {
-            streamUrl = streamMatch[1].trim();
+class Unbaser {
+    constructor(base) {
+        /* Functor for a given base. Will efficiently convert
+          strings to natural numbers. */
+        this.ALPHABET = {
+            62: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            95: "' !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'",
+        };
+        this.dictionary = {};
+        this.base = base;
+        // fill elements 37...61, if necessary
+        if (36 < base && base < 62) {
+            this.ALPHABET[base] = this.ALPHABET[base] ||
+                this.ALPHABET[62].substr(0, base);
+        }
+        // If base can be handled by int() builtin, let it do it for us
+        if (2 <= base && base <= 36) {
+            this.unbase = (value) => parseInt(value, base);
+        }
+        else {
+            // Build conversion dictionary cache
+            try {
+                [...this.ALPHABET[base]].forEach((cipher, index) => {
+                    this.dictionary[cipher] = index;
+                });
+            }
+            catch (er) {
+                throw Error("Unsupported base encoding.");
+            }
+            this.unbase = this._dictunbaser;
         }
     }
-
-    console.log(streamUrl);
-    return streamUrl;
-}
-
-function decodeHTMLEntities(text) {
-    text = text.replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec));
-    
-    const entities = {
-        '&quot;': '"',
-        '&amp;': '&',
-        '&apos;': "'",
-        '&lt;': '<',
-        '&gt;': '>'
-    };
-    
-    for (const entity in entities) {
-        text = text.replace(new RegExp(entity, 'g'), entities[entity]);
+    _dictunbaser(value) {
+        /* Decodes a value to an integer. */
+        let ret = 0;
+        [...value].reverse().forEach((cipher, index) => {
+            ret = ret + ((Math.pow(this.base, index)) * this.dictionary[cipher]);
+        });
+        return ret;
     }
-
-    return text;
 }
 
-searchResults(`<main id="main" class="site-main" role="main">
-                            <header class="search-header">
-                                <h1 class="search-title">
-                                    Search Results for: <span>ss</span>
-                                </h1>
-                            </header>
-                            <!-- END .search-header -->
-                            <article id="post-273206" class="post-item post-273206 post type-post status-publish format-standard has-post-thumbnail hentry category-tv-patrol-express tag-tv-patrol-express">
-                                <div class="right">
-                                    <div class="post-thumbnail">
-                                        <img width="320" height="320" src="https://www.ofwteleserye.su/wp-content/uploads/2024/12/xTV-Patrol-Express-320x320.jpg.pagespeed.ic.iEaVYNNxwB.webp" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" decoding="async" fetchpriority="high" srcset="https://www.ofwteleserye.su/wp-content/uploads/2024/12/TV-Patrol-Express-320x320.jpg 320w, https://www.ofwteleserye.su/wp-content/uploads/2024/12/TV-Patrol-Express-150x150.jpg 150w" sizes="(max-width: 320px) 100vw, 320px" data-pagespeed-url-hash="2136403535" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"/>
-                                    </div>
-                                    <!-- END .post-thumbnail -->
-                                </div>
-                                <!-- END .right -->
-                                <div class="left">
-                                    <div class="post-meta category-links">
-                                        <a href="https://www.ofwteleserye.su/category/tv-patrol-express/" title="View all posts in TV Patrol Express">TV Patrol Express</a>
-                                    </div>
-                                    <!-- END .post-meta -->
-                                    <h2 class="post-title">
-                                        <a href="https://www.ofwteleserye.su/tv-patrol-express-march-27-2025/" title="TV Patrol Express March 27, 2025" rel="bookmark">TV Patrol Express March 27, 2025</a>
-                                    </h2>
-                                    <!-- END .post-excerpt -->
-                                </div>
-                                <!-- END .left -->
-                            </article>
-                            <!-- END .post-item -->
-                            <article id="post-273003" class="post-item post-273003 post type-post status-publish format-standard has-post-thumbnail hentry category-tv-patrol-express tag-tv-patrol-express">
-                                <div class="right">
-                                    <div class="post-thumbnail">
-                                        <img width="320" height="320" src="https://www.ofwteleserye.su/wp-content/uploads/2024/12/xTV-Patrol-Express-320x320.jpg.pagespeed.ic.iEaVYNNxwB.webp" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" decoding="async" srcset="https://www.ofwteleserye.su/wp-content/uploads/2024/12/TV-Patrol-Express-320x320.jpg 320w, https://www.ofwteleserye.su/wp-content/uploads/2024/12/TV-Patrol-Express-150x150.jpg 150w" sizes="(max-width: 320px) 100vw, 320px" data-pagespeed-url-hash="2136403535" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"/>
-                                    </div>
-                                    <!-- END .post-thumbnail -->
-                                </div>
-                                <!-- END .right -->
-                                <div class="left">
-                                    <div class="post-meta category-links">
-                                        <a href="https://www.ofwteleserye.su/category/tv-patrol-express/" title="View all posts in TV Patrol Express">TV Patrol Express</a>
-                                    </div>
-                                    <!-- END .post-meta -->
-                                    <h2 class="post-title">
-                                        <a href="https://www.ofwteleserye.su/tv-patrol-express-march-26-2025/" title="TV Patrol Express March 26, 2025" rel="bookmark">TV Patrol Express March 26, 2025</a>
-                                    </h2>
-                                    <!-- END .post-excerpt -->
-                                </div>
-                                <!-- END .left -->
-                            </article>
-                            <!-- END .post-item -->
-                            <article id="post-272803" class="post-item post-272803 post type-post status-publish format-standard has-post-thumbnail hentry category-tv-patrol-express tag-tv-patrol-express">
-                                <div class="right">
-                                    <div class="post-thumbnail">
-                                        <img width="320" height="320" src="https://www.ofwteleserye.su/wp-content/uploads/2024/12/xTV-Patrol-Express-320x320.jpg.pagespeed.ic.iEaVYNNxwB.webp" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" decoding="async" srcset="https://www.ofwteleserye.su/wp-content/uploads/2024/12/TV-Patrol-Express-320x320.jpg 320w, https://www.ofwteleserye.su/wp-content/uploads/2024/12/TV-Patrol-Express-150x150.jpg 150w" sizes="(max-width: 320px) 100vw, 320px" data-pagespeed-url-hash="2136403535" onload="pagespeed.CriticalImages.checkImageForCriticality(this);"/>
-                                    </div>
-                                    <!-- END .post-thumbnail -->
-                                </div>
-                                <!-- END .right -->
-                                <div class="left">
-                                    <div class="post-meta category-links">
-                                        <a href="https://www.ofwteleserye.su/category/tv-patrol-express/" title="View all posts in TV Patrol Express">TV Patrol Express</a>
-                                    </div>
-                                    <!-- END .post-meta -->
-                                    <h2 class="post-title">
-                                        <a href="https://www.ofwteleserye.su/tv-patrol-express-march-25-2025/" title="TV Patrol Express March 25, 2025" rel="bookmark">TV Patrol Express March 25, 2025</a>
-                                    </h2>
-                                    <!-- END .post-excerpt -->
-                                </div>
-                                <!-- END .left -->
-                            </article>
-                            <!-- END .post-item -->`);
+function detect(source) {
+    /* Detects whether `source` is P.A.C.K.E.R. coded. */
+    return source.replace(" ", "").startsWith("eval(function(p,a,c,k,e,");
+}
+
+function unpack(source) {
+    /* Unpacks P.A.C.K.E.R. packed js code. */
+    let { payload, symtab, radix, count } = _filterargs(source);
+    if (count != symtab.length) {
+        throw Error("Malformed p.a.c.k.e.r. symtab.");
+    }
+    let unbase;
+    try {
+        unbase = new Unbaser(radix);
+    }
+    catch (e) {
+        throw Error("Unknown p.a.c.k.e.r. encoding.");
+    }
+    function lookup(match) {
+        /* Look up symbols in the synthetic symtab. */
+        const word = match;
+        let word2;
+        if (radix == 1) {
+            //throw Error("symtab unknown");
+            word2 = symtab[parseInt(word)];
+        }
+        else {
+            word2 = symtab[unbase.unbase(word)];
+        }
+        return word2 || word;
+    }
+    source = payload.replace(/\b\w+\b/g, lookup);
+    return _replacestrings(source);
+    function _filterargs(source) {
+        /* Juice from a source file the four args needed by decoder. */
+        const juicers = [
+            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\), *(\d+), *(.*)\)\)/,
+            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\)/,
+        ];
+        for (const juicer of juicers) {
+            //const args = re.search(juicer, source, re.DOTALL);
+            const args = juicer.exec(source);
+            if (args) {
+                let a = args;
+                if (a[2] == "[]") {
+                    //don't know what it is
+                    // a = list(a);
+                    // a[1] = 62;
+                    // a = tuple(a);
+                }
+                try {
+                    return {
+                        payload: a[1],
+                        symtab: a[4].split("|"),
+                        radix: parseInt(a[2]),
+                        count: parseInt(a[3]),
+                    };
+                }
+                catch (ValueError) {
+                    throw Error("Corrupted p.a.c.k.e.r. data.");
+                }
+            }
+        }
+        throw Error("Could not make sense of p.a.c.k.e.r data (unexpected code structure)");
+    }
+    function _replacestrings(source) {
+        /* Strip string lookup table (list) and replace values in source. */
+        /* Need to work on this. */
+        return source;
+    }
+}

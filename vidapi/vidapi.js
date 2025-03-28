@@ -200,7 +200,7 @@ async function extractStreamUrl(url) {
             const episodeNumber = match[3];
 
             try {
-                const responseText = await fetchv2(`https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber}`);
+                const responseText = await fetch(`https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber}`);
                 const data = await responseText.text();
 
                 const iframeMatch = data.match(/<iframe[^>]+src=["']([^"']+)["']/);
@@ -223,7 +223,7 @@ async function extractStreamUrl(url) {
                     }
                 };
                 
-                const iframeResponse = await fetchv2(iframeSrc, headers);
+                const iframeResponse = await fetch(iframeSrc, headers);
                 const iframeHtml = await iframeResponse.text();
 
                 const packedScriptMatch = iframeHtml.match(/(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
@@ -375,4 +375,4 @@ function unpack(source) {
     }
 }
 
-// extractStreamUrl(`https://vidapi.xyz/embed/tv/60735&s=9&e=1`);
+extractStreamUrl(`https://vidapi.xyz/embed/tv/60735&s=9&e=1`);
