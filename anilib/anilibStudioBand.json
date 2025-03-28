@@ -5,8 +5,8 @@
         "name": "ibro",
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg"
     },
-    "version": "1.0.4",
-    "language": "Russian DUB (Studio Band)",
+    "version": "1.0.5",
+    "language": "Russian (DUB)",
     "streamType": "MP4",
     "quality": "4K",
     "baseUrl": "https://anilib.me/",
