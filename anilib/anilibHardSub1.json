@@ -1,17 +1,17 @@
 {
-    "sourceName": "AnimeLIB (SUB)",
+    "sourceName": "AnimeLIB (Hard SUB)",
     "iconUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/icon.png",
     "author": {
         "name": "ibro",
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg"
     },
     "version": "1.0.0",
-    "language": "Russian (SUB)",
+    "language": "Russian (Hard SUB)",
     "streamType": "MP4",
     "quality": "1080p",
     "baseUrl": "https://anilib.me/",
     "searchBaseUrl": "https://api2.mangalib.me/api/anime?q=%s",
-    "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibSub.js",
+    "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibHardSub1.js",
     "type": "anime",
     "asyncJS": true,
     "softsub": true
