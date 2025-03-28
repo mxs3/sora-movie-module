@@ -86,12 +86,8 @@ async function extractStreamUrl(url) {
         // const animeSlug = match[1];
         const episodeId = match[2];
 
-        console.log("Episode ID:", episodeId);
-
         const responseText = await fetchv2(`https://api2.mangalib.me/api/episodes/${episodeId}`);
         const data = await responseText.json();
-
-        console.log(data);
 
         const animePlayers = data.data.players;
 
@@ -104,7 +100,7 @@ async function extractStreamUrl(url) {
         });
 
         const result = {
-            stream: highestResStream ? ` https://video2.cdnlibs.org/${highestResStream.href}` : "",
+            stream: highestResStream ? ` https://video2.cdnlibs.org${highestResStream.href}` : "",
             subtitles: subtitles ? subtitles.src : ""
         };
 
