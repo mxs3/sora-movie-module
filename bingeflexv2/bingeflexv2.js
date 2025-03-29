@@ -131,32 +131,9 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     // "hyvax" is with .srt captions
-
     const servicesWithoutCaption = [
         "guru",
-        // "halo",
-        // "g1",
-        // "g2",
-        // "alpha",
-        // "fastx",
-        // "astra",
-        // "ninja",
-        // "catflix",
-        // "hyvax",
-        // "vidcloud",
-        // "filmxyz",
-        // "shadow",
-        // "kaze",
-        // "asiacloud",
-        // "zenith",
-        // "kage",
-        // "anime",
-        // "ghost",
-        // "filmecho",
-        // "kinoecho",
-        // "ee3",
-        // "putafilme",
-        // "ophim",
+        // other services can be uncommented as needed
     ];
 
     const secretKey = ["I", "3LZu", "M2V3", "4EXX", "s4", "yRy", "oqMz", "ysE", "RT", "iSI", "zlc", "H", "YNp", "5vR6", "h9S", "R", "jo", "F", "h2", "W8", "i", "sz09", "Xom", "gpU", "q", "6Qvg", "Cu", "5Zaz", "VK", "od", "FGY4", "eu", "D5Q", "smH", "11eq", "QrXs", "3", "L3", "YhlP", "c", "Z", "YT", "bnsy", "5", "fcL", "L22G", "r8", "J", "4", "gnK"];
@@ -167,25 +144,21 @@ async function extractStreamUrl(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
+            let result = null;
 
             for (let i = 0; i < servicesWithoutCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
                     const service = servicesWithoutCaption[i];
                     const apiUrl = `https://rivestream.org/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
-                    // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${movieId}&api_key=d64117f26031a428449f102ced3aba73`;
-
                     try {
                         const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
-                        const subtitleTrackData = JSON.parse(subtitleTrackResponse);
-
+                        const subtitleTrackData = await subtitleTrackResponse.json();
                         const subtitleTrack = subtitleTrackData.find(track =>
                             track.display.startsWith('English')
                         );
 
-                        console.log(JSON.stringify(subtitleTrack));
-                        
                         const response2 = await fetch(apiUrl);
-                        const data2 = JSON.parse(response2);
+                        const data2 = await response2.json();
 
                         if (data2 && data2.error !== "Internal Server Error") {
                             const sources = data2.data?.sources?.filter(source => source.format === 'hls');
@@ -194,16 +167,15 @@ async function extractStreamUrl(url) {
                                     title: source.quality,
                                     url: source.url
                                 }));
-
-                                const result = {
+                                result = {
                                     streams: streams,
                                     subtitles: subtitleTrack ? subtitleTrack.url : ""
                                 };
-
                                 return JSON.stringify(result);
                             }
                         }
 
+                        // Fallback calculation using movieId
                         const C = movieId
                             .toString()
                             .split("")
@@ -217,19 +189,14 @@ async function extractStreamUrl(url) {
                         const D = btoa(A);
                         const urlovo = `https://api.vid3c.site/allmvse2.php?id=${D}`;
                         const response = await fetch(urlovo);
-                        const data = JSON.parse(response);
-
-                        console.log(JSON.stringify(data));
+                        const data = await response.json();
 
                         if (data && data.source3) {
-                            const hlsSource = data.source3?.url;
-
-                            const result = {
-                                stream: hlsSource || "",
+                            const hlsSource = data.source3.url;
+                            result = {
+                                streams: [{ title: "", url: hlsSource || "" }],
                                 subtitles: subtitleTrack ? subtitleTrack.url : ""
                             };
-
-                            console.log(JSON.stringify(result));
                             return JSON.stringify(result);
                         }
                     } catch (err) {
@@ -244,27 +211,21 @@ async function extractStreamUrl(url) {
             const showId = match[1];
             const seasonNumber = match[2];
             const episodeNumber = match[3];
+            let result = null;
 
             for (let i = 0; i < servicesWithoutCaption.length; i++) {
                 for (let j = 0; j < secretKey.length; j++) {
                     const service = servicesWithoutCaption[i];
                     const apiUrl = `https://rivestream.org/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
-                    // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&api_key=d64117f26031a428449f102ced3aba73`
-
                     try {
                         const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
-                        const subtitleTrackData = JSON.parse(subtitleTrackResponse);
-
-                        console.log(JSON.stringify(subtitleTrackData));
-
+                        const subtitleTrackData = await subtitleTrackResponse.json();
                         const subtitleTrack = subtitleTrackData.find(track =>
                             track.display.startsWith('English')
                         );
-                        
-                        const response2 = await fetch(apiUrl);
-                        const data2 = JSON.parse(response2);
 
-                        console.log(JSON.stringify(data2));
+                        const response2 = await fetch(apiUrl);
+                        const data2 = await response2.json();
 
                         if (data2 && data2.error !== "Internal Server Error") {
                             const sources = data2.data?.sources?.filter(source => source.format === 'hls');
@@ -273,7 +234,7 @@ async function extractStreamUrl(url) {
                                     title: source.quality,
                                     url: source.url
                                 }));
-                                const result = {
+                                result = {
                                     streams: streams,
                                     subtitles: subtitleTrack ? subtitleTrack.url : ""
                                 };
@@ -281,25 +242,21 @@ async function extractStreamUrl(url) {
                             }
                         }
 
+                        // Fallback for TV
                         const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
                         const reversedString = formattedString.split('').reverse().join('');
                         const firstBase64 = btoa(reversedString);
                         const secondBase64 = btoa(firstBase64);
-                        const url = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
-                        const response = await fetch(url);
-                        const data = JSON.parse(response);
-
-                        console.log(JSON.stringify(data));
+                        const fallbackUrl = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
+                        const response = await fetch(fallbackUrl);
+                        const data = await response.json();
 
                         if (data && data.source3) {
-                            const hlsSource = data.source3?.url;
-
-                            const result = {
-                                stream: hlsSource || "",
+                            const hlsSource = data.source3.url;
+                            result = {
+                                streams: [{ title: "", url: hlsSource || "" }],
                                 subtitles: subtitleTrack ? subtitleTrack.url : ""
                             };
-
-                            console.log(result);
                             return JSON.stringify(result);
                         }
                     } catch (err) {
