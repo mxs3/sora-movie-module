@@ -206,31 +206,30 @@ async function extractStreamUrl(url) {
                                 const playlistResponse = await fetchv2(hlsSource.url);
                                 const playlistText = await playlistResponse.text();
 
-                                console.log(playlistText);
+                                console.log("HLS Playlist Text:\n" + playlistText);
 
-                                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)(?:\n|$)/g);
-
+                                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)\n/g);
                                 if (streamMatches) {
                                     const streams = streamMatches
-                                        .map(matchStr => {
-                                            const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
-                                            const lines = matchStr.split('\n').filter(Boolean);
-                                            const relativeUrl = lines[1];
-                                            if (resolutionMatch && relativeUrl) {
-                                                return {
-                                                    width: parseInt(resolutionMatch[1], 10),
-                                                    height: parseInt(resolutionMatch[2], 10),
-                                                    url: relativeUrl
-                                                };
-                                            }
-                                            return null;
-                                        })
-                                        .filter(Boolean)
-                                        .sort((a, b) => b.width - a.width);
+                                    .map(matchStr => {
+                                        const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
+                                        const lines = matchStr.split('\n').filter(Boolean);
+                                        const relativeUrl = lines[1];
+                                        if (resolutionMatch && relativeUrl) {
+                                            return {
+                                                width: parseInt(resolutionMatch[1], 10),
+                                                height: parseInt(resolutionMatch[2], 10),
+                                                url: relativeUrl
+                                            };
+                                        }
+                                        return null;
+                                    })
+                                    .filter(Boolean)
+                                    .sort((a, b) => b.width - a.width);
 
                                     const highestResStream = streams[0];
 
-                                    console.log(highestResStream);
+                                    console.log("Highest resolution stream:" + highestResStream.url);
 
                                     if (highestResStream) {
                                         const parts = hlsSource.url.split('/');
@@ -476,3 +475,5 @@ function btoa(input) {
 
     return output;
 }
+
+extractStreamUrl("https://bingeflex.vercel.app/tv/228878?season=1&episode=1");
