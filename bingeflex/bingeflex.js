@@ -175,17 +175,15 @@ async function extractStreamUrl(url) {
                     // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${movieId}&api_key=d64117f26031a428449f102ced3aba73`;
 
                     try {
-                        const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
+                        const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
                         const subtitleTrackData = await subtitleTrackResponse.json();
 
                         const subtitleTrack = subtitleTrackData.find(track =>
                             track.display.startsWith('English')
                         );
-
-                        console.log(JSON.stringify(subtitleTrack));
                         
-                        const response = await fetch(apiUrl);
-                        const data = await response.text();
+                        const response = await fetchv2(apiUrl);
+                        const data = await response.json();
 
                         if (data && data.error !== "Internal Server Error") {
                             const preferredQualities = ['HLS 1', 'HLS 7', 'HLS 10', 'HLS 13', 'HLS 15', 'HLS 4'];
@@ -206,30 +204,31 @@ async function extractStreamUrl(url) {
                                 const playlistResponse = await fetchv2(hlsSource.url);
                                 const playlistText = await playlistResponse.text();
 
-                                console.log("HLS Playlist Text:\n" + playlistText);
+                                console.log(playlistText);
 
-                                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)\n/g);
+                                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)(?:\n|$)/g);
+
                                 if (streamMatches) {
                                     const streams = streamMatches
-                                    .map(matchStr => {
-                                        const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
-                                        const lines = matchStr.split('\n').filter(Boolean);
-                                        const relativeUrl = lines[1];
-                                        if (resolutionMatch && relativeUrl) {
-                                            return {
-                                                width: parseInt(resolutionMatch[1], 10),
-                                                height: parseInt(resolutionMatch[2], 10),
-                                                url: relativeUrl
-                                            };
-                                        }
-                                        return null;
-                                    })
-                                    .filter(Boolean)
-                                    .sort((a, b) => b.width - a.width);
+                                        .map(matchStr => {
+                                            const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
+                                            const lines = matchStr.split('\n').filter(Boolean);
+                                            const relativeUrl = lines[1];
+                                            if (resolutionMatch && relativeUrl) {
+                                                return {
+                                                    width: parseInt(resolutionMatch[1], 10),
+                                                    height: parseInt(resolutionMatch[2], 10),
+                                                    url: relativeUrl
+                                                };
+                                            }
+                                            return null;
+                                        })
+                                        .filter(Boolean)
+                                        .sort((a, b) => b.width - a.width);
 
                                     const highestResStream = streams[0];
 
-                                    console.log("Highest resolution stream:" + highestResStream.url);
+                                    console.log(highestResStream);
 
                                     if (highestResStream) {
                                         const parts = hlsSource.url.split('/');
@@ -475,5 +474,3 @@ function btoa(input) {
 
     return output;
 }
-
-extractStreamUrl("https://bingeflex.vercel.app/tv/228878?season=1&episode=1");
