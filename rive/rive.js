@@ -1,8 +1,8 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=d64117f26031a428449f102ced3aba73&query=${encodedKeyword}`);
-        const data = JSON.parse(responseText);
+        const responseText = await fetchv2(`https://api.themoviedb.org/3/search/multi?api_key=68e094699525b18a70bab2f86b1fa706&query=${encodedKeyword}`);
+        const data = await responseText.json();
 
         const transformedResults = data.results.map(result => {
             if(result.media_type === "movie" || result.title) {
@@ -40,8 +40,8 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-            const responseText = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
-            const data = JSON.parse(responseText);
+            const responseText = await fetchv2(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+            const data = await responseText.json();
 
             const transformedResults = [{
                 description: data.overview || 'No description available',
@@ -55,8 +55,8 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
-            const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
-            const data = JSON.parse(responseText);
+            const responseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+            const data = await responseText.json();
 
             const transformedResults = [{
                 description: data.overview || 'No description available',
@@ -97,8 +97,8 @@ async function extractEpisodes(url) {
             
             const showId = match[1];
             
-            const showResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
-            const showData = JSON.parse(showResponseText);
+            const showResponseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+            const showData = await showResponseText.json();
             
             let allEpisodes = [];
             for (const season of showData.seasons) {
@@ -106,8 +106,8 @@ async function extractEpisodes(url) {
 
                 if(seasonNumber === 0) continue;
                 
-                const seasonResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
-                const seasonData = JSON.parse(seasonResponseText);
+                const seasonResponseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+                const seasonData = await seasonResponseText.json();
                 
                 if (seasonData.episodes && seasonData.episodes.length) {
                     const episodes = seasonData.episodes.map(episode => ({
@@ -178,61 +178,60 @@ async function extractStreamUrl(url) {
                     // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${movieId}&api_key=d64117f26031a428449f102ced3aba73`;
 
                     try {
-                        const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
-                        const subtitleTrackData = JSON.parse(subtitleTrackResponse);
+                        const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
+                        const subtitleTrackData = await subtitleTrackResponse.json();
 
                         const subtitleTrack = subtitleTrackData.find(track =>
                             track.display.startsWith('English')
                         );
-
-                        console.log(JSON.stringify(subtitleTrack));
                         
-                        const response2 = await fetch(apiUrl);
-                        const data2 = JSON.parse(response2);
+                        const response = await fetchv2(apiUrl);
+                        const data = await response.json();
 
-                        if (data2 && data2.error !== "Internal Server Error") {
-                            const preferredQualities = ['HLS 7', 'HLS 10', 'HLS 13', 'HLS 15', 'HLS 4'];
+                        if (data && data.error !== "Internal Server Error") {
+                            const preferredQualities = ['HLS 1', 'HLS 7', 'HLS 10', 'HLS 13', 'HLS 15', 'HLS 4'];
                             let hlsSource;
 
                             for (const quality of preferredQualities) {
-                                hlsSource = data2.data?.sources?.find(source => source.format === 'hls' && source.quality === quality);
+                                hlsSource = data.data?.sources?.find(source => source.format === 'hls' && source.quality === quality);
                                 if (hlsSource) break;
                             }
 
                             if (!hlsSource) {
-                                hlsSource = data2.data?.sources?.find(source => source.format === 'hls');
+                                hlsSource = data.data?.sources?.find(source => source.format === 'hls');
                             }
 
                             console.log("URL:" + JSON.stringify(hlsSource?.url));
 
                             if (hlsSource?.url && !hlsSource.url.includes("uwu")) {
-                                const playlistResponse = await fetch(hlsSource.url);
-                                const playlistText = await playlistResponse;
+                                const playlistResponse = await fetchv2(hlsSource.url);
+                                const playlistText = await playlistResponse.text();
 
-                                console.log("HLS Playlist Text:\n" + playlistText);
+                                console.log(playlistText);
 
-                                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)\n/g);
+                                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)(?:\n|$)/g);
+
                                 if (streamMatches) {
                                     const streams = streamMatches
-                                    .map(matchStr => {
-                                        const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
-                                        const lines = matchStr.split('\n').filter(Boolean);
-                                        const relativeUrl = lines[1];
-                                        if (resolutionMatch && relativeUrl) {
-                                            return {
-                                                width: parseInt(resolutionMatch[1], 10),
-                                                height: parseInt(resolutionMatch[2], 10),
-                                                url: relativeUrl
-                                            };
-                                        }
-                                        return null;
-                                    })
-                                    .filter(Boolean)
-                                    .sort((a, b) => b.width - a.width);
+                                        .map(matchStr => {
+                                            const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
+                                            const lines = matchStr.split('\n').filter(Boolean);
+                                            const relativeUrl = lines[1];
+                                            if (resolutionMatch && relativeUrl) {
+                                                return {
+                                                    width: parseInt(resolutionMatch[1], 10),
+                                                    height: parseInt(resolutionMatch[2], 10),
+                                                    url: relativeUrl
+                                                };
+                                            }
+                                            return null;
+                                        })
+                                        .filter(Boolean)
+                                        .sort((a, b) => b.width - a.width);
 
                                     const highestResStream = streams[0];
 
-                                    console.log("Highest resolution stream:" + highestResStream.url);
+                                    console.log(highestResStream);
 
                                     if (highestResStream) {
                                         const parts = hlsSource.url.split('/');
@@ -259,39 +258,55 @@ async function extractStreamUrl(url) {
                                 return JSON.stringify(result);
                             }
                         }
-
-                        const C = movieId
-                            .toString()
-                            .split("")
-                            .map((digit) => {
-                                const encoding = "abcdefghij";
-                                return encoding[parseInt(digit)];
-                            })
-                            .join("");
-                        const B = C.split("").reverse().join("");
-                        const A = btoa(B);
-                        const D = btoa(A);
-                        const urlovo = `https://api.vid3c.site/allmvse2.php?id=${D}`;
-                        const response = await fetch(urlovo);
-                        const data = JSON.parse(response);
-
-                        console.log(JSON.stringify(data));
-
-                        if (data && data.source3) {
-                            const hlsSource = data.source3?.url;
-
-                            const result = {
-                                stream: hlsSource || "",
-                                subtitles: subtitleTrack ? subtitleTrack.url : ""
-                            };
-
-                            console.log(JSON.stringify(result));
-                            return JSON.stringify(result);
-                        }
                     } catch (err) {
                         console.log(`Fetch error on endpoint ${apiUrl} for movie ${movieId}:`, err);
                     }
                 }
+            }
+
+            try {
+                const C = movieId
+                    .toString()
+                    .split("")
+                    .map((digit) => {
+                        const encoding = "abcdefghij";
+                        return encoding[parseInt(digit)];
+                    })
+                    .join("");
+                const B = C.split("").reverse().join("");
+                const A = btoa(B);
+                const D = btoa(A);
+                const urlovo = `https://api.vid3c.site/allmvse2.php?id=${D}`;
+                const response = await fetchv2(urlovo);
+                const data = await response.json();
+
+                console.log(JSON.stringify(data));
+
+                if (data && data.source3) {
+                    const hlsSource = data.source3?.url;
+
+                    const result = {
+                        stream: hlsSource || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                }
+
+                if (data && data.source1) {
+                    const hlsSource = data.source1?.url;
+
+                    const result = {
+                        stream: hlsSource || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                }
+            } catch (err) {
+                console.log('Fetch error in extractStreamUrl:', err);
             }
         } else if (url.includes('tv')) {
             const match = url.match(/https:\/\/rivestream\.org\/watch\?type=tv&id=([^\/]+)&season=([^\/]+)&episode=([^\/]+)/);
@@ -308,40 +323,37 @@ async function extractStreamUrl(url) {
                     // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&api_key=d64117f26031a428449f102ced3aba73`
 
                     try {
-                        const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
-                        const subtitleTrackData = JSON.parse(subtitleTrackResponse);
-
-                        console.log(JSON.stringify(subtitleTrackData));
+                        const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+                        const subtitleTrackData = await subtitleTrackResponse.json();
 
                         const subtitleTrack = subtitleTrackData.find(track =>
                             track.display.startsWith('English')
                         );
                         
-                        const response2 = await fetch(apiUrl);
-                        const data2 = JSON.parse(response2);
+                        const response = await fetchv2(apiUrl);
+                        const data = await response.json();
 
-                        console.log(JSON.stringify(data2));
-
-                        if (data2 && data2.error !== "Internal Server Error") {
-                            const preferredQualities = ['HLS 7', 'HLS 10', 'HLS 13', 'HLS 15', 'HLS 4'];
+                        if (data && data.error !== "Internal Server Error") {
+                            const preferredQualities = ['HLS 1', 'HLS 7', 'HLS 10', 'HLS 13', 'HLS 15', 'HLS 4'];
                             let hlsSource;
 
                             for (const quality of preferredQualities) {
-                                hlsSource = data2.data?.sources?.find(source => source.format === 'hls' && source.quality === quality);
+                                hlsSource = data.data?.sources?.find(source => source.format === 'hls' && source.quality === quality);
                                 if (hlsSource) break;
                             }
 
                             if (!hlsSource) {
-                                hlsSource = data2.data?.sources?.find(source => source.format === 'hls');
+                                hlsSource = data.data?.sources?.find(source => source.format === 'hls');
                             }
 
                             if (hlsSource?.url && !hlsSource.url.includes("uwu")) {
-                                const playlistResponse = await fetch(hlsSource.url);
-                                const playlistText = playlistResponse;
+                                const playlistResponse = await fetchv2(hlsSource.url);
+                                const playlistText = await playlistResponse.text();
 
                                 console.log(playlistText);
 
-                                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)\n/g);
+                                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)(?:\n|$)/g);
+
                                 if (streamMatches) {
                                     const streams = streamMatches
                                         .map(matchStr => {
@@ -389,32 +401,55 @@ async function extractStreamUrl(url) {
                                 return JSON.stringify(result);
                             }
                         }
-
-                        const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
-                        const reversedString = formattedString.split('').reverse().join('');
-                        const firstBase64 = btoa(reversedString);
-                        const secondBase64 = btoa(firstBase64);
-                        const url = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
-                        const response = await fetch(url);
-                        const data = JSON.parse(response);
-
-                        console.log(JSON.stringify(data));
-
-                        if (data && data.source3) {
-                            const hlsSource = data.source3?.url;
-
-                            const result = {
-                                stream: hlsSource || "",
-                                subtitles: subtitleTrack ? subtitleTrack.url : ""
-                            };
-
-                            console.log(result);
-                            return JSON.stringify(result);
-                        }
                     } catch (err) {
                         console.log(`Fetch error on endpoint ${apiUrl} for show ${showId}:`, err);
                     }
                 }
+            }
+
+            try {
+                const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+                const subtitleTrackData = await subtitleTrackResponse.json();
+
+                const subtitleTrack = subtitleTrackData.find(track =>
+                    track.display.startsWith('English')
+                );
+
+                const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
+                const reversedString = formattedString.split('').reverse().join('');
+                const firstBase64 = btoa(reversedString);
+                const secondBase64 = btoa(firstBase64);
+                const url = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
+                const response = await fetchv2(url);
+                const data = await response.json();
+
+                console.log(JSON.stringify(data));
+
+                if (data && data.source3) {
+                    const hlsSource = data.source3?.url;
+
+                    const result = {
+                        stream: hlsSource || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+
+                    console.log(result);
+                    return JSON.stringify(result);
+                }
+
+                if (data && data.source1) {
+                    const hlsSource = data.source1?.url;
+
+                    const result = {
+                        stream: hlsSource || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+
+                    console.log(result);
+                    return JSON.stringify(result);
+                }
+            } catch (err) {
+                console.log('Fetch error in extractStreamUrl:', err);
             }
         } else {
             throw new Error("Invalid URL format");
