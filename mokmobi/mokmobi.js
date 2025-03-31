@@ -137,7 +137,7 @@ async function extractStreamUrl(url) {
 
             const movieId = match[1];
 
-            const response = await fetch(`https://vidsrc.su/embed/movie/${movieId}`);
+            const response = await fetchv2(`https://vidsrc.su/embed/movie/${movieId}`);
             const data = await response.text();
 
             const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
@@ -209,16 +209,62 @@ async function extractStreamUrl(url) {
             console.log("Subtitle URLs:", subtitleUrls);
 
             const firstServer = serverUrls.find(server => server.trim() !== "");
-
             const firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English'));
 
-            const result = {
-                stream: firstServer ? firstServer : "",
-                subtitles: firstSubtitle ? firstSubtitle.url : ""
-            };
+            if (!firstServer.includes("uwu")) {
+                const playlistResponse = await fetch(firstServer);
+                const playlistText = await playlistResponse.text();
 
-            console.log("Result:", result);
-            return JSON.stringify(result);
+                console.log(playlistText);
+
+                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)(?:\n|$)/g);
+
+                if (streamMatches) {
+                    const streams = streamMatches
+                        .map(matchStr => {
+                            const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
+                            const lines = matchStr.split('\n').filter(Boolean);
+                            const relativeUrl = lines[1];
+                            if (resolutionMatch && relativeUrl) {
+                                return {
+                                    width: parseInt(resolutionMatch[1], 10),
+                                    height: parseInt(resolutionMatch[2], 10),
+                                    url: relativeUrl
+                                };
+                            }
+                            return null;
+                        })
+                        .filter(Boolean)
+                        .sort((a, b) => b.width - a.width);
+
+                    const highestResStream = streams[0];
+
+                    console.log(highestResStream);
+
+                    if (highestResStream) {
+                        const parts = firstServer.split('/');
+                        const baseUrl = parts[0] + '//' + parts[2] + '/';
+
+                        const finalStreamUrl = baseUrl + highestResStream.url;
+
+                        const result = {
+                            stream: finalStreamUrl || "",
+                            subtitles: firstSubtitle ? firstSubtitle.url : ""
+                        };
+
+                        console.log(result);
+                        return JSON.stringify(result);
+                    }
+                }
+            } else {
+                const result = {
+                    stream: firstServer ? firstServer : "",
+                    subtitles: firstSubtitle ? firstSubtitle.url : ""
+                };
+            
+                console.log("Result:", result);
+                return JSON.stringify(result);
+            }
         } else {
             throw new Error("Invalid URL format");
         }
