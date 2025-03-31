@@ -137,7 +137,10 @@ async function extractStreamUrl(url) {
 
             const movieId = match[1];
 
-            const response = await fetchv2(`https://vidsrc.su/embed/movie/${movieId}`);
+            const responseText = await fetchv2(`https://www.mokmobi.ovh/api/stream/movie/${movieId}?server=VIDSRCSU&Autonext=1&Autoplay=1`);
+            const dataText = await responseText.json();
+
+            const response = await fetchv2(dataText.stream_url);
             const data = await response.text();
 
             const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
@@ -182,7 +185,10 @@ async function extractStreamUrl(url) {
             const seasonNumber = match[2];
             const episodeNumber = match[3];
 
-            const response = await fetchv2(`https://vidsrc.su/embed/tv/${showId}/${seasonNumber}/${episodeNumber}`);
+            const responseText = await fetchv2(`https://www.mokmobi.ovh/api/stream/tv/${showId}?server=VIDSRCSU&season=${seasonNumber}&episode=${episodeNumber}&Autonext=1&Autoplay=1`);
+            const dataText = await responseText.json();
+
+            const response = await fetchv2(dataText.stream_url);
             const data = await response.text();
 
             const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
