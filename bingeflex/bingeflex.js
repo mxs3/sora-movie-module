@@ -270,6 +270,13 @@ async function extractStreamUrl(url) {
             }
 
             try {
+                const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
+                const subtitleTrackData = await subtitleTrackResponse.json();
+
+                const subtitleTrack = subtitleTrackData.find(track =>
+                    track.display.startsWith('English')
+                );
+
                 const C = movieId
                     .toString()
                     .split("")

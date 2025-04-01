@@ -92,7 +92,35 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <summary>
 
-        ### 3️⃣ Let's Stream (⚠️ Read note)
+        ### 3️⃣ Mokmobi
+
+        </summary>
+
+        <span>
+        
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/mokmobi/icon.png" width="125px"><br>
+
+        **File:** `Mokmobi.json`<br>
+        **Type:** `TV Shows and Movies`<br>
+        **Language:** English. 🇺🇸 (SUB)<br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+
+        <span></span>
+        
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/mokmobi/mokmobi.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/mokmobi/mokmobi.json
+        
+        </span>
+
+        </details>
+
+      <!-- - <details>
+
+        <summary>
+
+        ### 4️⃣ Let's Stream (⚠️ Read note)
 
         </summary>
 
@@ -115,7 +143,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
         
         </span>
 
-        </details>
+        </details> -->
 
       <!-- - <details>
 
@@ -140,7 +168,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
     </details>
 
-  - <details>
+  <!-- - <details>
 
     <summary>
 
@@ -148,7 +176,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
     </summary>
 
-      <!-- - <details>
+      - <details>
 
         <summary>
 
@@ -167,7 +195,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/autoembed/autoembed.json
 
-        </details> -->
+        </details>
 
       - <details>
 
@@ -187,6 +215,142 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json)
 
         https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/hopcorn/hopcorn.json
+
+        </details>
+
+    </details> -->
+
+  - <details>
+
+    <summary>
+
+    ### 🍥 Anime
+
+    </summary>
+
+      - <details>
+
+        <summary>
+
+        ### 1️⃣ AnimeLIB (DUB - First Stream)
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/icon.png" width="125px"><br>
+
+        **File:** `AnimeLIBHardSub2.json`<br>
+        **Type:** `Anime`<br>
+        **Language:** Russian. 🇷🇺 (HARDSUB) <br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibHardSub2.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibHardSub2.json
+
+        </details>
+
+      - <details>
+
+        <summary>
+
+        ### 2️⃣ AnimeLIB (SUB - First Stream)
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/icon.png" width="125px"><br>
+
+        **File:** `AnimeLIBSoftSub2.json`<br>
+        **Type:** `Anime`<br>
+        **Language:** Russian. 🇷🇺 (SUB) <br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibSoftSub2.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibSoftSub2.json
+
+        </details>
+
+      - <details>
+
+        <summary>
+
+        ### 2️⃣ AnimeLIB (DUB)
+        
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/icon.png" width="125px"><br>
+
+        **File:** `AnimeLIB.json`<br>
+        **Type:** `Anime`<br>
+        **Language:** Russian. 🇷🇺 (DUB) <br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibSoftSub2.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibSoftSub2.json
+
+        </details>
+
+      - <details>
+
+        <summary>
+
+        ### 2️⃣ AnimeLIB (SOFTSUB)
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/icon.png" width="125px"><br>
+
+        **File:** `AnimeLIB.json`<br>
+        **Type:** `Anime`<br>
+        **Language:** Russian. 🇷🇺 (SOFTSUB) <br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibSoftSub.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibSoftSub.json
+
+        </details>
+
+      - <details>
+
+        <summary>
+
+        ### 1️⃣ RistoAnime
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ristoanime/icon.png" width="125px"><br>
+
+        **File:** `RistoAnime.json`<br>
+        **Type:** `Anime`<br>
+        **Language:** Arabic. 🇸🇦 (SUB) <br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ristoanime/ristoanime.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ristoanime/ristoanime.json
+
+        </details>
+
+      - <details>
+
+        <summary>
+
+        ### 1️⃣ Peak
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/peak/icon.jpg" width="125px"><br>
+
+        **File:** `Peak.json`<br>
+        **Type:** `Anime`<br>
+        **Language:** English. 🇺🇸 (SUB) <br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/peak/peak.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/peak/peak.json
 
         </details>
 
@@ -261,58 +425,6 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/kisskh.json)
 
         https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kisskh/kisskh.json
-
-        </details>
-
-    </details>
-
-     <details>
-
-    <summary>
-
-    ### 🍥 Anime
-
-    </summary>
-
-      - <details>
-
-        <summary>
-
-        ### 1️⃣ RistoAnime
-
-        </summary>
-
-        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ristoanime/icon.png" width="125px"><br>
-
-        **File:** `RistoAnime.json`<br>
-        **Type:** `Anime`<br>
-        **Language:** Arabic. 🇸🇦 (SUB) <br>
-        **App version:** V2 and up <br>
-        **Author:** ibro <br><br>
-        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ristoanime/ristoanime.json)
-
-        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ristoanime/ristoanime.json
-
-        </details>
-
-      - <details>
-
-        <summary>
-
-        ### 1️⃣ Peak
-
-        </summary>
-
-        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/peak/icon.jpg" width="125px"><br>
-
-        **File:** `Peak.json`<br>
-        **Type:** `Anime`<br>
-        **Language:** English. 🇺🇸 (SUB) <br>
-        **App version:** V2 and up <br>
-        **Author:** ibro <br><br>
-        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/peak/peak.json)
-
-        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/peak/peak.json
 
         </details>
 
