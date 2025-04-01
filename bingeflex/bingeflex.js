@@ -294,8 +294,8 @@ async function extractStreamUrl(url) {
 
                 console.log(JSON.stringify(data));
 
-                if (data && data.source3) {
-                    const hlsSource = data.source3?.url;
+                if (data && data.source4) {
+                    const hlsSource = data.source4?.url;
 
                     const result = {
                         stream: hlsSource || "",
@@ -439,14 +439,14 @@ async function extractStreamUrl(url) {
                 const reversedString = formattedString.split('').reverse().join('');
                 const firstBase64 = btoa(reversedString);
                 const secondBase64 = btoa(firstBase64);
-                const url = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
-                const response = await fetchv2(url);
+                const url2 = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
+                const response = await fetchv2(url2);
                 const data = await response.json();
 
                 console.log(JSON.stringify(data));
 
-                if (data && data.source3) {
-                    const hlsSource = data.source3?.url;
+                if (data && data.source4) {
+                    const hlsSource = data.source4?.url;
 
                     const result = {
                         stream: hlsSource || "",
