@@ -120,7 +120,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <summary>
 
-        ### 3️⃣ Net3lix
+        ### 4️⃣ Net3lix
 
         </summary>
 
@@ -148,7 +148,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <summary>
 
-        ### 3️⃣ Net3lix 2
+        ### 5️⃣ Net3lix 2
 
         </summary>
 
