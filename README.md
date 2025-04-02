@@ -372,20 +372,20 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <summary>
 
-        ### 4️⃣ AnimeLIB (SOFTSUB)
+        ### 5️⃣ AnimeLIB (DUB - Studio Band)
 
         </summary>
 
         <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/icon.png" width="125px"><br>
 
-        **File:** `AnimeLIBSoftSub.json`<br>
+        **File:** `AnimeLIBStudioBand.json`<br>
         **Type:** `Anime`<br>
-        **Language:** Russian. 🇷🇺 (SOFTSUB) <br>
+        **Language:** Russian. 🇷🇺 (DUB - Studio Band) <br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
-        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibSoftSub.json)
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibStudioBand.json)
 
-        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibSoftSub.json
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibStudioBand.json
 
         </details>
 
@@ -393,7 +393,49 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <summary>
 
-        ### 5️⃣ RistoAnime
+        ### 6️⃣ AnimeLIB (HardSUB - Ушастая)
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/icon.png" width="125px"><br>
+
+        **File:** `AnimeLIBHardSub1.json`<br>
+        **Type:** `Anime`<br>
+        **Language:** Russian. 🇷🇺 (HARDSUB - Ушастая) <br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibHardSub1.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibHardSub1.json
+
+        </details>
+
+      - <details>
+
+        <summary>
+
+        ### 7️⃣ AnimeLIB (HardSUB - SubVost)
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/icon.png" width="125px"><br>
+
+        **File:** `AnimeLIBHardSub2.json`<br>
+        **Type:** `Anime`<br>
+        **Language:** Russian. 🇷🇺 (HARDSUB - SubVost) <br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibHardSub2.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibHardSub2.json
+
+        </details>
+
+      - <details>
+
+        <summary>
+
+        ### 8️⃣ RistoAnime
 
         </summary>
 
@@ -414,7 +456,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <summary>
 
-        ### 6️⃣ Peak
+        ### 9️⃣ Peak
 
         </summary>
 
