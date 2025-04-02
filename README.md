@@ -456,6 +456,27 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <summary>
 
+        ### 8️⃣ Aniwave (Clone)
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/aniwave/icon.png" width="125px"><br>
+
+        **File:** `Aniwave.json`<br>
+        **Type:** `Anime`<br>
+        **Language:** English. 🇺🇸 (HARDSUB) <br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/aniwave/aniwave.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/aniwave/aniwave.json
+
+        </details>
+
+      - <details>
+
+        <summary>
+
         ### 9️⃣ Peak
 
         </summary>
