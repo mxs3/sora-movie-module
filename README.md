@@ -148,7 +148,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <summary>
 
-        ### 5️⃣ Net3lix 2
+        ### 5️⃣ Net3lix 2 (Different servers)
 
         </summary>
 
@@ -372,6 +372,27 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <summary>
 
+        ### 4️⃣ AnimeLIB (SOFTSUB)
+
+        </summary>
+
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/icon.png" width="125px"><br>
+
+        **File:** `AnimeLIBSoftSub.json`<br>
+        **Type:** `Anime`<br>
+        **Language:** Russian. 🇷🇺 (SOFTSUB) <br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibSoftSub.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibSoftSub.json
+
+        </details>
+
+      - <details>
+
+        <summary>
+
         ### 5️⃣ RistoAnime
 
         </summary>
@@ -536,7 +557,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
     </summary>
 
-    - <details>
+    <!-- - <details>
 
       <summary>
 
@@ -555,7 +576,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
       https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.json
 
-      </details>
+      </details> -->
 
     - <details>
 
