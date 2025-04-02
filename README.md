@@ -274,7 +274,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <summary>
 
-        ### 2️⃣ AnimeLIB (DUB)
+        ### 3️⃣ AnimeLIB (DUB)
         
         </summary>
 
@@ -295,7 +295,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <summary>
 
-        ### 2️⃣ AnimeLIB (SOFTSUB)
+        ### 4️⃣ AnimeLIB (SOFTSUB)
 
         </summary>
 
@@ -316,7 +316,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <summary>
 
-        ### 1️⃣ RistoAnime
+        ### 5️⃣ RistoAnime
 
         </summary>
 
@@ -337,7 +337,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <summary>
 
-        ### 1️⃣ Peak
+        ### 6️⃣ Peak
 
         </summary>
 
