@@ -280,14 +280,14 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/icon.png" width="125px"><br>
 
-        **File:** `AnimeLIB.json`<br>
+        **File:** `AnimeLIBDub.json`<br>
         **Type:** `Anime`<br>
         **Language:** Russian. 🇷🇺 (DUB) <br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
-        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibSoftSub2.json)
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibDub.json)
 
-        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibSoftSub2.json
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/anilibDub.json
 
         </details>
 
@@ -301,7 +301,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/anilib/icon.png" width="125px"><br>
 
-        **File:** `AnimeLIB.json`<br>
+        **File:** `AnimeLIBSoftSub.json`<br>
         **Type:** `Anime`<br>
         **Language:** Russian. 🇷🇺 (SOFTSUB) <br>
         **App version:** V2 and up <br>
