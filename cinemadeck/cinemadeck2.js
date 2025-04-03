@@ -137,13 +137,26 @@ async function extractStreamUrl(url) {
 
             const movieId = match[1];
 
+            const responseImdb = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885&append_to_response=external_ids`);
+            const dataImdbId = JSON.parse(responseImdb);
+
+            const imdbId = dataImdbId.external_ids.imdb_id;
+
             const headers = {
-                'Origin': 'https://www.vidsrc.wtf',
-                'Referer': 'https://www.vidsrc.wtf/'
+                'Origin': 'https://vidify.top',
+                'Referer': 'https://vidify.top/'
             };
 
-            const responseText = await fetchv2(`https://api.rgshows.me/main/movie/${movieId}`, headers, "POST");
+            const responseText = await fetchv2(`https://indian-movie-api.onrender.com/api/v1/mediaInfo?id=${imdbId}`, headers, "GET");
             const data = await responseText.json();
+
+            const requestBody = JSON.stringify({
+                file: data.data.playlist,
+                id: data.data.playlist,
+                key: data.data.key
+            })
+
+            const response = await fetchv2(`https://indian-movie-api.onrender.com/api/v1/getStream`, headers, "POST", requestBody);
 
             const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
             const subtitleTrackData = await subtitleTrackResponse.json();
@@ -216,13 +229,30 @@ async function extractStreamUrl(url) {
             const seasonNumber = match[2];
             const episodeNumber = match[3];
 
+            const responseImdb = await fetch(`https://api.themoviedb.org/3/movie/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885&append_to_response=external_ids`);
+            const dataImdbId = JSON.parse(responseImdb);
+
+            const imdbId = dataImdbId.external_ids.imdb_id;
+
             const headers = {
-                'Origin': 'https://www.vidsrc.wtf',
-                'Referer': 'https://www.vidsrc.wtf/'
+                'Origin': 'https://vidify.top',
+                'Referer': 'https://vidify.top/'
             };
 
-            const responseText = await fetchv2(`https://api.rgshows.me/main/tv/${showId}/${seasonNumber}/${episodeNumber}`, headers, "POST");
+            const responseText = await fetchv2(`https://indian-movie-api.onrender.com/api/v1/mediaInfo?id=${imdbId}`, headers, "GET");
             const data = await responseText.json();
+
+            const seasonIndex = parseInt(seasonNumber) - 1;
+            const episodeIndex = parseInt(episodeNumber) - 1;
+
+            const requestBody = JSON.stringify({
+                file: data.data.playlist[seasonIndex].folder[episodeIndex][1].file,
+                id: data.data.playlist[seasonIndex].folder[episodeIndex][1].id,
+                key: data.data.key
+            })
+
+            const response = await fetchv2(`https://indian-movie-api.onrender.com/api/v1/getStream`, headers, "POST", requestBody);
+            const data2 = await response.json();
 
             const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
             const subtitleTrackData = await subtitleTrackResponse.json();
@@ -231,7 +261,7 @@ async function extractStreamUrl(url) {
                 track.display.startsWith('English')
             );
 
-            const hlsSource = data.stream;
+            const hlsSource = data2.data.link;
 
             if (hlsSource) {
                 const playlistResponse = await fetchv2(hlsSource.url);

@@ -1,6 +1,11 @@
+let keyword2 = "";
+
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
+
+        keyword2 = keyword;
+
         const responseText = await fetchv2(`https://aniwave.se/filter?keyword=${encodedKeyword}`);
         const html = await responseText.text();
 
@@ -67,11 +72,26 @@ async function extractEpisodes(url) {
 
         const transformedResults = [];
 
-        for (let i = 1; i <= episodesCount; i++) {
-            transformedResults.push({
-                href: `${url}/ep-${i}`,
-                number: i
-            });
+        if (episodesCount > 0) {
+            for (let i = 1; i <= episodesCount; i++) {
+                transformedResults.push({
+                    href: `${url}/ep-${i}`,
+                    number: i
+                });
+            }
+        } else {
+            const response = await fetchv2(`https://aniwave.se/filter?keyword=${keyword2}`);
+            const data = await response.text();
+
+            const episodesMatch2 = data.match(/<span>Ep:\s*(\d+)<\/span>/);
+            const episodesCount2 = episodesMatch2 ? parseInt(episodesMatch2[1], 10) : 0;
+
+            for (let i = 1; i <= episodesCount2; i++) {
+                transformedResults.push({
+                    href: `${url}/ep-${i}`,
+                    number: i
+                });
+            }
         }
 
         console.log(transformedResults);
