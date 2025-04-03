@@ -152,15 +152,62 @@ async function extractStreamUrl(url) {
                 track.display.startsWith('English')
             );
 
-            const hlsSource = data.stream.url;
+            const hlsSource = data.stream;
 
-            const result = {
-                stream: hlsSource ? hlsSource : "",
-                subtitles: subtitleTrack ? subtitleTrack.url : ""
-            };
-        
-            console.log("Result:", result);
-            return JSON.stringify(result);
+            if (hlsSource) {
+                const playlistResponse = await fetchv2(hlsSource.url);
+                const playlistText = await playlistResponse.text();
+
+                console.log(playlistText);
+
+                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)(?:\n|$)/g);
+
+                if (streamMatches) {
+                    const streams = streamMatches
+                        .map(matchStr => {
+                            const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
+                            const lines = matchStr.split('\n').filter(Boolean);
+                            const relativeUrl = lines[1];
+                            if (resolutionMatch && relativeUrl) {
+                                return {
+                                    width: parseInt(resolutionMatch[1], 10),
+                                    height: parseInt(resolutionMatch[2], 10),
+                                    url: relativeUrl
+                                };
+                            }
+                            return null;
+                        })
+                        .filter(Boolean)
+                        .sort((a, b) => b.width - a.width);
+
+                    const highestResStream = streams[0];
+
+                    console.log(highestResStream);
+
+                    if (highestResStream) {
+                        const parts = hlsSource.url.split('/');
+                        const baseUrl = parts[0] + '//' + parts[2] + '/';
+
+                        const finalStreamUrl = baseUrl + highestResStream.url;
+
+                        const result = {
+                            stream: finalStreamUrl || "",
+                            subtitles: subtitleTrack ? subtitleTrack.url : ""
+                        };
+
+                        console.log(result);
+                        return JSON.stringify(result);
+                    }
+                }
+            } else {
+                const result = {
+                    stream: hlsSource.url || "",
+                    subtitles: subtitleTrack ? subtitleTrack.url : ""
+                };
+
+                console.log(JSON.stringify(result));
+                return JSON.stringify(result);
+            }
         } else if (url.includes('/tv/')) {
             const match = url.match(/https:\/\/cinemadeck\.com\/play\/tv\/([^\/]+)\?s=([^\/]+)&e=([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
@@ -184,15 +231,62 @@ async function extractStreamUrl(url) {
                 track.display.startsWith('English')
             );
 
-            const hlsSource = data.stream.url;
+            const hlsSource = data.stream;
 
-            const result = {
-                stream: hlsSource ? hlsSource : "",
-                subtitles: subtitleTrack ? subtitleTrack.url : ""
-            };
-        
-            console.log("Result:", result);
-            return JSON.stringify(result);
+            if (hlsSource) {
+                const playlistResponse = await fetchv2(hlsSource.url);
+                const playlistText = await playlistResponse.text();
+
+                console.log(playlistText);
+
+                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)(?:\n|$)/g);
+
+                if (streamMatches) {
+                    const streams = streamMatches
+                        .map(matchStr => {
+                            const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
+                            const lines = matchStr.split('\n').filter(Boolean);
+                            const relativeUrl = lines[1];
+                            if (resolutionMatch && relativeUrl) {
+                                return {
+                                    width: parseInt(resolutionMatch[1], 10),
+                                    height: parseInt(resolutionMatch[2], 10),
+                                    url: relativeUrl
+                                };
+                            }
+                            return null;
+                        })
+                        .filter(Boolean)
+                        .sort((a, b) => b.width - a.width);
+
+                    const highestResStream = streams[0];
+
+                    console.log(highestResStream);
+
+                    if (highestResStream) {
+                        const parts = hlsSource.url.split('/');
+                        const baseUrl = parts[0] + '//' + parts[2] + '/';
+
+                        const finalStreamUrl = baseUrl + highestResStream.url;
+
+                        const result = {
+                            stream: finalStreamUrl || "",
+                            subtitles: subtitleTrack ? subtitleTrack.url : ""
+                        };
+
+                        console.log(result);
+                        return JSON.stringify(result);
+                    }
+                }
+            } else {
+                const result = {
+                    stream: hlsSource.url || "",
+                    subtitles: subtitleTrack ? subtitleTrack.url : ""
+                };
+
+                console.log(JSON.stringify(result));
+                return JSON.stringify(result);
+            }
         } else {
             throw new Error("Invalid URL format");
         }
