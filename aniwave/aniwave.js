@@ -89,7 +89,7 @@ async function extractEpisodes(url) {
             const data = await response.text();
 
             const regex = new RegExp(
-                `<div\\s+class="item[\\s\\S]*?<a[^>]*href="\\/anime-watch\\/${animeSlug}"[^>]*>[\\s\\S]*?<\\/a>[\\s\\S]*?<div\\s+class="info">[\\s\\S]*?<span>Ep:\\s*(\\d+)<\\/span>`,
+                `<a\\s+[^>]*href="\\/anime-watch\\/${animeSlug}"[^>]*>[\\s\\S]*?<span>Ep:\\s*(\\d+)<\\/span>`,
                 'i'
             );
         
