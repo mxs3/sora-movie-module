@@ -89,12 +89,13 @@ async function extractEpisodes(url) {
             const data = await response.text();
 
             const regex = new RegExp(
-                `<a[^>]*href="\\/anime-watch\\/${animeSlug}"[^>]*>[\\s\\S]*?<span>Ep:\\s*(\\d+)<\\/span>`,
+                `<div\\s+class="item[\\s\\S]*?<a[^>]*href="\\/anime-watch\\/${animeSlug}"[^>]*>[\\s\\S]*?<\\/a>[\\s\\S]*?<div\\s+class="info">[\\s\\S]*?<span>Ep:\\s*(\\d+)<\\/span>`,
                 'i'
             );
+        
             const epMatch = data.match(regex);
             const episodesCount2 = epMatch ? parseInt(epMatch[1], 10) : 0;
-
+        
             for (let i = 1; i <= episodesCount2; i++) {
                 transformedResults.push({
                     href: `${url}/ep-${i}`,
