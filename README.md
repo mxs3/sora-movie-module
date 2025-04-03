@@ -464,7 +464,7 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         **File:** `Aniwave.json`<br>
         **Type:** `Anime`<br>
-        **Language:** English. 🇺🇸 (HARDSUB) <br>
+        **Language:** English. 🇺🇸 (HARDSUB + DUB) <br>
         **App version:** V2 and up <br>
         **Author:** ibro <br><br>
         [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/aniwave/aniwave.json)
