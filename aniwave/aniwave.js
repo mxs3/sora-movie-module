@@ -88,14 +88,12 @@ async function extractEpisodes(url) {
             const response = await fetchv2(`https://aniwave.se/filter?keyword=${keyword2}`);
             const data = await response.text();
 
-            const slugIndex = data.indexOf(animeSlug);
-            let episodesCount2 = 0;
-            if (slugIndex !== -1) {
-                const snippet = data.substring(slugIndex, slugIndex + 500);
-
-                const epMatch = snippet.match(/<span>Ep:\s*(\d+)<\/span>/);
-                episodesCount2 = epMatch ? parseInt(epMatch[1], 10) : 0;
-            }
+            const regex = new RegExp(
+                `<a[^>]*href="\\/anime-watch\\/${animeSlug}"[^>]*>[\\s\\S]*?<span>Ep:\\s*(\\d+)<\\/span>`,
+                'i'
+            );
+            const epMatch = data.match(regex);
+            const episodesCount2 = epMatch ? parseInt(epMatch[1], 10) : 0;
 
             for (let i = 1; i <= episodesCount2; i++) {
                 transformedResults.push({
