@@ -142,7 +142,7 @@ async function extractStreamUrl(url) {
                 'Referer': 'https://www.vidsrc.wtf/'
             };
 
-            const responseText = await fetchv2(`https://api.rgshows.me/main/movie/${movieId}`, headers, "GET");
+            const responseText = await fetchv2(`https://api.rgshows.me/main/movie/${movieId}`, headers, "POST");
             const data = await responseText.json();
 
             const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
@@ -221,7 +221,7 @@ async function extractStreamUrl(url) {
                 'Referer': 'https://www.vidsrc.wtf/'
             };
 
-            const responseText = await fetchv2(`https://api.rgshows.me/main/tv/${showId}/${seasonNumber}/${episodeNumber}`, headers, "GET");
+            const responseText = await fetchv2(`https://api.rgshows.me/main/tv/${showId}/${seasonNumber}/${episodeNumber}`, headers, "POST");
             const data = await responseText.json();
 
             const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
