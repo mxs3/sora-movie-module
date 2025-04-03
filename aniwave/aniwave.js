@@ -64,6 +64,11 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
+        const match = url.match(/https:\/\/aniwave\.se\/anime-watch\/([^\/]+)/);
+        if (!match) throw new Error("Invalid URL format");
+
+        const animeSlug = match[1];
+
         const responseText = await fetchv2(url);
         const html = await responseText.text();
 
@@ -83,8 +88,14 @@ async function extractEpisodes(url) {
             const response = await fetchv2(`https://aniwave.se/filter?keyword=${keyword2}`);
             const data = await response.text();
 
-            const episodesMatch2 = data.match(/<span>Ep:\s*(\d+)<\/span>/);
-            const episodesCount2 = episodesMatch2 ? parseInt(episodesMatch2[1], 10) : 0;
+            const slugIndex = data.indexOf(animeSlug);
+            let episodesCount2 = 0;
+            if (slugIndex !== -1) {
+                const snippet = data.substring(slugIndex, slugIndex + 500);
+
+                const epMatch = snippet.match(/<span>Ep:\s*(\d+)<\/span>/);
+                episodesCount2 = epMatch ? parseInt(epMatch[1], 10) : 0;
+            }
 
             for (let i = 1; i <= episodesCount2; i++) {
                 transformedResults.push({
