@@ -1,11 +1,6 @@
-let keyword2 = "";
-
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-
-        keyword2 = keyword;
-
         const responseText = await fetchv2(`https://aniwave.se/filter?keyword=${encodedKeyword}`);
         const html = await responseText.text();
 
@@ -69,6 +64,10 @@ async function extractEpisodes(url) {
 
         const animeSlug = match[1];
 
+        const match2 = animeSlug.match(/([^-]+)/);
+
+        const firstSlugWord = match2[1];
+
         const responseText = await fetchv2(url);
         const html = await responseText.text();
 
@@ -85,7 +84,9 @@ async function extractEpisodes(url) {
                 });
             }
         } else {
-            const response = await fetchv2(`https://aniwave.se/filter?keyword=${keyword2}`);
+            const apiUrl = `https://aniwave.se/filter?keyword=${firstSlugWord}`;
+
+            const response = await fetchv2(apiUrl);
             const data = await response.text();
 
             const regex = new RegExp(
@@ -95,7 +96,7 @@ async function extractEpisodes(url) {
         
             const epMatch = data.match(regex);
             const episodesCount2 = epMatch ? parseInt(epMatch[1], 10) : 0;
-        
+
             for (let i = 1; i <= episodesCount2; i++) {
                 transformedResults.push({
                     href: `${url}/ep-${i}`,
