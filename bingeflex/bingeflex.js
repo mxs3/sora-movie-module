@@ -288,7 +288,7 @@ async function extractStreamUrl(url) {
                 const B = C.split("").reverse().join("");
                 const A = btoa(B);
                 const D = btoa(A);
-                const urlovo = `https://api.vid3c.site/allmvse2.php?id=${D}`;
+                const urlovo = `https://api.vid3c.site/allmvse2e.php?id=${D}`;
                 const response = await fetchv2(urlovo);
                 const data = await response.json();
 
@@ -439,7 +439,7 @@ async function extractStreamUrl(url) {
                 const reversedString = formattedString.split('').reverse().join('');
                 const firstBase64 = btoa(reversedString);
                 const secondBase64 = btoa(firstBase64);
-                const url2 = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
+                const url2 = `https://api.vid3c.site/alltvse2e.php?id=${secondBase64}`;
                 const response = await fetchv2(url2);
                 const data = await response.json();
 
