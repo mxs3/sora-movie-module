@@ -170,7 +170,7 @@ async function extractStreamUrl(url) {
                 try {
                     let apiUrl = `https://moviekex.online/embed/api/fastfetch/${movieId}${servers[j]}`;
 
-                    const responseText = await fetch(apiUrl);
+                    const responseText = await fetchv2(apiUrl);
                     const data = await responseText.json();
 
                     const subtitles = data.tracks?.find(track => track.lang === 'English');
