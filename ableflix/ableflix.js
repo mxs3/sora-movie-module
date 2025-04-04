@@ -1,8 +1,8 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=653bb8af90162bd98fc7ee32bcbbfb3d&query=${encodedKeyword}`);
-        const data = JSON.parse(responseText);
+        const responseText = await fetchv2(`https://api.themoviedb.org/3/search/multi?api_key=653bb8af90162bd98fc7ee32bcbbfb3d&query=${encodedKeyword}`);
+        const data = await responseText.json();
 
         // Filter results to include only movies
         const transformedResults = data.results
@@ -39,6 +39,7 @@ async function searchResults(keyword) {
         //     }
         // });
 
+        console.log('Search results:', transformedResults);
         return JSON.stringify(transformedResults);
     } catch (error) {
         console.log('Fetch error in searchResults:', error);
@@ -48,13 +49,13 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        if(url.includes('//movie/')) {
+        if(url.includes('/movie/')) {
             const match = url.match(/https:\/\/ableflix\.cc\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-            const responseText = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d`);
-            const data = JSON.parse(responseText);
+            const responseText = await fetchv2(`https://api.themoviedb.org/3/movie/${movieId}?api_key=653bb8af90162bd98fc7ee32bcbbfb3d`);
+            const data = await responseText.json();
 
             const transformedResults = [{
                 description: data.overview || 'No description available',
@@ -62,6 +63,7 @@ async function extractDetails(url) {
                 airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
             }];
 
+            console.log('Details:', transformedResults);
             return JSON.stringify(transformedResults);
         } 
         // else if(url.includes('/watch/')) {
@@ -99,9 +101,13 @@ async function extractEpisodes(url) {
             const match = url.match(/https:\/\/ableflix\.cc\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
             const movieId = match[1];
-            return JSON.stringify([
-                { href: `https://ableflix.xyz/watch/movie/${movieId}`, number: 1, title: "Full Movie" }
+
+            const result = JSON.stringify([
+                { href: `https://ableflix.cc/movie/${movieId}`, number: 1, title: "Full Movie" }
             ]);
+
+            console.log('Episodes:', result);
+            return result;
         } 
         // else if(url.includes('/watch/')) {
         //     const match = url.match(/https:\/\/ableflix\.xyz\/watch\/([^\/]+)/);
@@ -164,10 +170,8 @@ async function extractStreamUrl(url) {
                 try {
                     let apiUrl = `https://moviekex.online/embed/api/fastfetch/${movieId}${servers[j]}`;
 
-                    const responseText = await fetchv2(apiUrl);
+                    const responseText = await fetch(apiUrl);
                     const data = await responseText.json();
-
-                    const hlsSource = data.url?.find(source => source.type === 'hls');
 
                     const subtitles = data.tracks?.find(track => track.lang === 'English');
 
@@ -195,6 +199,9 @@ async function extractStreamUrl(url) {
                         console.log(result);
                         return JSON.stringify(result);
                     }
+
+                    // Fallback to HLS if no MP4 source is found
+                    const hlsSource = data.url?.find(source => source.type === 'hls');
 
                     if (hlsSource && hlsSource.link) {
                         const result = {
@@ -240,5 +247,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractStreamUrl(`https://ableflix.cc/movie/822119`);
