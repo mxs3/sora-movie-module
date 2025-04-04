@@ -10,7 +10,7 @@ async function searchResults(keyword) {
             .map(result => ({
                 title: result.title || result.name,
                 image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                href: `https://ableflix.xyz/watch/movie/${result.id}`
+                href: `https://ableflix.cc/movie/${result.id}`
             }));
 
 
@@ -48,8 +48,8 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        if(url.includes('/watch/movie/')) {
-            const match = url.match(/https:\/\/ableflix\.xyz\/watch\/movie\/([^\/]+)/);
+        if(url.includes('//movie/')) {
+            const match = url.match(/https:\/\/ableflix\.cc\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
@@ -95,8 +95,8 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        if(url.includes('/watch/movie/')) {
-            const match = url.match(/https:\/\/ableflix\.xyz\/watch\/movie\/([^\/]+)/);
+        if(url.includes('/movie/')) {
+            const match = url.match(/https:\/\/ableflix\.cc\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
             const movieId = match[1];
             return JSON.stringify([
@@ -154,63 +154,61 @@ async function extractStreamUrl(url) {
     ];
 
     try {
-        if (url.includes('/watch/movie/')) {
-            const match = url.match(/https:\/\/ableflix\.xyz\/watch\/movie\/([^\/]+)/);
+        if (url.includes('/movie/')) {
+            const match = url.match(/https:\/\/ableflix\.cc\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
 
-            for (let i = 0; i < endpoints.length; i++) {
-                for (let j = 0; j < servers.length; j++) {
-                    try {
-                        let apiUrl = `https://moviekex.online/embed/api/fastfetch/${movieId}${servers[j]}`;
+            for (let j = 0; j < servers.length; j++) {
+                try {
+                    let apiUrl = `https://moviekex.online/embed/api/fastfetch/${movieId}${servers[j]}`;
 
-                        const responseText = await fetchv2(apiUrl);
-                        const data = await responseText.json();
+                    const responseText = await fetchv2(apiUrl);
+                    const data = await responseText.json();
 
-                        console.log(data);
+                    const hlsSource = data.url?.find(source => source.type === 'hls');
 
-                        const hlsSource = data.url?.find(source => source.type === 'hls');
+                    const subtitles = data.tracks?.find(track => track.lang === 'English');
 
-                        const subtitles = data?.tracks?.filter(track => track.lang === 'English');
+                    const preferredQualities = ['1080', '720', '480', '360'];
+                    let mp4Source;
 
-                        const preferredQualities = ['1080', '720', '480', '360'];
-                        let mp4Source;
-
-                        for (const quality of preferredQualities) {
-                            mp4Source = data?.url?.find(source => source.format === 'MP4' && source.lang === 'English' && source.resulation === quality);
-                            if (mp4Source) break;
-                        }
-
-                        if (!mp4Source) {
-                            mp4Source = data?.url?.find(source => source.format === 'MP4' && source.lang === 'English');
-                        }
-
-                        if (mp4Source && mp4Source.link) {
-                            const result = {
-                                stream: mp4Source.link || "",
-                                subtitles: subtitles ? subtitles.url : ""
-                            };
-                            
-                            console.log(result);
-                            return JSON.stringify(result);
-                        }
-
-                        if (hlsSource && hlsSource.link) {
-                            const result = {
-                                stream: hlsSource.link || "",
-                                subtitles: subtitles ? subtitles.url : ""
-                            };
-                            
-                            console.log(result);
-                            return JSON.stringify(result);
-                        }
-                    } catch (err) {
-                        console.log(`Fetch error on endpoint ${endpoints[i]} for movie ${movieId}:`, err);
+                    for (const quality of preferredQualities) {
+                        mp4Source = data?.url?.find(source => source.type === 'MP4' && source.lang === 'English' && source.resulation === quality);
+                        if (mp4Source) {
+                            console.log(`Found MP4 source with quality ${quality}:`, mp4Source);
+                            break;
+                        };
                     }
+
+                    if (!mp4Source) {
+                        mp4Source = data?.url?.find(source => source.format === 'MP4' && source.lang === 'English');
+                    }
+
+                    if (mp4Source && mp4Source.link) {
+                        const result = {
+                            stream: mp4Source.link || "",
+                            subtitles: subtitles ? subtitles.url : ""
+                        };
+                        
+                        console.log(result);
+                        return JSON.stringify(result);
+                    }
+
+                    if (hlsSource && hlsSource.link) {
+                        const result = {
+                            stream: hlsSource.link || "",
+                            subtitles: subtitles ? subtitles.url : ""
+                        };
+                        
+                        console.log(result);
+                        return JSON.stringify(result);
+                    }
+                } catch (err) {
+                    console.log(`Fetch error on endpoint ${endpoints[i]} for movie ${movieId}:`, err);
                 }
             }
-            return null;
         } 
         // else if (url.includes('/watch/')) {
         //     const match = url.match(/https:\/\/ableflix\.xyz\/watch\/([^\/]+)/);
@@ -242,3 +240,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractStreamUrl(`https://ableflix.cc/movie/822119`);
