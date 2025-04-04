@@ -294,37 +294,7 @@ async function extractStreamUrl(url) {
 
                 console.log(JSON.stringify(data));
 
-                if (data.source1.language === "English") {
-                    const hlsSource = data.source1;
-
-                    const result = {
-                        stream: hlsSource.url || "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
-    
-                    console.log(JSON.stringify(result));
-                    return JSON.stringify(result);
-                } else if (data.source2.language === "English") {
-                    const hlsSource = data.source2;
-
-                    const result = {
-                        stream: hlsSource.url || "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
-    
-                    console.log(JSON.stringify(result));
-                    return JSON.stringify(result);
-                } else if (data.source3.language === "English") {
-                    const hlsSource = data.source3;
-
-                    const result = {
-                        stream: hlsSource.url || "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
-    
-                    console.log(JSON.stringify(result));
-                    return JSON.stringify(result);
-                } else if (data.source4.language === "English") {
+                if (data.source4 !== null && data.source4.url !== "" && data.source4.language === "English") {
                     const hlsSource = data.source4;
 
                     const result = {
@@ -334,7 +304,27 @@ async function extractStreamUrl(url) {
     
                     console.log(JSON.stringify(result));
                     return JSON.stringify(result);
-                } else if (data.source5.language === "English") {
+                } else if (data.source1 !== null && data.source1.url !== "" && data.source1.language === "English") {
+                    const hlsSource = data.source1;
+
+                    const result = {
+                        stream: hlsSource.url || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+    
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                } else if (data.source2 !== null && data.source2.url !== "" && data.source2.language === "English") {
+                    const hlsSource = data.source2;
+
+                    const result = {
+                        stream: hlsSource.url || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+    
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                } else if (data.source5 !== null && data.source5.url !== "" && data.source5.language === "English") {
                     const hlsSource = data.source5;
 
                     const result = {
@@ -456,7 +446,7 @@ async function extractStreamUrl(url) {
             // }
 
             try {
-                const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+                const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
                 const subtitleTrackData = await subtitleTrackResponse.json();
 
                 const subtitleTrack = subtitleTrackData.find(track =>
@@ -468,43 +458,13 @@ async function extractStreamUrl(url) {
                 const firstBase64 = btoa(reversedString);
                 const secondBase64 = btoa(firstBase64);
                 const url2 = `https://api.vid3c.site/alltvse2e.php?id=${secondBase64}`;
-                const response = await fetch(url2);
+                const response = await fetchv2(url2);
                 const data = await response.json();
 
                 console.log("URL:" + JSON.stringify(url2));
                 console.log(JSON.stringify(data));
 
-                if (data.source1.language === "English") {
-                    const hlsSource = data.source1;
-
-                    const result = {
-                        stream: hlsSource.url || "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
-    
-                    console.log(JSON.stringify(result));
-                    return JSON.stringify(result);
-                } else if (data.source2.language === "English") {
-                    const hlsSource = data.source2;
-
-                    const result = {
-                        stream: hlsSource.url || "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
-    
-                    console.log(JSON.stringify(result));
-                    return JSON.stringify(result);
-                } else if (data.source3.language === "English") {
-                    const hlsSource = data.source3;
-
-                    const result = {
-                        stream: hlsSource.url || "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
-    
-                    console.log(JSON.stringify(result));
-                    return JSON.stringify(result);
-                } else if (data.source4.language === "English") {
+                if (data.source4 !== null && data.source4.url !== "" && data.source4.language === "English") {
                     const hlsSource = data.source4;
 
                     const result = {
@@ -514,7 +474,27 @@ async function extractStreamUrl(url) {
     
                     console.log(JSON.stringify(result));
                     return JSON.stringify(result);
-                } else if (data.source5.language === "English") {
+                } else if (data.source1 !== null && data.source1.url !== "" && data.source1.language === "English") {
+                    const hlsSource = data.source1;
+
+                    const result = {
+                        stream: hlsSource.url || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+    
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                } else if (data.source2 !== null && data.source2.url !== "" && data.source2.language === "English") {
+                    const hlsSource = data.source2;
+
+                    const result = {
+                        stream: hlsSource.url || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+    
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                } else if (data.source5 !== null && data.source5.url !== "" && data.source5.language === "English") {
                     const hlsSource = data.source5;
 
                     const result = {
@@ -554,5 +534,3 @@ function btoa(input) {
 
     return output;
 }
-
-extractStreamUrl(`https://bingeflex.vercel.app/tv/1396?season=1&episode=2`);
