@@ -144,34 +144,6 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         </details>
 
-      - <details>
-
-        <summary>
-
-        ### 5️⃣ Net3lix 2 (Different servers)
-
-        </summary>
-
-        <span>
-        
-        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/net3lix/icon.png" width="125px"><br>
-
-        **File:** `Net3lix2.json`<br>
-        **Type:** `TV Shows and Movies`<br>
-        **Language:** English. 🇺🇸 (SUB)<br>
-        **App version:** V2 and up <br>
-        **Author:** ibro <br><br>
-
-        <span></span>
-        
-        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/net3lix/net3lix2.json)
-
-        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/net3lix/net3lix2.json
-        
-        </span>
-
-        </details>
-
       <!-- - <details>
 
         <summary>
