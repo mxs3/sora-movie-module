@@ -5,9 +5,9 @@
         "name": "ibro",
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg"
     },
-    "version": "1.0.2",
+    "version": "1.0.3",
     "language": "English",
-    "streamType": "HLS",
+    "streamType": "MP4",
     "quality": "1080p",
     "baseUrl": "https://h5.aoneroom.com/",
     "searchBaseUrl": "https://api.themoviedb.org/3/search/multi?api_key=653bb8af90162bd98fc7ee32bcbbfb3d&query=%s",
