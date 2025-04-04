@@ -263,51 +263,6 @@ async function extractStreamUrl(url) {
                     }
                 }
             }
-
-            try {
-                const C = movieId
-                    .toString()
-                    .split("")
-                    .map((digit) => {
-                        const encoding = "abcdefghij";
-                        return encoding[parseInt(digit)];
-                    })
-                    .join("");
-                const B = C.split("").reverse().join("");
-                const A = btoa(B);
-                const D = btoa(A);
-                const urlovo = `https://api.vid3c.site/allmvse2.php?id=${D}`;
-                const response = await fetchv2(urlovo);
-                const data = await response.json();
-
-                console.log(JSON.stringify(data));
-
-                if (data && data.source3) {
-                    const hlsSource = data.source3?.url;
-
-                    const result = {
-                        stream: hlsSource || "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
-
-                    console.log(JSON.stringify(result));
-                    return JSON.stringify(result);
-                }
-
-                if (data && data.source1) {
-                    const hlsSource = data.source1?.url;
-
-                    const result = {
-                        stream: hlsSource || "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
-
-                    console.log(JSON.stringify(result));
-                    return JSON.stringify(result);
-                }
-            } catch (err) {
-                console.log('Fetch error in extractStreamUrl:', err);
-            }
         } else if (url.includes('tv')) {
             const match = url.match(/https:\/\/rivestream\.org\/watch\?type=tv&id=([^\/]+)&season=([^\/]+)&episode=([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
@@ -405,51 +360,6 @@ async function extractStreamUrl(url) {
                         console.log(`Fetch error on endpoint ${apiUrl} for show ${showId}:`, err);
                     }
                 }
-            }
-
-            try {
-                const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
-                const subtitleTrackData = await subtitleTrackResponse.json();
-
-                const subtitleTrack = subtitleTrackData.find(track =>
-                    track.display.startsWith('English')
-                );
-
-                const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
-                const reversedString = formattedString.split('').reverse().join('');
-                const firstBase64 = btoa(reversedString);
-                const secondBase64 = btoa(firstBase64);
-                const url = `https://api.vid3c.site/alltvse2.php?id=${secondBase64}`;
-                const response = await fetchv2(url);
-                const data = await response.json();
-
-                console.log(JSON.stringify(data));
-
-                if (data && data.source3) {
-                    const hlsSource = data.source3?.url;
-
-                    const result = {
-                        stream: hlsSource || "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
-
-                    console.log(result);
-                    return JSON.stringify(result);
-                }
-
-                if (data && data.source1) {
-                    const hlsSource = data.source1?.url;
-
-                    const result = {
-                        stream: hlsSource || "",
-                        subtitles: subtitleTrack ? subtitleTrack.url : ""
-                    };
-
-                    console.log(result);
-                    return JSON.stringify(result);
-                }
-            } catch (err) {
-                console.log('Fetch error in extractStreamUrl:', err);
             }
         } else {
             throw new Error("Invalid URL format");
