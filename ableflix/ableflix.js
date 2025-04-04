@@ -144,14 +144,13 @@ async function extractEpisodes(url) {
 async function extractStreamUrl(url) {
     const endpoints = [
         "https://moviekex.online/embed/api/fastfetch/",
-        "https://play2.123embed.net/server/3?path=/movie/",
     ];
 
     const servers = [
         "?sr=0",
-        "?sr=3",
-        "?sr=2",
         "?sr=1",
+        "?sr=2",
+        "?sr=3",
     ];
 
     try {
@@ -164,21 +163,47 @@ async function extractStreamUrl(url) {
             for (let i = 0; i < endpoints.length; i++) {
                 for (let j = 0; j < servers.length; j++) {
                     try {
-                        let apiUrl = endpoints[i] === "https://moviekex.online/embed/api/fastfetch/"
-                            ? `${endpoints[i]}${movieId}${servers[j]}`
-                            : `${endpoints[i]}${movieId}`;
+                        let apiUrl = `https://moviekex.online/embed/api/fastfetch/${movieId}${servers[j]}`;
 
-                        const responseText = await fetch(apiUrl);
-                        const data = JSON.parse(responseText);
+                        const responseText = await fetchv2(apiUrl);
+                        const data = await responseText.json();
 
                         console.log(data);
 
-                        if (endpoints[i] === "https://moviekex.online/embed/api/fastfetch/") {
-                            const hlsSource = data.url?.find(source => source.type === 'hls');
-                            if (hlsSource?.link) return hlsSource.link;
-                        } else {
-                            const hlsSource = data.playlist?.find(source => source.type === 'hls');
-                            if (hlsSource?.file) return hlsSource.file;
+                        const hlsSource = data.url?.find(source => source.type === 'hls');
+
+                        const subtitles = data?.tracks?.filter(track => track.lang === 'English');
+
+                        const preferredQualities = ['1080', '720', '480', '360'];
+                        let mp4Source;
+
+                        for (const quality of preferredQualities) {
+                            mp4Source = data?.url?.find(source => source.format === 'MP4' && source.lang === 'English' && source.resulation === quality);
+                            if (mp4Source) break;
+                        }
+
+                        if (!mp4Source) {
+                            mp4Source = data?.url?.find(source => source.format === 'MP4' && source.lang === 'English');
+                        }
+
+                        if (mp4Source && mp4Source.link) {
+                            const result = {
+                                stream: mp4Source.link || "",
+                                subtitles: subtitles ? subtitles.url : ""
+                            };
+                            
+                            console.log(result);
+                            return JSON.stringify(result);
+                        }
+
+                        if (hlsSource && hlsSource.link) {
+                            const result = {
+                                stream: hlsSource.link || "",
+                                subtitles: subtitles ? subtitles.url : ""
+                            };
+                            
+                            console.log(result);
+                            return JSON.stringify(result);
                         }
                     } catch (err) {
                         console.log(`Fetch error on endpoint ${endpoints[i]} for movie ${movieId}:`, err);
