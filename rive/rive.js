@@ -136,33 +136,33 @@ async function extractStreamUrl(url) {
     //     "ghost",
     // ];
   
-    const servicesWithoutCaption = [
-        "guru",
-        // "halo",
-        // "g1",
-        // "g2",
-        // "alpha",
-        // "fastx",
-        // "astra",
-        // "anime",
-        // "ninja",
-        // "catflix",
-        // "hyvax",
-        // "vidcloud",
-        // "filmxyz",
-        // "shadow",
-        // "kaze",
-        // "asiacloud",
-        // "zenith",
-        // "kage",
-        // "filmecho",
-        // "kinoecho",
-        // "ee3",
-        // "putafilme",
-        // "ophim",
-    ];
+    // const servicesWithoutCaption = [
+    //     "guru",
+    //     // "halo",
+    //     // "g1",
+    //     // "g2",
+    //     // "alpha",
+    //     // "fastx",
+    //     // "astra",
+    //     // "anime",
+    //     // "ninja",
+    //     // "catflix",
+    //     // "hyvax",
+    //     // "vidcloud",
+    //     // "filmxyz",
+    //     // "shadow",
+    //     // "kaze",
+    //     // "asiacloud",
+    //     // "zenith",
+    //     // "kage",
+    //     // "filmecho",
+    //     // "kinoecho",
+    //     // "ee3",
+    //     // "putafilme",
+    //     // "ophim",
+    // ];
 
-    const secretKey = ["I", "3LZu", "M2V3", "4EXX", "s4", "yRy", "oqMz", "ysE", "RT", "iSI", "zlc", "H", "YNp", "5vR6", "h9S", "R", "jo", "F", "h2", "W8", "i", "sz09", "Xom", "gpU", "q", "6Qvg", "Cu", "5Zaz", "VK", "od", "FGY4", "eu", "D5Q", "smH", "11eq", "QrXs", "3", "L3", "YhlP", "c", "Z", "YT", "bnsy", "5", "fcL", "L22G", "r8", "J", "4", "gnK"];
+    // const secretKey = ["I", "3LZu", "M2V3", "4EXX", "s4", "yRy", "oqMz", "ysE", "RT", "iSI", "zlc", "H", "YNp", "5vR6", "h9S", "R", "jo", "F", "h2", "W8", "i", "sz09", "Xom", "gpU", "q", "6Qvg", "Cu", "5Zaz", "VK", "od", "FGY4", "eu", "D5Q", "smH", "11eq", "QrXs", "3", "L3", "YhlP", "c", "Z", "YT", "bnsy", "5", "fcL", "L22G", "r8", "J", "4", "gnK"];
 
     try {
         if (url.includes('movie')) {
@@ -171,97 +171,175 @@ async function extractStreamUrl(url) {
 
             const movieId = match[1];
 
-            for (let i = 0; i < servicesWithoutCaption.length; i++) {
-                for (let j = 0; j < secretKey.length; j++) {
-                    const service = servicesWithoutCaption[i];
-                    const apiUrl = `https://rivestream.org/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
-                    // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${movieId}&api_key=d64117f26031a428449f102ced3aba73`;
+            // for (let i = 0; i < servicesWithoutCaption.length; i++) {
+            //     for (let j = 0; j < secretKey.length; j++) {
+            //         const service = servicesWithoutCaption[i];
+            //         const apiUrl = `https://rivestream.org/api/backendfetch?requestID=movieVideoProvider&id=${movieId}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+            //         // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${movieId}&api_key=d64117f26031a428449f102ced3aba73`;
 
-                    try {
-                        const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
-                        const subtitleTrackData = await subtitleTrackResponse.json();
+            //         try {
+            //             const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
+            //             const subtitleTrackData = await subtitleTrackResponse.json();
 
-                        const subtitleTrack = subtitleTrackData.find(track =>
-                            track.display.startsWith('English')
-                        );
+            //             const subtitleTrack = subtitleTrackData.find(track =>
+            //                 track.display.startsWith('English')
+            //             );
                         
-                        const response = await fetchv2(apiUrl);
-                        const data = await response.json();
+            //             const response = await fetchv2(apiUrl);
+            //             const data = await response.json();
 
-                        if (data && data.error !== "Internal Server Error") {
-                            const preferredQualities = ['HLS 1', 'HLS 7', 'HLS 10', 'HLS 13', 'HLS 15', 'HLS 4'];
-                            let hlsSource;
+            //             if (data && data.error !== "Internal Server Error") {
+            //                 const preferredQualities = ['HLS 1', 'HLS 7', 'HLS 10', 'HLS 13', 'HLS 15', 'HLS 4'];
+            //                 let hlsSource;
 
-                            for (const quality of preferredQualities) {
-                                hlsSource = data.data?.sources?.find(source => source.format === 'hls' && source.quality === quality);
-                                if (hlsSource) break;
-                            }
+            //                 for (const quality of preferredQualities) {
+            //                     hlsSource = data.data?.sources?.find(source => source.format === 'hls' && source.quality === quality);
+            //                     if (hlsSource) break;
+            //                 }
 
-                            if (!hlsSource) {
-                                hlsSource = data.data?.sources?.find(source => source.format === 'hls');
-                            }
+            //                 if (!hlsSource) {
+            //                     hlsSource = data.data?.sources?.find(source => source.format === 'hls');
+            //                 }
 
-                            console.log("URL:" + JSON.stringify(hlsSource?.url));
+            //                 console.log("URL:" + JSON.stringify(hlsSource?.url));
 
-                            if (hlsSource?.url && !hlsSource.url.includes("uwu")) {
-                                const playlistResponse = await fetchv2(hlsSource.url);
-                                const playlistText = await playlistResponse.text();
+            //                 const result = {
+            //                     stream: hlsSource.url || "",
+            //                     subtitles: subtitleTrack ? subtitleTrack.url : ""
+            //                 };
 
-                                console.log(playlistText);
+            //                 console.log(JSON.stringify(result));
+            //                 return JSON.stringify(result);
 
-                                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)(?:\n|$)/g);
+            //                 // if (hlsSource?.url && !hlsSource.url.includes("uwu")) {
+            //                 //     const playlistResponse = await fetchv2(hlsSource.url);
+            //                 //     const playlistText = await playlistResponse.text();
 
-                                if (streamMatches) {
-                                    const streams = streamMatches
-                                        .map(matchStr => {
-                                            const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
-                                            const lines = matchStr.split('\n').filter(Boolean);
-                                            const relativeUrl = lines[1];
-                                            if (resolutionMatch && relativeUrl) {
-                                                return {
-                                                    width: parseInt(resolutionMatch[1], 10),
-                                                    height: parseInt(resolutionMatch[2], 10),
-                                                    url: relativeUrl
-                                                };
-                                            }
-                                            return null;
-                                        })
-                                        .filter(Boolean)
-                                        .sort((a, b) => b.width - a.width);
+            //                 //     console.log(playlistText);
 
-                                    const highestResStream = streams[0];
+            //                 //     const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)(?:\n|$)/g);
 
-                                    console.log(highestResStream);
+            //                 //     if (streamMatches) {
+            //                 //         const streams = streamMatches
+            //                 //             .map(matchStr => {
+            //                 //                 const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
+            //                 //                 const lines = matchStr.split('\n').filter(Boolean);
+            //                 //                 const relativeUrl = lines[1];
+            //                 //                 if (resolutionMatch && relativeUrl) {
+            //                 //                     return {
+            //                 //                         width: parseInt(resolutionMatch[1], 10),
+            //                 //                         height: parseInt(resolutionMatch[2], 10),
+            //                 //                         url: relativeUrl
+            //                 //                     };
+            //                 //                 }
+            //                 //                 return null;
+            //                 //             })
+            //                 //             .filter(Boolean)
+            //                 //             .sort((a, b) => b.width - a.width);
 
-                                    if (highestResStream) {
-                                        const parts = hlsSource.url.split('/');
-                                        const baseUrl = parts[0] + '//' + parts[2] + '/';
+            //                 //         const highestResStream = streams[0];
 
-                                        const finalStreamUrl = baseUrl + highestResStream.url;
+            //                 //         console.log(highestResStream);
 
-                                        const result = {
-                                            stream: finalStreamUrl || "",
-                                            subtitles: subtitleTrack ? subtitleTrack.url : ""
-                                        };
+            //                 //         if (highestResStream) {
+            //                 //             const parts = hlsSource.url.split('/');
+            //                 //             const baseUrl = parts[0] + '//' + parts[2] + '/';
 
-                                        console.log(result);
-                                        return JSON.stringify(result);
-                                    }
-                                }
-                            } else {
-                                const result = {
-                                    stream: hlsSource.url || "",
-                                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                                };
+            //                 //             const finalStreamUrl = baseUrl + highestResStream.url;
 
-                                console.log(JSON.stringify(result));
-                                return JSON.stringify(result);
-                            }
-                        }
-                    } catch (err) {
-                        console.log(`Fetch error on endpoint ${apiUrl} for movie ${movieId}:`, err);
-                    }
+            //                 //             const result = {
+            //                 //                 stream: finalStreamUrl || "",
+            //                 //                 subtitles: subtitleTrack ? subtitleTrack.url : ""
+            //                 //             };
+
+            //                 //             console.log(result);
+            //                 //             return JSON.stringify(result);
+            //                 //         }
+            //                 //     }
+            //                 // } else {
+            //                 //     const result = {
+            //                 //         stream: hlsSource.url || "",
+            //                 //         subtitles: subtitleTrack ? subtitleTrack.url : ""
+            //                 //     };
+
+            //                 //     console.log(JSON.stringify(result));
+            //                 //     return JSON.stringify(result);
+            //                 // }
+            //             }
+            //         } catch (err) {
+            //             console.log(`Fetch error on endpoint ${apiUrl} for movie ${movieId}:`, err);
+            //         }
+            //     }
+            // }
+
+            try {
+                const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
+                const subtitleTrackData = await subtitleTrackResponse.json();
+
+                const subtitleTrack = subtitleTrackData.find(track =>
+                    track.display.startsWith('English')
+                );
+
+                const C = movieId
+                    .toString()
+                    .split("")
+                    .map((digit) => {
+                        const encoding = "abcdefghij";
+                        return encoding[parseInt(digit)];
+                    })
+                    .join("");
+                const B = C.split("").reverse().join("");
+                const A = btoa(B);
+                const D = btoa(A);
+                const urlovo = `https://api.vid3c.site/allmvse2e.php?id=${D}`;
+                const response = await fetchv2(urlovo);
+                const data = await response.json();
+
+                console.log(JSON.stringify(data));
+
+                if (data.source4 !== null && data.source4.url !== "" && data.source4.language === "English") {
+                    const hlsSource = data.source4;
+
+                    const result = {
+                        stream: hlsSource.url || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+    
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                } else if (data.source1 !== null && data.source1.url !== "" && data.source1.language === "English") {
+                    const hlsSource = data.source1;
+
+                    const result = {
+                        stream: hlsSource.url || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+    
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                } else if (data.source2 !== null && data.source2.url !== "" && data.source2.language === "English") {
+                    const hlsSource = data.source2;
+
+                    const result = {
+                        stream: hlsSource.url || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+    
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                } else if (data.source5 !== null && data.source5.url !== "" && data.source5.language === "English") {
+                    const hlsSource = data.source5;
+
+                    const result = {
+                        stream: hlsSource.url || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+    
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
                 }
+            } catch (err) {
+                console.log('Fetch error in extractStreamUrl:', err);
             }
         } else if (url.includes('tv')) {
             const match = url.match(/https:\/\/rivestream\.org\/watch\?type=tv&id=([^\/]+)&season=([^\/]+)&episode=([^\/]+)/);
@@ -271,95 +349,167 @@ async function extractStreamUrl(url) {
             const seasonNumber = match[2];
             const episodeNumber = match[3];
 
-            for (let i = 0; i < servicesWithoutCaption.length; i++) {
-                for (let j = 0; j < secretKey.length; j++) {
-                    const service = servicesWithoutCaption[i];
-                    const apiUrl = `https://rivestream.org/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
-                    // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&api_key=d64117f26031a428449f102ced3aba73`
+            // for (let i = 0; i < servicesWithoutCaption.length; i++) {
+            //     for (let j = 0; j < secretKey.length; j++) {
+            //         const service = servicesWithoutCaption[i];
+            //         const apiUrl = `https://rivestream.org/api/backendfetch?requestID=tvVideoProvider&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&service=${service}&secretKey=${secretKey[j]}&proxyMode=noProxy`;
+            //         // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&api_key=d64117f26031a428449f102ced3aba73`
 
-                    try {
-                        const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
-                        const subtitleTrackData = await subtitleTrackResponse.json();
+            //         try {
+            //             const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+            //             const subtitleTrackData = await subtitleTrackResponse.json();
 
-                        const subtitleTrack = subtitleTrackData.find(track =>
-                            track.display.startsWith('English')
-                        );
+            //             const subtitleTrack = subtitleTrackData.find(track =>
+            //                 track.display.startsWith('English')
+            //             );
                         
-                        const response = await fetchv2(apiUrl);
-                        const data = await response.json();
+            //             const response = await fetchv2(apiUrl);
+            //             const data = await response.json();
 
-                        if (data && data.error !== "Internal Server Error") {
-                            const preferredQualities = ['HLS 1', 'HLS 7', 'HLS 10', 'HLS 13', 'HLS 15', 'HLS 4'];
-                            let hlsSource;
+            //             if (data && data.error !== "Internal Server Error") {
+            //                 const preferredQualities = ['HLS 1', 'HLS 7', 'HLS 10', 'HLS 13', 'HLS 15', 'HLS 4'];
+            //                 let hlsSource;
 
-                            for (const quality of preferredQualities) {
-                                hlsSource = data.data?.sources?.find(source => source.format === 'hls' && source.quality === quality);
-                                if (hlsSource) break;
-                            }
+            //                 for (const quality of preferredQualities) {
+            //                     hlsSource = data.data?.sources?.find(source => source.format === 'hls' && source.quality === quality);
+            //                     if (hlsSource) break;
+            //                 }
 
-                            if (!hlsSource) {
-                                hlsSource = data.data?.sources?.find(source => source.format === 'hls');
-                            }
+            //                 if (!hlsSource) {
+            //                     hlsSource = data.data?.sources?.find(source => source.format === 'hls');
+            //                 }
 
-                            if (hlsSource?.url && !hlsSource.url.includes("uwu")) {
-                                const playlistResponse = await fetchv2(hlsSource.url);
-                                const playlistText = await playlistResponse.text();
+            //                 const result = {
+            //                     stream: hlsSource.url || "",
+            //                     subtitles: subtitleTrack ? subtitleTrack.url : ""
+            //                 };
 
-                                console.log(playlistText);
+            //                 console.log(result);
+            //                 return JSON.stringify(result);
 
-                                const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)(?:\n|$)/g);
+            //                 // if (hlsSource?.url && !hlsSource.url.includes("uwu")) {
+            //                 //     const playlistResponse = await fetchv2(hlsSource.url);
+            //                 //     const playlistText = await playlistResponse.text();
 
-                                if (streamMatches) {
-                                    const streams = streamMatches
-                                        .map(matchStr => {
-                                            const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
-                                            const lines = matchStr.split('\n').filter(Boolean);
-                                            const relativeUrl = lines[1];
-                                            if (resolutionMatch && relativeUrl) {
-                                                return {
-                                                    width: parseInt(resolutionMatch[1], 10),
-                                                    height: parseInt(resolutionMatch[2], 10),
-                                                    url: relativeUrl
-                                                };
-                                            }
-                                            return null;
-                                        })
-                                        .filter(Boolean)
-                                        .sort((a, b) => b.width - a.width);
+            //                 //     console.log(playlistText);
 
-                                    const highestResStream = streams[0];
+            //                 //     const streamMatches = playlistText.match(/#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?\n(.*?)(?:\n|$)/g);
 
-                                    console.log(highestResStream);
+            //                 //     if (streamMatches) {
+            //                 //         const streams = streamMatches
+            //                 //             .map(matchStr => {
+            //                 //                 const resolutionMatch = matchStr.match(/RESOLUTION=(\d+)x(\d+)/);
+            //                 //                 const lines = matchStr.split('\n').filter(Boolean);
+            //                 //                 const relativeUrl = lines[1];
+            //                 //                 if (resolutionMatch && relativeUrl) {
+            //                 //                     return {
+            //                 //                         width: parseInt(resolutionMatch[1], 10),
+            //                 //                         height: parseInt(resolutionMatch[2], 10),
+            //                 //                         url: relativeUrl
+            //                 //                     };
+            //                 //                 }
+            //                 //                 return null;
+            //                 //             })
+            //                 //             .filter(Boolean)
+            //                 //             .sort((a, b) => b.width - a.width);
 
-                                    if (highestResStream) {
-                                        const parts = hlsSource.url.split('/');
-                                        const baseUrl = parts[0] + '//' + parts[2] + '/';
+            //                 //         const highestResStream = streams[0];
 
-                                        const finalStreamUrl = baseUrl + highestResStream.url;
+            //                 //         console.log(highestResStream);
 
-                                        const result = {
-                                            stream: finalStreamUrl || "",
-                                            subtitles: subtitleTrack ? subtitleTrack.url : ""
-                                        };
+            //                 //         if (highestResStream) {
+            //                 //             const parts = hlsSource.url.split('/');
+            //                 //             const baseUrl = parts[0] + '//' + parts[2] + '/';
 
-                                        console.log(result);
-                                        return JSON.stringify(result);
-                                    }
-                                }
-                            } else {
-                                const result = {
-                                    stream: hlsSource.url || "",
-                                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                                };
+            //                 //             const finalStreamUrl = baseUrl + highestResStream.url;
 
-                                console.log(result);
-                                return JSON.stringify(result);
-                            }
-                        }
-                    } catch (err) {
-                        console.log(`Fetch error on endpoint ${apiUrl} for show ${showId}:`, err);
-                    }
+            //                 //             const result = {
+            //                 //                 stream: finalStreamUrl || "",
+            //                 //                 subtitles: subtitleTrack ? subtitleTrack.url : ""
+            //                 //             };
+
+            //                 //             console.log(result);
+            //                 //             return JSON.stringify(result);
+            //                 //         }
+            //                 //     }
+            //                 // } else {
+            //                 //     const result = {
+            //                 //         stream: hlsSource.url || "",
+            //                 //         subtitles: subtitleTrack ? subtitleTrack.url : ""
+            //                 //     };
+
+            //                 //     console.log(result);
+            //                 //     return JSON.stringify(result);
+            //                 // }
+            //             }
+            //         } catch (err) {
+            //             console.log(`Fetch error on endpoint ${apiUrl} for show ${showId}:`, err);
+            //         }
+            //     }
+            // }
+
+            try {
+                const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+                const subtitleTrackData = await subtitleTrackResponse.json();
+
+                const subtitleTrack = subtitleTrackData.find(track =>
+                    track.display.startsWith('English')
+                );
+
+                const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
+                const reversedString = formattedString.split('').reverse().join('');
+                const firstBase64 = btoa(reversedString);
+                const secondBase64 = btoa(firstBase64);
+                const url2 = `https://api.vid3c.site/alltvse2e.php?id=${secondBase64}`;
+                const response = await fetchv2(url2);
+                const data = await response.json();
+
+                console.log("URL:" + JSON.stringify(url2));
+                console.log(JSON.stringify(data));
+
+                if (data.source4 !== null && data.source4.url !== "" && data.source4.language === "English") {
+                    const hlsSource = data.source4;
+
+                    const result = {
+                        stream: hlsSource.url || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+    
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                } else if (data.source1 !== null && data.source1.url !== "" && data.source1.language === "English") {
+                    const hlsSource = data.source1;
+
+                    const result = {
+                        stream: hlsSource.url || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+    
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                } else if (data.source2 !== null && data.source2.url !== "" && data.source2.language === "English") {
+                    const hlsSource = data.source2;
+
+                    const result = {
+                        stream: hlsSource.url || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+    
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                } else if (data.source5 !== null && data.source5.url !== "" && data.source5.language === "English") {
+                    const hlsSource = data.source5;
+
+                    const result = {
+                        stream: hlsSource.url || "",
+                        subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    };
+    
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
                 }
+            } catch (err) {
+                console.log('Fetch error in extractStreamUrl:', err);
             }
         } else {
             throw new Error("Invalid URL format");
