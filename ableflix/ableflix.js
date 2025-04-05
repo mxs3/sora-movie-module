@@ -170,7 +170,7 @@ async function extractStreamUrl(url) {
                 try {
                     let apiUrl = `https://moviekex.online/embed/api/fastfetch/${movieId}${servers[j]}`;
 
-                    const responseText = await fetchv2(apiUrl);
+                    const responseText = await fetch(apiUrl);
                     const data = await responseText.json();
 
                     const subtitles = data.tracks?.find(track => track.lang === 'English');
@@ -247,3 +247,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractStreamUrl(`https://ableflix.cc/movie/822119`);
