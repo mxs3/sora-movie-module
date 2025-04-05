@@ -155,37 +155,116 @@ async function extractStreamUrl(url) {
                 console.log("Iframe src:", iframeSrc);
 
                 const headers = {
-                    'Referer': 'https://vidapi.xyz/',
-                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-                    'Accept': 'application/json'
+                    'Referer': 'https://vidapi.xyz/'
                 };
-                
-                const iframeResponse = await fetchv2(iframeSrc, headers);
-                const iframeHtml = await iframeResponse.text();
 
-                const packedScriptMatch = iframeHtml.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
-                if (!packedScriptMatch) {
-                    throw new Error("No packed script found in the iframe.");
+                if (iframeSrc.includes("uqloads.xyz")) {
+                    const iframeResponse = await fetchv2(iframeSrc, headers);
+                    const iframeHtml = await iframeResponse.text();
+
+                    const packedScriptMatch = iframeHtml.match(/(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
+                    if (!packedScriptMatch) {
+                        throw new Error("No packed script found in the iframe.");
+                    }
+                    const packedScript = packedScriptMatch[1];
+                    console.log("Packed script found.");
+
+                    const unpackedScript = unpack(packedScript);
+                    console.log("Unpacked script:", unpackedScript);
+
+                    const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
+                    const streamMatch = unpackedScript.match(streamRegex);
+                    const stream = streamMatch ? streamMatch[1].trim() : '';
+                    console.log("Stream URL:", stream);
+
+                    const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
+                    const subtitlesMatch = unpackedScript.match(subtitlesRegex);
+                    const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
+                    console.log("Subtitles URL:", subtitles);
+
+                    const result = { stream, subtitles };
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                } else if (iframeSrc.includes("player4u.xyz")) {
+                    const iframeResponse = await fetchv2(iframeSrc, headers);
+                    const html = await iframeResponse.text();
+
+                    // Regular expression to get each <li> block
+                    const liRegex = /<li class="slide-toggle">([\s\S]*?)<\/li>/g;
+                    const entries = [];
+                    let liMatch;
+
+                    while ((liMatch = liRegex.exec(html)) !== null) {
+                    const liContent = liMatch[1];
+
+                    // Extract the URL from the onclick attribute using regex
+                    const urlMatch = liContent.match(/onclick="go\('([^']+)'\)"/);
+                    if (!urlMatch) continue;
+                    const url = urlMatch[1];
+
+                    // Extract resolution by looking for common resolution keywords (720p, 1080p, or 4K)
+                    const resMatch = liContent.match(/&nbsp;(\d+p|4K)\b/);
+                    const resolution = resMatch ? resMatch[1] : '';
+
+                    entries.push({ url, resolution });
+                    }
+
+                    // Define a ranking for the resolutions: higher number means higher quality.
+                    const resolutionRank = { '720p': 1, '1080p': 2, '4K': 3 };
+
+                    let bestEntry = entries[0];
+                    // Loop through each entry to find the one with the highest resolution rank.
+                    for (const entry of entries) {
+                        if (resolutionRank[entry.resolution] > resolutionRank[bestEntry.resolution]) {
+                            bestEntry = entry;
+                        }
+                    }
+
+                    const url = "https://player4u.xyz" + bestEntry.url;
+
+                    const response = await fetchv2(url, headers);
+                    const iframeData = await response.text();
+
+                    const iframeMatch = iframeData.match(/<iframe[^>]+src=["']([^"']+)["']/);
+                    if (!iframeMatch) {
+                        throw new Error("No iframe found in the main page.");
+                    }
+                    let iframeSrc2 = iframeMatch[1].trim();
+
+                    if (!iframeSrc2.startsWith("http")) {
+                        iframeSrc2 = "https://uqloads.xyz/e/" + iframeSrc2;
+                    }
+
+                    console.log("Iframe src2:", iframeSrc2);
+
+                    const response2 = await fetchv2(iframeSrc2, headers);
+                    const iframeHtml = await response2.text();
+
+                    console.log("Iframe HTML:", iframeHtml);
+
+                    const packedScriptMatch = iframeHtml.match(/(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
+                    if (!packedScriptMatch) {
+                        throw new Error("No packed script found in the iframe.");
+                    }
+                    const packedScript = packedScriptMatch[1];
+                    console.log("Packed script found.");
+
+                    const unpackedScript = unpack(packedScript);
+                    console.log("Unpacked script:", unpackedScript);
+
+                    const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
+                    const streamMatch = unpackedScript.match(streamRegex);
+                    const stream = streamMatch ? streamMatch[1].trim() : '';
+                    console.log("Stream URL:", stream);
+
+                    const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
+                    const subtitlesMatch = unpackedScript.match(subtitlesRegex);
+                    const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
+                    console.log("Subtitles URL:", subtitles);
+
+                    const result = { stream, subtitles };
+                    console.log(JSON.stringify(result));
                 }
-                const packedScript = packedScriptMatch[1];
-                console.log("Packed script found.");
-
-                const unpackedScript = unpack(packedScript);
-                console.log("Unpacked script:", unpackedScript);
-
-                const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
-                const streamMatch = unpackedScript.match(streamRegex);
-                const stream = streamMatch ? streamMatch[1].trim() : '';
-                console.log("Stream URL:", stream);
-
-                const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
-                const subtitlesMatch = unpackedScript.match(subtitlesRegex);
-                const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
-                console.log("Subtitles URL:", subtitles);
-
-                const result = { stream, subtitles };
-                console.log(JSON.stringify(result));
-                return JSON.stringify(result);
             } catch (err) {
                 console.log(`Fetch error on endpoint https://vidapi.xyz/embed/movie/${movieId} for movie ${movieId}:`, err);
             }
@@ -216,33 +295,114 @@ async function extractStreamUrl(url) {
                 const headers = {
                     'Referer': 'https://vidapi.xyz/'
                 };
-                
-                const iframeResponse = await fetchv2(iframeSrc, headers);
-                const iframeHtml = await iframeResponse.text();
 
-                const packedScriptMatch = iframeHtml.match(/(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
-                if (!packedScriptMatch) {
-                    throw new Error("No packed script found in the iframe.");
+                if (iframeSrc.includes("uqloads.xyz")) {
+                    const iframeResponse = await fetchv2(iframeSrc, headers);
+                    const iframeHtml = await iframeResponse.text();
+
+                    const packedScriptMatch = iframeHtml.match(/(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
+                    if (!packedScriptMatch) {
+                        throw new Error("No packed script found in the iframe.");
+                    }
+                    const packedScript = packedScriptMatch[1];
+                    console.log("Packed script found.");
+
+                    const unpackedScript = unpack(packedScript);
+                    console.log("Unpacked script:", unpackedScript);
+
+                    const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
+                    const streamMatch = unpackedScript.match(streamRegex);
+                    const stream = streamMatch ? streamMatch[1].trim() : '';
+                    console.log("Stream URL:", stream);
+
+                    const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
+                    const subtitlesMatch = unpackedScript.match(subtitlesRegex);
+                    const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
+                    console.log("Subtitles URL:", subtitles);
+
+                    const result = { stream, subtitles };
+                    console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
+                } else if (iframeSrc.includes("player4u.xyz")) {
+                    const iframeResponse = await fetchv2(iframeSrc, headers);
+                    const html = await iframeResponse.text();
+
+                    // Regular expression to get each <li> block
+                    const liRegex = /<li class="slide-toggle">([\s\S]*?)<\/li>/g;
+                    const entries = [];
+                    let liMatch;
+
+                    while ((liMatch = liRegex.exec(html)) !== null) {
+                    const liContent = liMatch[1];
+
+                    // Extract the URL from the onclick attribute using regex
+                    const urlMatch = liContent.match(/onclick="go\('([^']+)'\)"/);
+                    if (!urlMatch) continue;
+                    const url = urlMatch[1];
+
+                    // Extract resolution by looking for common resolution keywords (720p, 1080p, or 4K)
+                    const resMatch = liContent.match(/&nbsp;(\d+p|4K)\b/);
+                    const resolution = resMatch ? resMatch[1] : '';
+
+                    entries.push({ url, resolution });
+                    }
+
+                    // Define a ranking for the resolutions: higher number means higher quality.
+                    const resolutionRank = { '720p': 1, '1080p': 2, '4K': 3 };
+
+                    let bestEntry = entries[0];
+                    // Loop through each entry to find the one with the highest resolution rank.
+                    for (const entry of entries) {
+                        if (resolutionRank[entry.resolution] > resolutionRank[bestEntry.resolution]) {
+                            bestEntry = entry;
+                        }
+                    }
+
+                    const url = "https://player4u.xyz" + bestEntry.url;
+
+                    const response = await fetchv2(url, headers);
+                    const iframeData = await response.text();
+
+                    const iframeMatch = iframeData.match(/<iframe[^>]+src=["']([^"']+)["']/);
+                    if (!iframeMatch) {
+                        throw new Error("No iframe found in the main page.");
+                    }
+                    let iframeSrc2 = iframeMatch[1].trim();
+
+                    if (!iframeSrc2.startsWith("http")) {
+                        iframeSrc2 = "https://uqloads.xyz/e/" + iframeSrc2;
+                    }
+
+                    console.log("Iframe src2:", iframeSrc2);
+
+                    const response2 = await fetchv2(iframeSrc2, headers);
+                    const iframeHtml = await response2.text();
+
+                    console.log("Iframe HTML:", iframeHtml);
+
+                    const packedScriptMatch = iframeHtml.match(/(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
+                    if (!packedScriptMatch) {
+                        throw new Error("No packed script found in the iframe.");
+                    }
+                    const packedScript = packedScriptMatch[1];
+                    console.log("Packed script found.");
+
+                    const unpackedScript = unpack(packedScript);
+                    console.log("Unpacked script:", unpackedScript);
+
+                    const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
+                    const streamMatch = unpackedScript.match(streamRegex);
+                    const stream = streamMatch ? streamMatch[1].trim() : '';
+                    console.log("Stream URL:", stream);
+
+                    const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
+                    const subtitlesMatch = unpackedScript.match(subtitlesRegex);
+                    const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
+                    console.log("Subtitles URL:", subtitles);
+
+                    const result = { stream, subtitles };
+                    console.log(JSON.stringify(result));
                 }
-                const packedScript = packedScriptMatch[1];
-                console.log("Packed script found.");
-
-                const unpackedScript = unpack(packedScript);
-                console.log("Unpacked script:", unpackedScript);
-
-                const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
-                const streamMatch = unpackedScript.match(streamRegex);
-                const stream = streamMatch ? streamMatch[1].trim() : '';
-                console.log("Stream URL:", stream);
-
-                const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
-                const subtitlesMatch = unpackedScript.match(subtitlesRegex);
-                const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
-                console.log("Subtitles URL:", subtitles);
-
-                const result = { stream, subtitles };
-                console.log(JSON.stringify(result));
-                return JSON.stringify(result);
             } catch (err) {
                 console.log(`Fetch error on endpoint https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber} for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
             }
@@ -368,3 +528,5 @@ function unpack(source) {
         return source;
     }
 }
+
+extractStreamUrl(`https://vidapi.xyz/embed/tv/1396&s=1&e=1`);
