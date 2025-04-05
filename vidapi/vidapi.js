@@ -1,8 +1,8 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=71fdb081b0133511ac14ac0cc10fd307&query=${encodedKeyword}`);
-        const data = JSON.parse(responseText);
+        const responseText = await fetchv2(`https://api.themoviedb.org/3/search/multi?api_key=71fdb081b0133511ac14ac0cc10fd307&query=${encodedKeyword}`);
+        const data = await responseText.json();
 
         const transformedResults = data.results.map(result => {
             // For movies, TMDB returns "title" and media_type === "movie"
@@ -45,8 +45,8 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-            const responseText = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=videos,credits`);
-            const data = JSON.parse(responseText);
+            const responseText = await fetchv2(`https://api.themoviedb.org/3/movie/${movieId}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=videos,credits`);
+            const data = await responseText.json();
 
             const transformedResults = [{
                 description: data.overview || 'No description available',
@@ -61,8 +61,8 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
-            const responseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=seasons`);
-            const data = JSON.parse(responseText);
+            const responseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=seasons`);
+            const data = await responseText.json();
 
             const transformedResults = [{
                 description: data.overview || 'No description available',
@@ -98,8 +98,8 @@ async function extractEpisodes(url) {
             if (!match) throw new Error("Invalid URL format");
             const showId = match[1];
             
-            const showResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
-            const showData = JSON.parse(showResponseText);
+            const showResponseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
+            const showData = await showResponseText.json();
             
             let allEpisodes = [];
             for (const season of showData.seasons) {
@@ -107,8 +107,8 @@ async function extractEpisodes(url) {
 
                 if(seasonNumber === 0) continue;
                 
-                const seasonResponseText = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
-                const seasonData = JSON.parse(seasonResponseText);
+                const seasonResponseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
+                const seasonData = await seasonResponseText.json();
                 
                 if (seasonData.episodes && seasonData.episodes.length) {
                     const episodes = seasonData.episodes.map(episode => ({
@@ -200,7 +200,7 @@ async function extractStreamUrl(url) {
             const episodeNumber = match[3];
 
             try {
-                const responseText = await fetch(`https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber}`);
+                const responseText = await fetchv2(`https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber}`);
                 const data = await responseText.text();
 
                 const iframeMatch = data.match(/<iframe[^>]+src=["']([^"']+)["']/);
@@ -216,14 +216,10 @@ async function extractStreamUrl(url) {
                 console.log("Iframe src:", iframeSrc);
 
                 const headers = {
-                    headers: {
-                        'Referer': 'https://vidapi.xyz/',
-                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-                        'Accept': 'application/json'
-                    }
+                    'Referer': 'https://vidapi.xyz/'
                 };
                 
-                const iframeResponse = await fetch(iframeSrc, headers);
+                const iframeResponse = await fetchv2(iframeSrc, headers);
                 const iframeHtml = await iframeResponse.text();
 
                 const packedScriptMatch = iframeHtml.match(/(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
