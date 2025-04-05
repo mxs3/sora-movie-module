@@ -338,13 +338,13 @@ async function extractStreamUrl(url) {
                     // Extract the URL from the onclick attribute using regex
                     const urlMatch = liContent.match(/onclick="go\('([^']+)'\)"/);
                     if (!urlMatch) continue;
-                    const url = urlMatch[1];
+                        const url = urlMatch[1];
 
-                    // Extract resolution by looking for common resolution keywords (720p, 1080p, or 4K)
-                    const resMatch = liContent.match(/&nbsp;(\d+p|4K)\b/);
-                    const resolution = resMatch ? resMatch[1] : '';
+                        // Extract resolution by looking for common resolution keywords (720p, 1080p, or 4K)
+                        const resMatch = liContent.match(/&nbsp;(\d+p|4K)\b/);
+                        const resolution = resMatch ? resMatch[1] : '';
 
-                    entries.push({ url, resolution });
+                        entries.push({ url, resolution });
                     }
 
                     // Define a ranking for the resolutions: higher number means higher quality.
@@ -528,5 +528,3 @@ function unpack(source) {
         return source;
     }
 }
-
-extractStreamUrl(`https://vidapi.xyz/embed/tv/1396&s=1&e=1`);
