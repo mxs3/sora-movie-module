@@ -155,11 +155,9 @@ async function extractStreamUrl(url) {
                 console.log("Iframe src:", iframeSrc);
 
                 const headers = {
-                    headers: {
-                        'Referer': 'https://vidapi.xyz/',
-                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-                        'Accept': 'application/json'
-                    }
+                    'Referer': 'https://vidapi.xyz/',
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+                    'Accept': 'application/json'
                 };
                 
                 const iframeResponse = await fetchv2(iframeSrc, headers);
@@ -177,12 +175,12 @@ async function extractStreamUrl(url) {
 
                 const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
                 const streamMatch = unpackedScript.match(streamRegex);
-                const stream = streamMatch ? streamMatch[1].trim() : 'N/A';
+                const stream = streamMatch ? streamMatch[1].trim() : '';
                 console.log("Stream URL:", stream);
 
                 const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
                 const subtitlesMatch = unpackedScript.match(subtitlesRegex);
-                const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : 'N/A';
+                const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
                 console.log("Subtitles URL:", subtitles);
 
                 const result = { stream, subtitles };
@@ -234,12 +232,12 @@ async function extractStreamUrl(url) {
 
                 const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
                 const streamMatch = unpackedScript.match(streamRegex);
-                const stream = streamMatch ? streamMatch[1].trim() : 'N/A';
+                const stream = streamMatch ? streamMatch[1].trim() : '';
                 console.log("Stream URL:", stream);
 
                 const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
                 const subtitlesMatch = unpackedScript.match(subtitlesRegex);
-                const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : 'N/A';
+                const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
                 console.log("Subtitles URL:", subtitles);
 
                 const result = { stream, subtitles };
@@ -370,5 +368,3 @@ function unpack(source) {
         return source;
     }
 }
-
-extractStreamUrl(`https://vidapi.xyz/embed/tv/60735&s=9&e=1`);
