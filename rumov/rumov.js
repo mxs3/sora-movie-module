@@ -69,15 +69,13 @@ async function extractStreamUrl(url) {
 
         const movieId = match[1];
 
-        const responseImdb = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885&append_to_response=external_ids`);
-        const dataImdbId = JSON.parse(responseImdb);
+        const responseImdb = await fetchv2(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885&append_to_response=external_ids`);
+        const dataImdbId = await responseImdb.json();
 
         const imdbId = dataImdbId.external_ids.imdb_id;
 
-        const response = await fetch(`https://api.insertunit.ws/embed/imdb/${imdbId}`);
-        const data = await response;
-
-        console.log(data);
+        const response = await fetchv2(`https://api.insertunit.ws/embed/imdb/${imdbId}`);
+        const data = await response.text();
 
         if (data) {
             const streamMatch = data.match(/hls:\s*"([^"]+)"/);
