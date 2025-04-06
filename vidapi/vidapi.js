@@ -189,7 +189,6 @@ async function extractStreamUrl(url) {
                     const iframeResponse = await fetchv2(iframeSrc, headers);
                     const html = await iframeResponse.text();
 
-                    // Regular expression to get each <li> block
                     const liRegex = /<li class="slide-toggle">([\s\S]*?)<\/li>/g;
                     const entries = [];
                     let liMatch;
@@ -197,30 +196,33 @@ async function extractStreamUrl(url) {
                     while ((liMatch = liRegex.exec(html)) !== null) {
                     const liContent = liMatch[1];
 
-                    // Extract the URL from the onclick attribute using regex
                     const urlMatch = liContent.match(/onclick="go\('([^']+)'\)"/);
                     if (!urlMatch) continue;
                     const url = urlMatch[1];
 
-                    // Extract resolution by looking for common resolution keywords (720p, 1080p, or 4K)
                     const resMatch = liContent.match(/&nbsp;(\d+p|4K)\b/);
                     const resolution = resMatch ? resMatch[1] : '';
 
                     entries.push({ url, resolution });
                     }
 
-                    // Define a ranking for the resolutions: higher number means higher quality.
                     const resolutionRank = { '720p': 1, '1080p': 2, '4K': 3 };
 
-                    let bestEntry = entries[0];
-                    // Loop through each entry to find the one with the highest resolution rank.
+                    let maxRank = 0;
                     for (const entry of entries) {
-                        if (resolutionRank[entry.resolution] > resolutionRank[bestEntry.resolution]) {
-                            bestEntry = entry;
+                    const rank = resolutionRank[entry.resolution] || 0;
+                        if (rank > maxRank) {
+                            maxRank = rank;
                         }
                     }
 
-                    const url = "https://player4u.xyz" + bestEntry.url;
+                    const bestEntries = entries.filter(entry => (resolutionRank[entry.resolution] || 0) === maxRank);
+
+                    const selectedEntry = bestEntries.length >= 2 ? bestEntries[1] : bestEntries[0];
+
+                    console.log("Selected URL:", selectedEntry.url);
+
+                    const url = "https://player4u.xyz" + selectedEntry.url;
 
                     const response = await fetchv2(url, headers);
                     const iframeData = await response.text();
@@ -328,7 +330,6 @@ async function extractStreamUrl(url) {
                     const iframeResponse = await fetchv2(iframeSrc, headers);
                     const html = await iframeResponse.text();
 
-                    // Regular expression to get each <li> block
                     const liRegex = /<li class="slide-toggle">([\s\S]*?)<\/li>/g;
                     const entries = [];
                     let liMatch;
@@ -336,30 +337,33 @@ async function extractStreamUrl(url) {
                     while ((liMatch = liRegex.exec(html)) !== null) {
                     const liContent = liMatch[1];
 
-                    // Extract the URL from the onclick attribute using regex
                     const urlMatch = liContent.match(/onclick="go\('([^']+)'\)"/);
                     if (!urlMatch) continue;
-                        const url = urlMatch[1];
+                    const url = urlMatch[1];
 
-                        // Extract resolution by looking for common resolution keywords (720p, 1080p, or 4K)
-                        const resMatch = liContent.match(/&nbsp;(\d+p|4K)\b/);
-                        const resolution = resMatch ? resMatch[1] : '';
+                    const resMatch = liContent.match(/&nbsp;(\d+p|4K)\b/);
+                    const resolution = resMatch ? resMatch[1] : '';
 
-                        entries.push({ url, resolution });
+                    entries.push({ url, resolution });
                     }
 
-                    // Define a ranking for the resolutions: higher number means higher quality.
                     const resolutionRank = { '720p': 1, '1080p': 2, '4K': 3 };
 
-                    let bestEntry = entries[0];
-                    // Loop through each entry to find the one with the highest resolution rank.
+                    let maxRank = 0;
                     for (const entry of entries) {
-                        if (resolutionRank[entry.resolution] > resolutionRank[bestEntry.resolution]) {
-                            bestEntry = entry;
+                    const rank = resolutionRank[entry.resolution] || 0;
+                        if (rank > maxRank) {
+                            maxRank = rank;
                         }
                     }
 
-                    const url = "https://player4u.xyz" + bestEntry.url;
+                    const bestEntries = entries.filter(entry => (resolutionRank[entry.resolution] || 0) === maxRank);
+
+                    const selectedEntry = bestEntries.length >= 2 ? bestEntries[1] : bestEntries[0];
+
+                    console.log("Selected URL:", selectedEntry.url);
+
+                    const url = "https://player4u.xyz" + selectedEntry.url;
 
                     const response = await fetchv2(url, headers);
                     const iframeData = await response.text();
@@ -530,3 +534,6 @@ function unpack(source) {
         return source;
     }
 }
+
+// extractStreamUrl(`https://vidapi.xyz/embed/tv/1396&s=1&e=1`);
+// extractStreamUrl(`https://vidapi.xyz/embed/tv/60735&s=9&e=1`);
