@@ -208,21 +208,14 @@ async function extractStreamUrl(url) {
 
                     const resolutionRank = { '720p': 1, '1080p': 2, '4K': 3 };
 
-                    let maxRank = 0;
+                    let bestEntry = entries[0];
                     for (const entry of entries) {
-                    const rank = resolutionRank[entry.resolution] || 0;
-                        if (rank > maxRank) {
-                            maxRank = rank;
+                        if (resolutionRank[entry.resolution] > resolutionRank[bestEntry.resolution]) {
+                            bestEntry = entry;
                         }
                     }
 
-                    const bestEntries = entries.filter(entry => (resolutionRank[entry.resolution] || 0) === maxRank);
-
-                    const selectedEntry = bestEntries.length >= 2 ? bestEntries[1] : bestEntries[0];
-
-                    console.log("Selected URL:", selectedEntry.url);
-
-                    const url = "https://player4u.xyz" + selectedEntry.url;
+                    const url = "https://player4u.xyz" + bestEntry.url;
 
                     const response = await fetchv2(url, headers);
                     const iframeData = await response.text();
@@ -339,31 +332,24 @@ async function extractStreamUrl(url) {
 
                     const urlMatch = liContent.match(/onclick="go\('([^']+)'\)"/);
                     if (!urlMatch) continue;
-                    const url = urlMatch[1];
+                        const url = urlMatch[1];
 
-                    const resMatch = liContent.match(/&nbsp;(\d+p|4K)\b/);
-                    const resolution = resMatch ? resMatch[1] : '';
+                        const resMatch = liContent.match(/&nbsp;(\d+p|4K)\b/);
+                        const resolution = resMatch ? resMatch[1] : '';
 
-                    entries.push({ url, resolution });
+                        entries.push({ url, resolution });
                     }
 
                     const resolutionRank = { '720p': 1, '1080p': 2, '4K': 3 };
 
-                    let maxRank = 0;
+                    let bestEntry = entries[0];
                     for (const entry of entries) {
-                    const rank = resolutionRank[entry.resolution] || 0;
-                        if (rank > maxRank) {
-                            maxRank = rank;
+                        if (resolutionRank[entry.resolution] > resolutionRank[bestEntry.resolution]) {
+                            bestEntry = entry;
                         }
                     }
 
-                    const bestEntries = entries.filter(entry => (resolutionRank[entry.resolution] || 0) === maxRank);
-
-                    const selectedEntry = bestEntries.length >= 2 ? bestEntries[1] : bestEntries[0];
-
-                    console.log("Selected URL:", selectedEntry.url);
-
-                    const url = "https://player4u.xyz" + selectedEntry.url;
+                    const url = "https://player4u.xyz" + bestEntry.url;
 
                     const response = await fetchv2(url, headers);
                     const iframeData = await response.text();
@@ -534,6 +520,3 @@ function unpack(source) {
         return source;
     }
 }
-
-// extractStreamUrl(`https://vidapi.xyz/embed/tv/1396&s=1&e=1`);
-// extractStreamUrl(`https://vidapi.xyz/embed/tv/60735&s=9&e=1`);
