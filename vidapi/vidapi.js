@@ -264,6 +264,7 @@ async function extractStreamUrl(url) {
 
                     const result = { stream, subtitles };
                     console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
                 }
             } catch (err) {
                 console.log(`Fetch error on endpoint https://vidapi.xyz/embed/movie/${movieId} for movie ${movieId}:`, err);
@@ -402,6 +403,7 @@ async function extractStreamUrl(url) {
 
                     const result = { stream, subtitles };
                     console.log(JSON.stringify(result));
+                    return JSON.stringify(result);
                 }
             } catch (err) {
                 console.log(`Fetch error on endpoint https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber} for TV show ${showId} S${seasonNumber}E${episodeNumber}:`, err);
