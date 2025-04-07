@@ -9,19 +9,19 @@ async function searchResults(keyword) {
                 return {
                     title: result.title || result.name || result.original_title || result.original_name,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://www.mokmobi.ovh/`
+                    href: `https://bingeflex.vercel.app/movie/${result.id}`
                 };
             } else if(result.media_type === "tv" || result.name) {
                 return {
                     title: result.name || result.title || result.original_name || result.original_title,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://www.mokmobi.ovh/`
+                    href: `https://bingeflex.vercel.app/tv/${result.id}`
                 };
             } else {
                 return {
                     title: result.title || result.name || result.original_name || result.original_title || "Untitled",
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://www.mokmobi.ovh/`
+                    href: `https://bingeflex.vercel.app/tv/${result.id}`
                 };
             }
         });

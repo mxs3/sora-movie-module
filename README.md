@@ -172,6 +172,34 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
         </details>
 
+      - <details>
+
+        <summary>
+
+        ### 6️⃣ VidAPI
+
+        </summary>
+
+        <span>
+        
+        <img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/vidapi/icon.png" width="125px"><br>
+
+        **File:** `VidAPI.json`<br>
+        **Type:** `TV Shows and Movies`<br>
+        **Language:** English. 🇺🇸 (SUB)<br>
+        **App version:** V2 and up <br>
+        **Author:** ibro <br><br>
+
+        <span></span>
+        
+        [<kbd> <br> Add to Sora <br> </kbd>](https://intradeus.github.io/http-protocol-redirector?r=sora://module?url=https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/vidapi/vidapi.json)
+
+        https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/vidapi/vidapi.json
+        
+        </span>
+
+        </details>
+
       <!-- - <details>
 
         <summary>
