@@ -169,7 +169,7 @@ async function extractStreamUrl(url) {
             const allServers = serverUrls.map(server => server.trim()).filter(server => server !== "");
 
             const result = {
-                stream: allServers,
+                streams: allServers,
                 subtitles: firstSubtitle ? firstSubtitle.url : ""
             };
 
@@ -215,7 +215,7 @@ async function extractStreamUrl(url) {
             const allServers = serverUrls.map(server => server.trim()).filter(server => server !== "");
 
             const result = {
-                stream: allServers,
+                streams: allServers,
                 subtitles: firstSubtitle ? firstSubtitle.url : ""
             };
         
