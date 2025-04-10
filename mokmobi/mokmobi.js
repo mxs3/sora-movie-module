@@ -166,12 +166,14 @@ async function extractStreamUrl(url) {
             console.log("Server URLs:", serverUrls);
             console.log("Subtitle URLs:", subtitleUrls);
 
-            const firstServer = serverUrls.find(server => server.trim() !== "");
+            // const firstServer = serverUrls.find(server => server.trim() !== "");
 
             const firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English'));
 
+            const allServers = serverUrls.map(server => server.trim()).filter(server => server !== "");
+
             const result = {
-                stream: firstServer ? firstServer : "",
+                streams: allServers,
                 subtitles: firstSubtitle ? firstSubtitle.url : ""
             };
 
@@ -214,11 +216,13 @@ async function extractStreamUrl(url) {
             console.log("Server URLs:", serverUrls);
             console.log("Subtitle URLs:", subtitleUrls);
 
-            const firstServer = serverUrls.find(server => server.trim() !== "");
+            // const firstServer = serverUrls.find(server => server.trim() !== "");
             const firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English'));
 
+            const allServers = serverUrls.map(server => server.trim()).filter(server => server !== "");
+
             const result = {
-                stream: firstServer ? firstServer : "",
+                streams: allServers,
                 subtitles: firstSubtitle ? firstSubtitle.url : ""
             };
         
