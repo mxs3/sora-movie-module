@@ -172,17 +172,20 @@ async function extractStreamUrl(url) {
                     const unpackedScript = unpack(packedScript);
                     console.log("Unpacked script:", unpackedScript);
 
-                    const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
-                    const streamMatch = unpackedScript.match(streamRegex);
-                    const stream = streamMatch ? streamMatch[1].trim() : '';
-                    console.log("Stream URL:", stream);
+                    const streamRegex = /"hls[1-9]":\s*"([^"]+)"/g;
+
+                    let streamMatch;
+                    let streams = [];
+                    while ((streamMatch = streamRegex.exec(unpackedScript)) !== null) {
+                        streams.push(streamMatch[1].trim());
+                    }
 
                     const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
                     const subtitlesMatch = unpackedScript.match(subtitlesRegex);
                     const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
                     console.log("Subtitles URL:", subtitles);
 
-                    const result = { stream, subtitles };
+                    const result = { streams, subtitles };
                     console.log(JSON.stringify(result));
                     return JSON.stringify(result);
                 } else if (iframeSrc.includes("player4u.xyz")) {
@@ -247,17 +250,20 @@ async function extractStreamUrl(url) {
                     const unpackedScript = unpack(packedScript);
                     console.log("Unpacked script:", unpackedScript);
 
-                    const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
-                    const streamMatch = unpackedScript.match(streamRegex);
-                    const stream = streamMatch ? streamMatch[1].trim() : '';
-                    console.log("Stream URL:", stream);
+                    const streamRegex = /"hls[1-9]":\s*"([^"]+)"/g;
+
+                    let streamMatch;
+                    let streams = [];
+                    while ((streamMatch = streamRegex.exec(unpackedScript)) !== null) {
+                        streams.push(streamMatch[1].trim());
+                    }
 
                     const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
                     const subtitlesMatch = unpackedScript.match(subtitlesRegex);
                     const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
                     console.log("Subtitles URL:", subtitles);
 
-                    const result = { stream, subtitles };
+                    const result = { streams, subtitles };
                     console.log(JSON.stringify(result));
                     return JSON.stringify(result);
                 }
@@ -292,6 +298,12 @@ async function extractStreamUrl(url) {
                     'Referer': 'https://vidapi.xyz/'
                 };
 
+                // const headers = {
+                //     headers: {
+                //         'Referer': 'https://vidapi.xyz/',
+                //     }
+                // };
+
                 if (iframeSrc.includes("uqloads.xyz")) {
                     const iframeResponse = await fetchv2(iframeSrc, headers);
                     const iframeHtml = await iframeResponse.text();
@@ -306,17 +318,22 @@ async function extractStreamUrl(url) {
                     const unpackedScript = unpack(packedScript);
                     console.log("Unpacked script:", unpackedScript);
 
-                    const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
-                    const streamMatch = unpackedScript.match(streamRegex);
-                    const stream = streamMatch ? streamMatch[1].trim() : '';
-                    console.log("Stream URL:", stream);
+                    const streamRegex = /"hls[1-9]":\s*"([^"]+)"/g;
+
+                    let streamMatch;
+                    let streams = [];
+                    while ((streamMatch = streamRegex.exec(unpackedScript)) !== null) {
+                        streams.push(streamMatch[1].trim());
+                    }
+
+                    console.log("Stream URLs:", streams);
 
                     const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
                     const subtitlesMatch = unpackedScript.match(subtitlesRegex);
                     const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
                     console.log("Subtitles URL:", subtitles);
 
-                    const result = { stream, subtitles };
+                    const result = { streams, subtitles };
                     console.log(JSON.stringify(result));
                     return JSON.stringify(result);
                 } else if (iframeSrc.includes("player4u.xyz")) {
@@ -381,17 +398,20 @@ async function extractStreamUrl(url) {
                     const unpackedScript = unpack(packedScript);
                     console.log("Unpacked script:", unpackedScript);
 
-                    const streamRegex = /sources\s*:\s*\[\s*{[^}]*file\s*:\s*"([^"]+)"/;
-                    const streamMatch = unpackedScript.match(streamRegex);
-                    const stream = streamMatch ? streamMatch[1].trim() : '';
-                    console.log("Stream URL:", stream);
+                    const streamRegex = /"hls[1-9]":\s*"([^"]+)"/g;
+
+                    let streamMatch;
+                    let streams = [];
+                    while ((streamMatch = streamRegex.exec(unpackedScript)) !== null) {
+                        streams.push(streamMatch[1].trim());
+                    }
 
                     const subtitlesRegex = /tracks\s*:\s*\[[\s\S]*?{\s*file\s*:\s*"([^"]+)"\s*,\s*label\s*:\s*"[^"]+"\s*,\s*kind\s*:\s*"captions"/;
                     const subtitlesMatch = unpackedScript.match(subtitlesRegex);
                     const subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
                     console.log("Subtitles URL:", subtitles);
 
-                    const result = { stream, subtitles };
+                    const result = { streams, subtitles };
                     console.log(JSON.stringify(result));
                     return JSON.stringify(result);
                 }
