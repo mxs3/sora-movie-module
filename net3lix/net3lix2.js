@@ -161,47 +161,26 @@ async function extractStreamUrl(url) {
 
             console.log(JSON.stringify(data));
 
-            if (data.source4 !== null && data.source4.url !== "" && data.source4.language === "English") {
-                const hlsSource = data.source4.url !== "https://vid3c.site/stream/file2/video.mp4" ? data.source4 : "";
+            const sourceKeys = ["source4", "source1", "source2", "source5"];
+            const streams = [];
 
-                const result = {
-                    stream: hlsSource.url || "",
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                };
+            for (let key of sourceKeys) {
+                const currentSource = data[key];
 
-                console.log(JSON.stringify(result));
-                return JSON.stringify(result);
-            } else if (data.source1 !== null && data.source1.url !== "" && data.source1.language === "English") {
-                const hlsSource = data.source1.url !== "https://vid3c.site/stream/file2/video.mp4" ? data.source1 : "";
-
-                const result = {
-                    stream: hlsSource.url || "",
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                };
-
-                console.log(JSON.stringify(result));
-                return JSON.stringify(result);
-            } else if (data.source2 !== null && data.source2.url !== "" && data.source2.language === "English") {
-                const hlsSource = data.source2.url !== "https://vid3c.site/stream/file2/video.mp4" ? data.source2 : "";
-
-                const result = {
-                    stream: hlsSource.url || "",
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                };
-
-                console.log(JSON.stringify(result));
-                return JSON.stringify(result);
-            } else if (data.source5 !== null && data.source5.url !== "" && data.source5.language === "English") {
-                const hlsSource = data.source5.url !== "https://vid3c.site/stream/file2/video.mp4" ? data.source5 : "";
-
-                const result = {
-                    stream: hlsSource.url || "",
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                };
-
-                console.log(JSON.stringify(result));
-                return JSON.stringify(result);
+                if (currentSource && currentSource.url && currentSource.language === "English") {
+                    if (currentSource.url !== "https://vid3c.site/stream/file2/video.mp4") {
+                        streams.push(currentSource.url);
+                    }
+                }
             }
+
+            const result = {
+                streams: streams,
+                subtitles: subtitleTrack ? subtitleTrack.url : ""
+            };
+
+            console.log(JSON.stringify(result));
+            return JSON.stringify(result);
         } else if (url.includes('/tv/')) {
             const match = url.match(/https:\/\/net3lix\.world\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
@@ -228,47 +207,26 @@ async function extractStreamUrl(url) {
             console.log("URL:" + JSON.stringify(url2));
             console.log(JSON.stringify(data));
 
-            if (data.source4 !== null && data.source4.url !== "" && data.source4.language === "English") {
-                const hlsSource = data.source4.url !== "https://vid3c.site/stream/file2/video.mp4" ? data.source4 : "";
+            const sourceKeys = ["source4", "source1", "source2", "source5"];
+            const streams = [];
 
-                const result = {
-                    stream: hlsSource.url || "",
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                };
+            for (let key of sourceKeys) {
+                const currentSource = data[key];
 
-                console.log(JSON.stringify(result));
-                return JSON.stringify(result);
-            } else if (data.source1 !== null && data.source1.url !== "" && data.source1.language === "English") {
-                const hlsSource = data.source1.url !== "https://vid3c.site/stream/file2/video.mp4" ? data.source1 : "";
-
-                const result = {
-                    stream: hlsSource.url || "",
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                };
-
-                console.log(JSON.stringify(result));
-                return JSON.stringify(result);
-            } else if (data.source2 !== null && data.source2.url !== "" && data.source2.language === "English") {
-                const hlsSource = data.source2.url !== "https://vid3c.site/stream/file2/video.mp4" ? data.source2 : "";
-
-                const result = {
-                    stream: hlsSource.url || "",
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                };
-
-                console.log(JSON.stringify(result));
-                return JSON.stringify(result);
-            } else if (data.source5 !== null && data.source5.url !== "" && data.source5.language === "English") {
-                const hlsSource = data.source5.url !== "https://vid3c.site/stream/file2/video.mp4" ? data.source5 : "";
-
-                const result = {
-                    stream: hlsSource.url || "",
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
-                };
-
-                console.log(JSON.stringify(result));
-                return JSON.stringify(result);
+                if (currentSource && currentSource.url && currentSource.language === "English") {
+                    if (currentSource.url !== "https://vid3c.site/stream/file2/video.mp4") {
+                        streams.push(currentSource.url);
+                    }
+                }
             }
+
+            const result = {
+                streams: streams,
+                subtitles: subtitleTrack ? subtitleTrack.url : ""
+            };
+
+            console.log(JSON.stringify(result));
+            return JSON.stringify(result);
         } else {
             throw new Error("Invalid URL format");
         }
