@@ -463,9 +463,9 @@ async function extractStreamUrl(url) {
 
                 console.log(JSON.stringify(result));
                 return JSON.stringify(result);
-                } catch (err) {
-                    console.log('Fetch error in extractStreamUrl:', err);
-                }
+            } catch (err) {
+                console.log('Fetch error in extractStreamUrl:', err);
+            }
         } else {
             throw new Error("Invalid URL format");
         }
