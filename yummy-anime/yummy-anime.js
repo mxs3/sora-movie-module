@@ -69,9 +69,13 @@ async function extractEpisodes(url) {
         console.log(data);
 
         const transformedResults = data.map(result => {
+            const episodeNumber = result.number;
+
+            const epNum = parseInt(episodeNumber);
+
             return {
                 href: `https:${result.iframe_url}`,
-                number: result.number
+                number: epNum
             };
         });
 
