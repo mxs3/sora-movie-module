@@ -9,19 +9,19 @@ async function searchResults(keyword) {
                 return {
                     title: result.title || result.name || result.original_title || result.original_name,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://bingeflex.vercel.app/movie/${result.id}`
+                    href: `https://rivestream.org/watch?type=movie&id=${result.id}`
                 };
             } else if(result.media_type === "tv" || result.name) {
                 return {
                     title: result.name || result.title || result.original_name || result.original_title,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://bingeflex.vercel.app/tv/${result.id}`
+                    href: `https://rivestream.org/watch?type=tv&id=${result.id}&season=1&episode=1`
                 };
             } else {
                 return {
                     title: result.title || result.name || result.original_name || result.original_title || "Untitled",
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://bingeflex.vercel.app/tv/${result.id}`
+                    href: `https://rivestream.org/watch?type=tv&id=${result.id}&season=1&episode=1`
                 };
             }
         });
@@ -35,8 +35,8 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        if(url.includes('/movie/')) {
-            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
+        if(url.includes('movie')) {
+            const match = url.match(/https:\/\/rivestream\.org\/watch\?type=movie&id=([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
@@ -50,8 +50,8 @@ async function extractDetails(url) {
             }];
 
             return JSON.stringify(transformedResults);
-        } else if(url.includes('/tv/')) {
-            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/tv\/([^\/]+)/);
+        } else if(url.includes('tv')) {
+            const match = url.match(/https:\/\/rivestream\.org\/watch\?type=tv&id=([^\/]+)&season=([^\/]+)&episode=([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
@@ -80,18 +80,18 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        if(url.includes('/movie/')) {
-            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
+        if(url.includes('movie')) {
+            const match = url.match(/https:\/\/rivestream\.org\/watch\?type=movie&id=([^\/]+)/);
             
             if (!match) throw new Error("Invalid URL format");
             
             const movieId = match[1];
             
             return JSON.stringify([
-                { href: `https://bingeflex.vercel.app/movie/${movieId}`, number: 1, title: "Full Movie" }
+                { href: `https://rivestream.org/watch?type=movie&id=${movieId}`, number: 1, title: "Full Movie" }
             ]);
-        } else if(url.includes('/tv/')) {
-            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/tv\/([^\/]+)/);
+        } else if(url.includes('tv')) {
+            const match = url.match(/https:\/\/rivestream\.org\/watch\?type=tv&id=([^\/]+)&season=([^\/]+)&episode=([^\/]+)/);
             
             if (!match) throw new Error("Invalid URL format");
             
@@ -111,7 +111,7 @@ async function extractEpisodes(url) {
                 
                 if (seasonData.episodes && seasonData.episodes.length) {
                     const episodes = seasonData.episodes.map(episode => ({
-                        href: `https://bingeflex.vercel.app/tv/${showId}?season=${seasonNumber}&episode=${episode.episode_number}`,
+                        href: `https://rivestream.org/watch?type=tv&id=${showId}&season=${seasonNumber}&episode=${episode.episode_number}`,
                         number: episode.episode_number,
                         title: episode.name || ""
                     }));
@@ -131,8 +131,8 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        if (url.includes('/movie/')) {
-            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
+        if (url.includes('movie')) {
+            const match = url.match(/https:\/\/rivestream\.org\/watch\?type=movie&id=([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
@@ -179,8 +179,8 @@ async function extractStreamUrl(url) {
 
             console.log("Result:", result);
             return JSON.stringify(result);
-        } else if (url.includes('/tv/')) {
-            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/tv\/([^\/]+)\?season=([^\/]+)&episode=([^\/]+)/);
+        } else if (url.includes('tv')) {
+            const match = url.match(/https:\/\/rivestream\.org\/watch\?type=tv&id=([^\/]+)&season=([^\/]+)&episode=([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
