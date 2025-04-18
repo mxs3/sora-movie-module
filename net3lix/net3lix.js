@@ -131,101 +131,31 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        if (url.includes('/movie/')) {
-            const match = url.match(/https:\/\/net3lix\.world\/watch\/movie\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
+        const match = url.match(/net3lix\.world\/watch\/(movie|tv)\/(.+)/);
+        if (!match) throw new Error('Invalid URL format');
+        const [, type, path] = match;
 
-            const movieId = match[1];
+        const embedUrl = type === 'movie'
+        ? `https://vidsrc.su/embed/movie/${path}`
+        : (() => {
+            const [showId, season, episode] = path.split('/');
+            return `https://vidsrc.su/embed/tv/${showId}/${season}/${episode}`;
+            })();
 
-            const response = await fetchv2(`https://vidsrc.su/embed/movie/${movieId}`);
-            const data = await response.text();
+        const data = await fetchv2(embedUrl).then(res => res.text());
 
-            const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
+        const urlRegex = /^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm;
+        const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
 
-            const serverMatches = [...data.matchAll(/^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm)];
+        const streams = Array.from(data.matchAll(urlRegex), m => m[2].trim()).filter(Boolean);
 
-            const subtitleMatches = [];
-            let subtitleMatch;
-            while ((subtitleMatch = subtitleRegex.exec(data)) !== null) {
-                subtitleMatches.push({
-                    url: subtitleMatch[1],
-                    format: subtitleMatch[2],
-                    display: subtitleMatch[3],
-                    language: subtitleMatch[4]
-                });
-            }
+        let subtitle = '';
+        const engMatch = Array.from(data.matchAll(subtitleRegex)).find(([, url,, display]) => display.includes('English'));
+        if (engMatch) subtitle = engMatch[1];
 
-            console.log("Subtitle Matches:", subtitleMatches);
-
-            const serverUrls = serverMatches.map(match => match[2]);
-            const subtitleUrls = subtitleMatches.map(item => item.url);
-
-            console.log("Server URLs:", serverUrls);
-            console.log("Subtitle URLs:", subtitleUrls);
-
-            // const firstServer = serverUrls.find(server => server.trim() !== "");
-            const firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English'));
-
-            const allServers = serverUrls.map(server => server.trim()).filter(server => server !== "");
-
-            const result = {
-                streams: allServers,
-                subtitles: firstSubtitle ? firstSubtitle.url : ""
-            };
-
-            console.log("Result:", result);
-            return JSON.stringify(result);
-        } else if (url.includes('/tv/')) {
-            const match = url.match(/https:\/\/net3lix\.world\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const showId = match[1];
-            const seasonNumber = match[2];
-            const episodeNumber = match[3];
-
-            const response = await fetchv2(`https://vidsrc.su/embed/tv/${showId}/${seasonNumber}/${episodeNumber}`);
-            const data = await response.text();
-
-            const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
-
-            const serverMatches = [...data.matchAll(/^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm)];
-
-            const subtitleMatches = [];
-            let subtitleMatch;
-            while ((subtitleMatch = subtitleRegex.exec(data)) !== null) {
-                subtitleMatches.push({
-                    url: subtitleMatch[1],
-                    format: subtitleMatch[2],
-                    display: subtitleMatch[3],
-                    language: subtitleMatch[4]
-                });
-            }
-
-            console.log("Subtitle Matches:", subtitleMatches);
-
-            const serverUrls = serverMatches.map(match => match[2]);
-            const subtitleUrls = subtitleMatches.map(item => item.url);
-
-            console.log("Server URLs:", serverUrls);
-            console.log("Subtitle URLs:", subtitleUrls);
-
-            // const firstServer = serverUrls.find(server => server.trim() !== "");
-            const firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English'));
-
-            const allServers = serverUrls.map(server => server.trim()).filter(server => server !== "");
-
-            const result = {
-                streams: allServers,
-                subtitles: firstSubtitle ? firstSubtitle.url : ""
-            };
-        
-            console.log("Result:", result);
-            return JSON.stringify(result);
-        } else {
-            throw new Error("Invalid URL format");
-        }
+        return JSON.stringify({ streams, subtitles: subtitle });
     } catch (error) {
-        console.log('Fetch error in extractStreamUrl:', error);
+        console.error('extractStreamUrl error:', error);
         return null;
     }
 }
