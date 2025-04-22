@@ -1,11 +1,11 @@
 {
-    "sourceName": "Bingeflex",
+    "sourceName": "Bingeflix",
     "iconUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/bingeflex/icon.png",
     "author": {
         "name": "ibro",
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg"
     },
-    "version": "1.4.1",
+    "version": "1.5.0",
     "language": "English",
     "streamType": "HLS",
     "quality": "1080p",

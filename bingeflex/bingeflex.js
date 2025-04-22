@@ -9,19 +9,19 @@ async function searchResults(keyword) {
                 return {
                     title: result.title || result.name || result.original_title || result.original_name,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://bingeflex.vercel.app/movie/${result.id}`
+                    href: `https://bingeflix.tv/movie/${result.id}`
                 };
             } else if(result.media_type === "tv" || result.name) {
                 return {
                     title: result.name || result.title || result.original_name || result.original_title,
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://bingeflex.vercel.app/tv/${result.id}`
+                    href: `https://bingeflix.tv/tv/${result.id}`
                 };
             } else {
                 return {
                     title: result.title || result.name || result.original_name || result.original_title || "Untitled",
                     image: `https://image.tmdb.org/t/p/w500${result.poster_path}`,
-                    href: `https://bingeflex.vercel.app/tv/${result.id}`
+                    href: `https://bingeflix.tv/tv/${result.id}`
                 };
             }
         });
@@ -36,7 +36,7 @@ async function searchResults(keyword) {
 async function extractDetails(url) {
     try {
         if(url.includes('/movie/')) {
-            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
+            const match = url.match(/https:\/\/bingeflix\.tv\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
@@ -51,7 +51,7 @@ async function extractDetails(url) {
 
             return JSON.stringify(transformedResults);
         } else if(url.includes('/tv/')) {
-            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/tv\/([^\/]+)/);
+            const match = url.match(/https:\/\/bingeflix\.tv\/tv\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
@@ -81,17 +81,17 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {
     try {
         if(url.includes('/movie/')) {
-            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
+            const match = url.match(/https:\/\/bingeflix\.tv\/movie\/([^\/]+)/);
             
             if (!match) throw new Error("Invalid URL format");
             
             const movieId = match[1];
             
             return JSON.stringify([
-                { href: `https://bingeflex.vercel.app/movie/${movieId}`, number: 1, title: "Full Movie" }
+                { href: `https://bingeflix.tv/movie/${movieId}`, number: 1, title: "Full Movie" }
             ]);
         } else if(url.includes('/tv/')) {
-            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/tv\/([^\/]+)/);
+            const match = url.match(/https:\/\/bingeflix\.tv\/tv\/([^\/]+)/);
             
             if (!match) throw new Error("Invalid URL format");
             
@@ -111,7 +111,7 @@ async function extractEpisodes(url) {
                 
                 if (seasonData.episodes && seasonData.episodes.length) {
                     const episodes = seasonData.episodes.map(episode => ({
-                        href: `https://bingeflex.vercel.app/tv/${showId}?season=${seasonNumber}&episode=${episode.episode_number}`,
+                        href: `https://bingeflix.tv/tv/${showId}?season=${seasonNumber}&episode=${episode.episode_number}`,
                         number: episode.episode_number,
                         title: episode.name || ""
                     }));
@@ -163,7 +163,7 @@ async function extractStreamUrl(url) {
 
     try {
         if (url.includes('/movie/')) {
-            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/movie\/([^\/]+)/);
+            const match = url.match(/https:\/\/bingeflix\.tv\/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
@@ -318,7 +318,7 @@ async function extractStreamUrl(url) {
                 console.log('Fetch error in extractStreamUrl:', err);
             }
         } else if (url.includes('/tv/')) {
-            const match = url.match(/https:\/\/bingeflex\.vercel\.app\/tv\/([^\/]+)\?season=([^\/]+)&episode=([^\/]+)/);
+            const match = url.match(/https:\/\/bingeflix\.tv\/tv\/([^\/]+)\?season=([^\/]+)&episode=([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
