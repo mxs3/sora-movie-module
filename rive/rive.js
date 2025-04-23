@@ -292,20 +292,29 @@ async function extractStreamUrl(url) {
                 }
 
                 let subtitle = '';
-                const engMatch = Array.from(data1.matchAll(subtitleRegex)).find(([, url,, display]) => display.includes('English'));
+                // const engMatch = Array.from(data1.matchAll(subtitleRegex)).find(([, url,, display]) => display.includes('English'));
                 
-                if (engMatch) {
-                    subtitle = engMatch[1];
-                } else {
-                    const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
-                    const subtitleTrackData = await subtitleTrackResponse.json();
+                // if (engMatch) {
+                //     subtitle = engMatch[1];
+                // } else {
+                //     const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
+                //     const subtitleTrackData = await subtitleTrackResponse.json();
 
-                    const subtitleTrack = subtitleTrackData.find(track =>
-                        track.display.startsWith('English')
-                    );
+                //     const subtitleTrack = subtitleTrackData.find(track =>
+                //         track.display.startsWith('English')
+                //     );
 
-                    subtitle = subtitleTrack ? subtitleTrack.url : '';
-                }
+                //     subtitle = subtitleTrack ? subtitleTrack.url : '';
+                // }
+
+                const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
+                const subtitleTrackData = await subtitleTrackResponse.json();
+
+                const subtitleTrack = subtitleTrackData.find(track =>
+                    track.display.startsWith('English')
+                );
+
+                subtitle = subtitleTrack ? subtitleTrack.url : '';
 
                 const C = movieId
                     .toString()
@@ -473,20 +482,29 @@ async function extractStreamUrl(url) {
                 }
                 
                 let subtitle = '';
-                const engMatch = Array.from(data1.matchAll(subtitleRegex)).find(([, url,, display]) => display.includes('English'));
+                // const engMatch = Array.from(data1.matchAll(subtitleRegex)).find(([, url,, display]) => display.includes('English'));
 
-                if (engMatch) {
-                    subtitle = engMatch[1];
-                } else {
-                    const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
-                    const subtitleTrackData = await subtitleTrackResponse.json();
+                // if (engMatch) {
+                //     subtitle = engMatch[1];
+                // } else {
+                //     const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+                //     const subtitleTrackData = await subtitleTrackResponse.json();
 
-                    const subtitleTrack = subtitleTrackData.find(track =>
-                        track.display.startsWith('English')
-                    );
+                //     const subtitleTrack = subtitleTrackData.find(track =>
+                //         track.display.startsWith('English')
+                //     );
 
-                    subtitle = subtitleTrack ? subtitleTrack.url : '';
-                }
+                //     subtitle = subtitleTrack ? subtitleTrack.url : '';
+                // }
+
+                const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+                const subtitleTrackData = await subtitleTrackResponse.json();
+
+                const subtitleTrack = subtitleTrackData.find(track =>
+                    track.display.startsWith('English')
+                );
+
+                subtitle = subtitleTrack ? subtitleTrack.url : '';
 
                 const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
                 const reversedString = formattedString.split('').reverse().join('');
