@@ -502,7 +502,7 @@ async function extractStreamUrl(url) {
                 const subtitleTrackData = await subtitleTrackResponse.json();
 
                 const subtitleTrack = subtitleTrackData.find(track =>
-                    track.display.startsWith('English') && track.encoding === 'ASCII' || track.encoding === 'UTF-8'
+                    track.display.startsWith('English') && (track.encoding === 'ASCII' || track.encoding === 'UTF-8')
                 );
 
                 subtitle = subtitleTrack ? subtitleTrack.url : '';
