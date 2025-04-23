@@ -273,12 +273,39 @@ async function extractStreamUrl(url) {
             // }
 
             try {
-                const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
-                const subtitleTrackData = await subtitleTrackResponse.json();
+                let streams = [];
 
-                const subtitleTrack = subtitleTrackData.find(track =>
-                    track.display.startsWith('English')
-                );
+                const embedUrl = `https://vidsrc.su/embed/movie/${movieId}`
+                const data1 = await fetchv2(embedUrl).then(res => res.text());
+
+                const urlRegex = /^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm;
+                const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
+                
+                const streams2 = Array.from(data1.matchAll(urlRegex), m => m[2].trim()).filter(Boolean);
+
+                for (let i = 0; i < streams2.length; i++) {
+                    const currentStream = streams2[i];
+
+                    if (currentStream) {
+                        streams.push(currentStream);
+                    }
+                }
+
+                let subtitle = '';
+                const engMatch = Array.from(data1.matchAll(subtitleRegex)).find(([, url,, display]) => display.includes('English'));
+                
+                if (engMatch) {
+                    subtitle = engMatch[1];
+                } else {
+                    const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
+                    const subtitleTrackData = await subtitleTrackResponse.json();
+
+                    const subtitleTrack = subtitleTrackData.find(track =>
+                        track.display.startsWith('English')
+                    );
+
+                    subtitle = subtitleTrack ? subtitleTrack.url : '';
+                }
 
                 const C = movieId
                     .toString()
@@ -298,7 +325,6 @@ async function extractStreamUrl(url) {
                 console.log(JSON.stringify(data));
 
                 const sourceKeys = ["source4", "source1", "source2", "source5"];
-                const streams = [];
 
                 for (let key of sourceKeys) {
                     const currentSource = data[key];
@@ -312,7 +338,7 @@ async function extractStreamUrl(url) {
 
                 const result = {
                     streams: streams,
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    subtitles: subtitle
                 };
 
                 console.log(JSON.stringify(result));
@@ -428,12 +454,39 @@ async function extractStreamUrl(url) {
             // }
 
             try {
-                const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
-                const subtitleTrackData = await subtitleTrackResponse.json();
+                let streams = [];
+                
+                const embedUrl = `https://vidsrc.su/embed/tv/${showId}/${seasonNumber}/${episodeNumber}`
+                const data1 = await fetchv2(embedUrl).then(res => res.text());
+                
+                const urlRegex = /^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm;
+                const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
+                
+                const streams2 = Array.from(data1.matchAll(urlRegex), m => m[2].trim()).filter(Boolean);
+                
+                for (let i = 0; i < streams2.length; i++) {
+                    const currentStream = streams2[i];
 
-                const subtitleTrack = subtitleTrackData.find(track =>
-                    track.display.startsWith('English')
-                );
+                    if (currentStream) {
+                        streams.push(currentStream);
+                    }
+                }
+                
+                let subtitle = '';
+                const engMatch = Array.from(data1.matchAll(subtitleRegex)).find(([, url,, display]) => display.includes('English'));
+
+                if (engMatch) {
+                    subtitle = engMatch[1];
+                } else {
+                    const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+                    const subtitleTrackData = await subtitleTrackResponse.json();
+
+                    const subtitleTrack = subtitleTrackData.find(track =>
+                        track.display.startsWith('English')
+                    );
+
+                    subtitle = subtitleTrack ? subtitleTrack.url : '';
+                }
 
                 const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
                 const reversedString = formattedString.split('').reverse().join('');
@@ -447,7 +500,6 @@ async function extractStreamUrl(url) {
                 console.log(JSON.stringify(data));
 
                 const sourceKeys = ["source4", "source1", "source2", "source5"];
-                const streams = [];
 
                 for (let key of sourceKeys) {
                     const currentSource = data[key];
@@ -461,7 +513,7 @@ async function extractStreamUrl(url) {
 
                 const result = {
                     streams: streams,
-                    subtitles: subtitleTrack ? subtitleTrack.url : ""
+                    subtitles: subtitle
                 };
 
                 console.log(JSON.stringify(result));
