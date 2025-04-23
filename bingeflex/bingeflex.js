@@ -273,7 +273,7 @@ async function extractStreamUrl(url) {
                 let streams = [];
 
                 const embedUrl = `https://vidsrc.su/embed/movie/${movieId}`
-                const data1 = await fetchv2(embedUrl).then(res => res.text());
+                const data1 = await fetch(embedUrl).then(res => res.text());
 
                 const urlRegex = /^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm;
                 const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
@@ -304,14 +304,18 @@ async function extractStreamUrl(url) {
                 //     subtitle = subtitleTrack ? subtitleTrack.url : '';
                 // }
 
-                const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
+                const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${movieId}`);
                 const subtitleTrackData = await subtitleTrackResponse.json();
+
+                console.log("URL:" + JSON.stringify(subtitleTrackData));
 
                 const subtitleTrack = subtitleTrackData.find(track =>
                     track.display.startsWith('English')
                 );
 
                 subtitle = subtitleTrack ? subtitleTrack.url : '';
+
+                console.log("URL:" + JSON.stringify(subtitle));
 
                 const C = movieId
                     .toString()
@@ -325,7 +329,7 @@ async function extractStreamUrl(url) {
                 const A = btoa(B);
                 const D = btoa(A);
                 const urlovo = `https://api.vid3c.site/allmvse2e.php?id=${D}`;
-                const response = await fetchv2(urlovo);
+                const response = await fetch(urlovo);
                 const data = await response.json();
 
                 console.log(JSON.stringify(data));
@@ -498,7 +502,7 @@ async function extractStreamUrl(url) {
                 const subtitleTrackData = await subtitleTrackResponse.json();
 
                 const subtitleTrack = subtitleTrackData.find(track =>
-                    track.display.startsWith('English')
+                    track.display.startsWith('English') && track.encoding === 'ASCII'
                 );
 
                 subtitle = subtitleTrack ? subtitleTrack.url : '';
@@ -562,3 +566,5 @@ function btoa(input) {
 
     return output;
 }
+
+extractStreamUrl("https://bingeflix.tv/movie/602");
