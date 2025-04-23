@@ -3,9 +3,10 @@
     "iconUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/net3lix/icon.png",
     "author": {
         "name": "ibro",
-        "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg"
+        "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
+        "url": "https://github.com/xibrox"
     },
-    "version": "1.0.3",
+    "version": "1.0.4",
     "language": "English",
     "streamType": "HLS",
     "quality": "1080p",
