@@ -169,7 +169,15 @@ async function extractStreamUrl(url) {
 
             // const firstServer = serverUrls.find(server => server.trim() !== "");
 
-            const firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'ASCII' || subtitle.encoding === 'UTF-8' || subtitle.encoding === 'CP1252'));
+            let firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'ASCII' || subtitle.encoding === 'UTF-8'));
+
+            if (!firstSubtitle) {
+                firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP1252'));
+            }
+
+            if (!firstSubtitle) {
+                firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP850'));
+            }
 
             const streams = serverUrls.map(server => server.trim()).filter(server => server !== "");
 
@@ -219,8 +227,16 @@ async function extractStreamUrl(url) {
             console.log("Subtitle URLs:", subtitleUrls);
 
             // const firstServer = serverUrls.find(server => server.trim() !== "");
-            const firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'ASCII' || subtitle.encoding === 'UTF-8' || subtitle.encoding === 'CP850'));
+            let firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'ASCII' || subtitle.encoding === 'UTF-8'));
 
+            if (!firstSubtitle) {
+                firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP1252'));
+            }
+
+            if (!firstSubtitle) {
+                firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP850'));
+            }
+            
             const streams = serverUrls.map(server => server.trim()).filter(server => server !== "");
 
             const result = {
