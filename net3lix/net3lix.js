@@ -144,18 +144,42 @@ async function extractStreamUrl(url) {
 
         const data = await fetchv2(embedUrl).then(res => res.text());
 
+        console.log('Embed URL:', embedUrl);
+        console.log('Data:', data);
+
         const urlRegex = /^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm;
-        const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
+        const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"encoding"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
 
         const streams = Array.from(data.matchAll(urlRegex), m => m[2].trim()).filter(Boolean);
 
-        let subtitle = '';
-        const engMatch = Array.from(data.matchAll(subtitleRegex)).find(([, url,, display]) => display.includes('English'));
-        if (engMatch) subtitle = engMatch[1];
+        const subtitleMatches = [];
+        let subtitleMatch;
+        while ((subtitleMatch = subtitleRegex.exec(data)) !== null) {
+            subtitleMatches.push({
+                url: subtitleMatch[1],
+                format: subtitleMatch[2],
+                encoding: subtitleMatch[3],
+                display: subtitleMatch[4],
+                language: subtitleMatch[5]
+            });
+        }
 
-        return JSON.stringify({ streams, subtitles: subtitle });
+        const subtitleUrls = subtitleMatches.map(item => item.url);
+        console.log("Subtitle URLs:", subtitleUrls);
+
+        const firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'ASCII' || subtitle.encoding === 'UTF-8' || subtitle.encoding === 'CP850') );
+
+        const result = {
+            streams,
+            subtitles: firstSubtitle ? firstSubtitle.url : ""
+        }
+
+        console.log('Result:', result);
+        return JSON.stringify(result);
     } catch (error) {
         console.error('extractStreamUrl error:', error);
         return null;
     }
 }
+
+extractStreamUrl('https://net3lix.world/watch/movie/238')

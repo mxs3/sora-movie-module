@@ -141,7 +141,7 @@ async function extractStreamUrl(url) {
             const subtitleTrackData = await subtitleTrackResponse.json();
 
             const subtitleTrack = subtitleTrackData.find(track =>
-                track.display.startsWith('English')
+                track.display.startsWith('English') && (track.encoding === 'ASCII' || track.encoding === 'UTF-8' || track.encoding === 'CP850')
             );
 
             const C = movieId
@@ -193,7 +193,7 @@ async function extractStreamUrl(url) {
             const subtitleTrackData = await subtitleTrackResponse.json();
 
             const subtitleTrack = subtitleTrackData.find(track =>
-                track.display.startsWith('English')
+                track.display.startsWith('English') && (track.encoding === 'ASCII' || track.encoding === 'UTF-8' || track.encoding === 'CP850')
             );
 
             const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;

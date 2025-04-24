@@ -143,7 +143,7 @@ async function extractStreamUrl(url) {
             const response = await fetchv2(dataText.stream_url);
             const data = await response.text();
 
-            const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
+            const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"encoding"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
 
             const serverMatches = [...data.matchAll(/^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm)];
 
@@ -153,8 +153,9 @@ async function extractStreamUrl(url) {
                 subtitleMatches.push({
                     url: subtitleMatch[1],
                     format: subtitleMatch[2],
-                    display: subtitleMatch[3],
-                    language: subtitleMatch[4]
+                    encoding: subtitleMatch[3],
+                    display: subtitleMatch[4],
+                    language: subtitleMatch[5]
                 });
             }
 
@@ -168,12 +169,12 @@ async function extractStreamUrl(url) {
 
             // const firstServer = serverUrls.find(server => server.trim() !== "");
 
-            const firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English'));
+            const firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'ASCII' || subtitle.encoding === 'UTF-8' || subtitle.encoding === 'CP1252'));
 
-            const allServers = serverUrls.map(server => server.trim()).filter(server => server !== "");
+            const streams = serverUrls.map(server => server.trim()).filter(server => server !== "");
 
             const result = {
-                streams: allServers,
+                streams,
                 subtitles: firstSubtitle ? firstSubtitle.url : ""
             };
 
@@ -193,7 +194,7 @@ async function extractStreamUrl(url) {
             const response = await fetchv2(dataText.stream_url);
             const data = await response.text();
 
-            const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
+            const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"encoding"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
 
             const serverMatches = [...data.matchAll(/^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm)];
 
@@ -203,8 +204,9 @@ async function extractStreamUrl(url) {
                 subtitleMatches.push({
                     url: subtitleMatch[1],
                     format: subtitleMatch[2],
-                    display: subtitleMatch[3],
-                    language: subtitleMatch[4]
+                    encoding: subtitleMatch[3],
+                    display: subtitleMatch[4],
+                    language: subtitleMatch[5]
                 });
             }
 
@@ -217,12 +219,12 @@ async function extractStreamUrl(url) {
             console.log("Subtitle URLs:", subtitleUrls);
 
             // const firstServer = serverUrls.find(server => server.trim() !== "");
-            const firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English'));
+            const firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'ASCII' || subtitle.encoding === 'UTF-8' || subtitle.encoding === 'CP850'));
 
-            const allServers = serverUrls.map(server => server.trim()).filter(server => server !== "");
+            const streams = serverUrls.map(server => server.trim()).filter(server => server !== "");
 
             const result = {
-                streams: allServers,
+                streams,
                 subtitles: firstSubtitle ? firstSubtitle.url : ""
             };
         
@@ -236,3 +238,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractStreamUrl("https://rivestream.org/watch?type=movie&id=238")
