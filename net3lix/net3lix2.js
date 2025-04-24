@@ -140,9 +140,17 @@ async function extractStreamUrl(url) {
             const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
             const subtitleTrackData = await subtitleTrackResponse.json();
 
-            const subtitleTrack = subtitleTrackData.find(track =>
-                track.display.startsWith('English') && (track.encoding === 'ASCII' || track.encoding === 'UTF-8' || track.encoding === 'CP850')
+            let subtitleTrack = subtitleTrackData.find(track =>
+                track.display.includes('English') && (track.encoding === 'ASCII' || track.encoding === 'UTF-8' || track.encoding === 'CP850')
             );
+
+            if (!subtitleTrack) {
+                subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP1252'));
+            }
+    
+            if (!subtitleTrack) {
+                subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP850'));
+            }
 
             const C = movieId
                 .toString()
@@ -192,9 +200,17 @@ async function extractStreamUrl(url) {
             const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
             const subtitleTrackData = await subtitleTrackResponse.json();
 
-            const subtitleTrack = subtitleTrackData.find(track =>
-                track.display.startsWith('English') && (track.encoding === 'ASCII' || track.encoding === 'UTF-8' || track.encoding === 'CP850')
+            let subtitleTrack = subtitleTrackData.find(track =>
+                track.display.includes('English') && (track.encoding === 'ASCII' || track.encoding === 'UTF-8' || track.encoding === 'CP850')
             );
+
+            if (!subtitleTrack) {
+                subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP1252'));
+            }
+    
+            if (!subtitleTrack) {
+                subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP850'));
+            }
 
             const formattedString = `${showId}-${seasonNumber}-${episodeNumber}`;
             const reversedString = formattedString.split('').reverse().join('');

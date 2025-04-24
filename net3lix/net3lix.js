@@ -167,7 +167,15 @@ async function extractStreamUrl(url) {
         const subtitleUrls = subtitleMatches.map(item => item.url);
         console.log("Subtitle URLs:", subtitleUrls);
 
-        const firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'ASCII' || subtitle.encoding === 'UTF-8' || subtitle.encoding === 'CP850') );
+        let firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'ASCII' || subtitle.encoding === 'UTF-8'));
+
+        if (!firstSubtitle) {
+            firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP1252'));
+        }
+
+        if (!firstSubtitle) {
+            firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP850'));
+        }
 
         const result = {
             streams,
@@ -181,5 +189,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractStreamUrl('https://net3lix.world/watch/movie/238')
