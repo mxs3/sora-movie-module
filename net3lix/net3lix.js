@@ -174,6 +174,10 @@ async function extractStreamUrl(url) {
         }
 
         if (!firstSubtitle) {
+            firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP1250'));
+        }
+
+        if (!firstSubtitle) {
             firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP850'));
         }
 

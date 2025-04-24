@@ -141,11 +141,15 @@ async function extractStreamUrl(url) {
             const subtitleTrackData = await subtitleTrackResponse.json();
 
             let subtitleTrack = subtitleTrackData.find(track =>
-                track.display.includes('English') && (track.encoding === 'ASCII' || track.encoding === 'UTF-8' || track.encoding === 'CP850')
+                track.display.includes('English') && (track.encoding === 'ASCII' || track.encoding === 'UTF-8')
             );
 
             if (!subtitleTrack) {
                 subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP1252'));
+            }
+
+            if (!subtitleTrack) {
+                subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP1250'));
             }
     
             if (!subtitleTrack) {
@@ -201,11 +205,15 @@ async function extractStreamUrl(url) {
             const subtitleTrackData = await subtitleTrackResponse.json();
 
             let subtitleTrack = subtitleTrackData.find(track =>
-                track.display.includes('English') && (track.encoding === 'ASCII' || track.encoding === 'UTF-8' || track.encoding === 'CP850')
+                track.display.includes('English') && (track.encoding === 'ASCII' || track.encoding === 'UTF-8')
             );
 
             if (!subtitleTrack) {
                 subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP1252'));
+            }
+
+            if (!subtitleTrack) {
+                subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP1250'));
             }
     
             if (!subtitleTrack) {
