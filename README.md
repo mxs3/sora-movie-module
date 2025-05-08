@@ -1,10 +1,10 @@
 > [!CAUTION]
+> Sora Modules © 2025 by NAMEHERE is licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
+
+> [!WARNING]
 > **ONLY USE THE BELOW MODULES**<br>
 > **IF A MODULE IN MY REPO ISN'T LISTED BELOW THEN IT'S NOT WORKING**<br>
 > <i>(e.g., Sudatchi and VidAPI)</i>
-
-> [!WARNING]
-> Sora Modules © 2025 by NAMEHERE is licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
 
 # 🍿 TV Show, Movie and Anime Modules for [Sora](https://github.com/cranci1/Sora) 🎥
 
