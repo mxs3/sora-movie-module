@@ -1,5 +1,5 @@
 > [!CAUTION]
-> Sora Modules © 2025 by NAMEHERE is licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
+> **Sora Modules © 2025 by NAMEHERE is licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International**
 
 > [!WARNING]
 > **ONLY USE THE BELOW MODULES**<br>
