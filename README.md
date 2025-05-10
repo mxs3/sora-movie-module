@@ -1,7 +1,8 @@
-> [!CAUTION]
-> **Sora Modules © 2025 by NAMEHERE is licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International**
+> [!WARNING] 
+> These modules are licensed **exclusively for use within the [Sora/Sulfur iOS app](https://github.com/cranci1/Sora)**.  
+> **Do not pay to use them — if someone is charging you, it's a scam.**
 
-> [!WARNING]
+> [!CAUTION]
 > **ONLY USE THE BELOW MODULES**<br>
 > **IF A MODULE IN MY REPO ISN'T LISTED BELOW THEN IT'S NOT WORKING**<br>
 > <i>(e.g., Sudatchi and VidAPI)</i>
@@ -730,5 +731,3 @@ Welcome to the **TV Show, Movie and Anime Modules for _Sora_** repository. This 
 
 > [!NOTE]
 > **If something is wrong, open an issue or @mention me on the sora discord server.**
-
-<p xmlns:cc="http://creativecommons.org/ns" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://github.com/xibrox/sora-movie-module/">Sora Modules</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://github.com/xibrox">xibrox</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1" alt=""></a></p>
