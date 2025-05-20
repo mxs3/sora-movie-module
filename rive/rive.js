@@ -339,13 +339,13 @@ async function extractStreamUrl(url) {
                 const B = C.split("").reverse().join("");
                 const A = btoa(B);
                 const D = btoa(A);
-                const urlovo = `https://api.vid3c.site/allmvse2e.php?id=${D}`;
+                const urlovo = `https://api2.vidsrc.vip/movie/${D}`;
                 const response = await fetchv2(urlovo);
                 const data = await response.json();
 
                 console.log(JSON.stringify(data));
 
-                const sourceKeys = ["source4", "source1", "source2", "source5"];
+                const sourceKeys = ["source4", "source1", "source2", "source5", "source3"];
 
                 for (let key of sourceKeys) {
                     const currentSource = data[key];
@@ -534,14 +534,14 @@ async function extractStreamUrl(url) {
                 const reversedString = formattedString.split('').reverse().join('');
                 const firstBase64 = btoa(reversedString);
                 const secondBase64 = btoa(firstBase64);
-                const url2 = `https://api.vid3c.site/alltvse2e.php?id=${secondBase64}`;
+                const url2 = `https://api2.vidsrc.vip/tv/${secondBase64}`;
                 const response = await fetchv2(url2);
                 const data = await response.json();
 
                 console.log("URL:" + JSON.stringify(url2));
                 console.log(JSON.stringify(data));
 
-                const sourceKeys = ["source4", "source1", "source2", "source5"];
+                const sourceKeys = ["source4", "source1", "source2", "source5", "source3"];
 
                 for (let key of sourceKeys) {
                     const currentSource = data[key];
