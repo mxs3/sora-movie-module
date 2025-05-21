@@ -151,15 +151,15 @@ async function extractStreamUrl(url) {
                             'Referer': data.headers.Referer
                         };
 
-                        streams.push(data.provider);
-                        streams.push(stream.link);
-                        streams.push(`headers: ${JSON.stringify(headers)}`);
+                        // streams.push(data.provider);
+                        // streams.push(stream.link);
+                        // streams.push(`headers: ${JSON.stringify(headers)}`);
 
-                        // streams.push({
-                        //     title: data.provider,
-                        //     streamUrl: stream.link,
-                        //     headers: headers
-                        // });
+                        streams.push({
+                            title: data.provider,
+                            streamUrl: stream.link,
+                            headers: headers
+                        });
                     }
                 }
             }
@@ -216,15 +216,15 @@ async function extractStreamUrl(url) {
                             'Referer': data.headers.Referer
                         };
 
-                        streams.push(data.provider);
-                        streams.push(stream.link);
-                        streams.push(`headers: ${JSON.stringify(headers)}`);
+                        // streams.push(data.provider);
+                        // streams.push(stream.link);
+                        // streams.push(`headers: ${JSON.stringify(headers)}`);
 
-                        // streams.push({
-                        //     title: data.provider,
-                        //     streamUrl: stream.link,
-                        //     headers: headers
-                        // });
+                        streams.push({
+                            title: data.provider,
+                            streamUrl: stream.link,
+                            headers: headers
+                        });
                     }
                 }
             }
@@ -256,7 +256,7 @@ async function extractStreamUrl(url) {
             };
             
             console.log("Final result:", result);
-            return result;
+            return JSON.stringify(result);
         } else {
             throw new Error("Invalid URL format");
         }
