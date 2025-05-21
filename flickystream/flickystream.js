@@ -195,7 +195,7 @@ async function extractStreamUrl(url) {
 
             for (let i = 1; i <= 5; i++) {
                 const apiUrl = `https://player.vidzee.wtf/api/server?id=${showId}&sr=${i}&ss=${seasonNumber}&ep=${episodeNumber}`;
-                const response = await fetch(apiUrl);
+                const response = await fetchv2(apiUrl);
                 const data = await response.json();
 
                 if (data.url) {
@@ -209,7 +209,7 @@ async function extractStreamUrl(url) {
                 }
             }
             
-            const subtitleTrackResponse = await fetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+            const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
             const subtitleTrackData = await subtitleTrackResponse.json();
 
             let subtitleTrack = subtitleTrackData.find(track =>
@@ -245,5 +245,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractStreamUrl(`https://flickystream.com/player/tv/1396/1/1`);
