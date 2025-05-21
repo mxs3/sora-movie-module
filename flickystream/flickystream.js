@@ -151,11 +151,15 @@ async function extractStreamUrl(url) {
                             'Referer': data.headers.Referer
                         };
 
-                        streams.push({
-                            title: data.provider,
-                            streamUrl: stream.link,
-                            headers: headers
-                        });
+                        streams.push(data.provider);
+                        streams.push(stream.link);
+                        // streams.push(`headers: ${JSON.stringify(headers)}`);
+
+                        // streams.push({
+                        //     title: data.provider,
+                        //     streamUrl: stream.link,
+                        //     headers: headers
+                        // });
                     }
                 }
             }
@@ -212,11 +216,15 @@ async function extractStreamUrl(url) {
                             'Referer': data.headers.Referer
                         };
 
-                        streams.push({
-                            title: data.provider,
-                            streamUrl: stream.link,
-                            headers: headers
-                        });
+                        streams.push(data.provider);
+                        streams.push(stream.link);
+                        // streams.push(`headers: ${JSON.stringify(headers)}`);
+
+                        // streams.push({
+                        //     title: data.provider,
+                        //     streamUrl: stream.link,
+                        //     headers: headers
+                        // });
                     }
                 }
             }
