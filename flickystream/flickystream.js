@@ -147,9 +147,13 @@ async function extractStreamUrl(url) {
                     const stream = data.url?.find(source => source.lang === 'English' || source.lang === 'english');
 
                     if (stream) {
+                        const headers = {
+                            'Referer': data.headers.Referer
+                        }
+
                         streams.push(data.provider);
                         streams.push(stream.link);
-                        streams.push(data.headers.Referer);
+                        streams.push(headers);
                     }
                 }
             }
@@ -202,9 +206,13 @@ async function extractStreamUrl(url) {
                     const stream = data.url?.find(source => source.lang === 'English' || source.lang === 'english');
                     
                     if (stream) {
+                        const headers = {
+                            'Referer': data.headers.Referer
+                        }
+
                         streams.push(data.provider);
                         streams.push(stream.link);
-                        streams.push(data.headers.Referer);
+                        streams.push(headers);
                     }
                 }
             }
