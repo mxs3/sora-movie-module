@@ -153,7 +153,7 @@ async function extractStreamUrl(url) {
 
                         streams.push(data.provider);
                         streams.push(stream.link);
-                        streams.push(headers);
+                        streams.push(`headers: ${JSON.stringify(headers)}`);
                     }
                 }
             }
@@ -212,7 +212,7 @@ async function extractStreamUrl(url) {
 
                         streams.push(data.provider);
                         streams.push(stream.link);
-                        streams.push(headers);
+                        streams.push(`headers: ${JSON.stringify(headers)}`);
                     }
                 }
             }
