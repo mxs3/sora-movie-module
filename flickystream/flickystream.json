@@ -6,11 +6,11 @@
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
         "url": "https://github.com/xibrox"
     },
-    "version": "1.0.3",
+    "version": "1.0.4",
     "language": "English",
     "streamType": "HLS",
     "quality": "1080p",
-    "baseUrl": "https://www.vidsrc.wtf/",
+    "baseUrl": "https://flickystream.com/",
     "searchBaseUrl": "https://api.themoviedb.org/3/search/multi?api_key=adc48d20c0956934fb224de5c40bb85d&query=%s",
     "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/flickystream/flickystream.js",
     "type": "anime/shows/movies",
