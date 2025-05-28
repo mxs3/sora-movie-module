@@ -1,19 +1,10 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
+        const responseText = await fetchv2(`https://api.themoviedb.org/3/search/multi?api_key=68e094699525b18a70bab2f86b1fa706&query=${encodedKeyword}`);
+        const data = await responseText.json();
 
-        // Fetch movie results
-        const movieResponseText = await fetchv2(`https://api.themoviedb.org/3/discover/movie?api_key=68e094699525b18a70bab2f86b1fa706&language=en-US&page=1&with_genres=16&with_keywords=210024%7C287501&with_text_query=${encodedKeyword}`);
-        const movieData = await movieResponseText.json();
-
-        // Fetch TV show results
-        const tvResponseText = await fetchv2(`https://api.themoviedb.org/3/discover/tv?api_key=68e094699525b18a70bab2f86b1fa706&language=en-US&page=1&with_genres=16&with_keywords=210024%7C287501&with_text_query=${encodedKeyword}`);
-        const tvData = await tvResponseText.json();
-
-        // Combine results
-        const combinedResults = [...movieData.results, ...tvData.results];
-
-        const transformedResults = combinedResults.map(result => {
+        const transformedResults = data.results.map(result => {
             if(result.media_type === "movie" || result.title) {
                 return {
                     title: result.title || result.name || result.original_title || result.original_name,
@@ -153,7 +144,7 @@ async function extractStreamUrl(url) {
 
             const movieId = match[1];
 
-            const responseText = await fetchv2(`https://flix.1anime.app/movie/animepahe/${movieId}`);
+            const responseText = await fetchv2(`https://flix.1anime.app/movie/vidsrcsu/${movieId}`);
             const data = await responseText.json();
 
             let allStreams = [];
@@ -215,7 +206,7 @@ async function extractStreamUrl(url) {
             const seasonNumber = match[2];
             const episodeNumber = match[3];
 
-            const response = await fetchv2(`https://flix.1anime.app/tv/animepahe/${showId}/${seasonNumber}/${episodeNumber}`);
+            const response = await fetchv2(`https://flix.1anime.app/tv/vidsrcsu/${showId}/${seasonNumber}/${episodeNumber}`);
             const data = await response.json();
 
             let allStreams = [];
