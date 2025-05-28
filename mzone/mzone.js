@@ -138,123 +138,65 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        if (url.includes('movie')) {
-            const match = url.match(/https:\/\/m-zone\.org\/watch\/movie\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
+        const match = url.match(/m-zone\.org\/watch\/(movie|tv)\/(.+)/);
+        if (!match) throw new Error('Invalid URL format');
+        const [, type, path] = match;
 
-            const movieId = match[1];
+        const embedUrl = type === 'movie'
+        ? `https://vidsrc.su/embed/movie/${path}`
+        : (() => {
+            const [showId, season, episode] = path.split('/');
+            return `https://vidsrc.su/embed/tv/${showId}/${season}/${episode}`;
+            })();
 
-            let streams = [];
+        const data = await fetchv2(embedUrl).then(res => res.text());
 
-            const embedUrl = `https://vidsrc.su/embed/movie/${movieId}`
-            const data1 = await fetchv2(embedUrl).then(res => res.text());
+        console.log('Embed URL:', embedUrl);
+        console.log('Data:', data);
 
-            const urlRegex = /^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm;
-            const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
-            
-            const streams2 = Array.from(data1.matchAll(urlRegex), m => m[2].trim()).filter(Boolean);
+        const urlRegex = /^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm;
+        const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"encoding"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
 
-            for (let i = 0; i < streams2.length; i++) {
-                const currentStream = streams2[i];
+        const streams = Array.from(data.matchAll(urlRegex), m => m[2].trim()).filter(Boolean);
 
-                if (currentStream) {
-                    streams.push(currentStream);
-                }
-            }
-
-            let subtitle = '';
-
-            const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
-            const subtitleTrackData = await subtitleTrackResponse.json();
-
-            let subtitleTrack = subtitleTrackData.find(track =>
-                track.display.includes('English') && (track.encoding === 'ASCII' || track.encoding === 'UTF-8')
-            );
-
-            if (!subtitleTrack) {
-                subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP1252'));
-            }
-
-            if (!subtitleTrack) {
-                subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP1250'));
-            }
-    
-            if (!subtitleTrack) {
-                subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP850'));
-            }
-
-            subtitle = subtitleTrack ? subtitleTrack.url : '';
-
-            const result = {
-                streams,
-                subtitles: subtitle
-            };
-
-            console.log("Result:", result);
-            return JSON.stringify(result);
-        } else if (url.includes('tv')) {
-            const match = url.match(/https:\/\/m-zone\.org\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const showId = match[1];
-            const seasonNumber = match[2];
-            const episodeNumber = match[3];
-
-            let streams = [];
-                
-            const embedUrl = `https://vidsrc.su/embed/tv/${showId}/${seasonNumber}/${episodeNumber}`
-            const data1 = await fetchv2(embedUrl).then(res => res.text());
-            
-            const urlRegex = /^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm;
-            const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
-            
-            const streams2 = Array.from(data1.matchAll(urlRegex), m => m[2].trim()).filter(Boolean);
-            
-            for (let i = 0; i < streams2.length; i++) {
-                const currentStream = streams2[i];
-
-                if (currentStream) {
-                    streams.push(currentStream);
-                }
-            }
-            
-            let subtitle = '';
-
-            const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
-            const subtitleTrackData = await subtitleTrackResponse.json();
-
-            let subtitleTrack = subtitleTrackData.find(track =>
-                track.display.includes('English') && (track.encoding === 'ASCII' || track.encoding === 'UTF-8')
-            );
-
-            if (!subtitleTrack) {
-                subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP1252'));
-            }
-
-            if (!subtitleTrack) {
-                subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP1250'));
-            }
-    
-            if (!subtitleTrack) {
-                subtitleTrack = subtitleTrackData.find(track => track.display.includes('English') && (track.encoding === 'CP850'));
-            }
-
-            subtitle = subtitleTrack ? subtitleTrack.url : '';
-
-            const result = {
-                streams,
-                subtitles: firstSubtitle ? firstSubtitle.url : ""
-            };
-        
-            console.log("Result:", result);
-            return JSON.stringify(result);
-        } else {
-            throw new Error("Invalid URL format");
+        const subtitleMatches = [];
+        let subtitleMatch;
+        while ((subtitleMatch = subtitleRegex.exec(data)) !== null) {
+            subtitleMatches.push({
+                url: subtitleMatch[1],
+                format: subtitleMatch[2],
+                encoding: subtitleMatch[3],
+                display: subtitleMatch[4],
+                language: subtitleMatch[5]
+            });
         }
+
+        const subtitleUrls = subtitleMatches.map(item => item.url);
+        console.log("Subtitle URLs:", subtitleUrls);
+
+        let firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'ASCII' || subtitle.encoding === 'UTF-8'));
+
+        if (!firstSubtitle) {
+            firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP1252'));
+        }
+
+        if (!firstSubtitle) {
+            firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP1250'));
+        }
+
+        if (!firstSubtitle) {
+            firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP850'));
+        }
+
+        const result = {
+            streams,
+            subtitles: firstSubtitle ? firstSubtitle.url : ""
+        }
+
+        console.log('Result:', result);
+        return JSON.stringify(result);
     } catch (error) {
         console.log('Fetch error in extractStreamUrl:', error);
         return null;
     }
 }
-
-extractStreamUrl("https://rivestream.org/watch?type=movie&id=238")
