@@ -111,21 +111,27 @@ async function extractEpisodes(url) {
             if (!match) throw new Error("Invalid URL format");
             
             const showId = match[1];
-            const seasonNumber = match[2];
-            const episodeNumber = match[3];
-
-            // Fetch episodes for the specific season from the URL
-            const seasonResponseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
-            const seasonData = await seasonResponseText.json();
-
+            
+            const showResponseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+            const showData = await showResponseText.json();
+            
             let allEpisodes = [];
-            if (seasonData.episodes && seasonData.episodes.length) {
-                const episodes = seasonData.episodes.map(episode => ({
-                    href: `tv/${showId}/${seasonNumber}/${episode.episode_number}`,
-                    number: episode.episode_number,
-                    title: episode.name || ""
-                }));
-                allEpisodes = allEpisodes.concat(episodes);
+            for (const season of showData.seasons) {
+                const seasonNumber = season.season_number;
+
+                if(seasonNumber === 0) continue;
+                
+                const seasonResponseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+                const seasonData = await seasonResponseText.json();
+                
+                if (seasonData.episodes && seasonData.episodes.length) {
+                    const episodes = seasonData.episodes.map(episode => ({
+                        href: `tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                        number: episode.episode_number,
+                        title: episode.name || ""
+                    }));
+                    allEpisodes = allEpisodes.concat(episodes);
+                }
             }
             
             console.log(allEpisodes);
