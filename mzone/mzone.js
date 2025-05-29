@@ -138,18 +138,28 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const match = url.match(/m-zone\.org\/watch\/(movie|tv)\/(.+)/);
+        const match = url.match(/m-zone\.org\/watch\/(movie|tv)\/([^?]+)/);
         if (!match) throw new Error('Invalid URL format');
-        const [, type, path] = match;
 
-        const embedUrl = type === 'movie'
-        ? `https://vidsrc.su/embed/movie/${path}`
-        : (() => {
-            const [showId, season, episode] = path.split('/');
-            return `https://vidsrc.su/embed/tv/${showId}/${season}/${episode}`;
-            })();
+        const [, type, id] = match;
 
-        const data = await fetchv2(embedUrl).then(res => res.text());
+        let embedUrl;
+
+        if (type === 'movie') {
+            embedUrl = `https://vidsrc.su/embed/movie/${id}`;
+        } else {
+            const seasonMatch = url.match(/season=(\d+)/);
+            const episodeMatch = url.match(/episode=(\d+)/);
+
+            if (!seasonMatch || !episodeMatch) throw new Error('Missing season or episode in URL');
+
+            const season = seasonMatch[1];
+            const episode = episodeMatch[1];
+
+            embedUrl = `https://vidsrc.su/embed/tv/${id}/${season}/${episode}`;
+        }
+
+        const data = await fetch(embedUrl).then(res => res.text());
 
         console.log('Embed URL:', embedUrl);
         console.log('Data:', data);
@@ -171,27 +181,14 @@ async function extractStreamUrl(url) {
             });
         }
 
-        const subtitleUrls = subtitleMatches.map(item => item.url);
-        console.log("Subtitle URLs:", subtitleUrls);
-
-        let firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'ASCII' || subtitle.encoding === 'UTF-8'));
-
-        if (!firstSubtitle) {
-            firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP1252'));
-        }
-
-        if (!firstSubtitle) {
-            firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP1250'));
-        }
-
-        if (!firstSubtitle) {
-            firstSubtitle = subtitleMatches.find(subtitle => subtitle.display.includes('English') && (subtitle.encoding === 'CP850'));
-        }
+        const firstSubtitle = subtitleMatches.find(sub => 
+            sub.display.includes('English') && ['ASCII', 'UTF-8', 'CP1252', 'CP1250', 'CP850'].includes(sub.encoding)
+        );
 
         const result = {
             streams,
             subtitles: firstSubtitle ? firstSubtitle.url : ""
-        }
+        };
 
         console.log('Result:', result);
         return JSON.stringify(result);
@@ -200,3 +197,5 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+extractStreamUrl("https://m-zone.org/watch/tv/1396?season=1&episode=1");
