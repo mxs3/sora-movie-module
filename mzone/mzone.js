@@ -159,7 +159,7 @@ async function extractStreamUrl(url) {
             embedUrl = `https://vidsrc.su/embed/tv/${id}/${season}/${episode}`;
         }
 
-        const data = await fetch(embedUrl).then(res => res.text());
+        const data = await fetchv2(embedUrl).then(res => res.text());
 
         console.log('Embed URL:', embedUrl);
         console.log('Data:', data);
