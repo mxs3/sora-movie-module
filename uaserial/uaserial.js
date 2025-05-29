@@ -119,7 +119,7 @@ async function extractStreamUrl(url) {
         const seasonNumber = match[2];
         const episodeNumber = match[3];
 
-        const response = await fetch(url);
+        const response = await fetchv2(url);
         const htmlText = await response.text();
 
         const episodesMatch = htmlText.match(/episodes\s*:\s*(\[[\s\S]*?\])\s*,?\s*\n/);
@@ -164,7 +164,7 @@ async function extractStreamUrl(url) {
         for (const source of srcArray) {
             if (!source.link.includes("ashdi.vip")) continue;
 
-            const streamRes = await fetch(source.link);
+            const streamRes = await fetchv2(source.link);
             const streamHtml = await streamRes.text();
 
             const fileMatch = streamHtml.match(/file\s*:\s*"([^"]+\.m3u8[^"]*)"/);
