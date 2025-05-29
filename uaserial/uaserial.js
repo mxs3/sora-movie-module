@@ -126,14 +126,13 @@ async function extractStreamUrl(url) {
         const streamUrl = fileMatch ? fileMatch[1] : null;
         const subtitleUrl = subtitleMatch ? subtitleMatch[1] : null;
 
-        console.log('Stream:', streamUrl);
-        console.log('Subtitle:', subtitleUrl);
-
-        return {
-            stream: streamUrl,
-            subtitle: subtitleUrl || null
+        const result = {
+            stream: streamUrl ? streamUrl : "",
+            subtitles: subtitleUrl ? subtitleUrl : ""
         };
 
+        console.log(result);
+        return JSON.stringify(result);
     } catch (error) {
         console.log('Fetch error in extractStreamUrl:', error);
         return null;
