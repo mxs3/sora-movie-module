@@ -70,21 +70,45 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        const response = await fetchv2(url);
+        const response = await fetch(url);
         const html = await response.text();
 
         const episodeOptions = [...html.matchAll(
             /<option[^>]*?data-series-number="(\d+)"[^>]*?value="([^"]+)"[^>]*?>([^<]+)<\/option>/g
         )];
 
-        const episodes = episodeOptions.map(([, number, value, label]) => ({
-            href: value.startsWith('http') ? value : `https://uaserial.me${value}`,
-            number: parseInt(number, 10),
-            title: label.trim()
-        }));        
+        if (episodeOptions.length > 0) {
+            const episodes = episodeOptions.map(([, number, value, label]) => ({
+                href: value.startsWith('http') ? value : `https://uaserial.me${value}`,
+                number: parseInt(number, 10),
+                title: label.trim()
+            }));
 
-        console.log(episodes);
-        return JSON.stringify(episodes);
+            console.log("Extracted from <option>:", episodes);
+            return JSON.stringify(episodes);
+        }
+
+        const iframeMatch = html.match(/<iframe[^>]+src="([^"]+\/episode-\d+)"[^>]*>/);
+        if (iframeMatch) {
+            const href = iframeMatch[1].startsWith('http') 
+                ? iframeMatch[1] 
+                : `https://uaserial.me${iframeMatch[1]}`;
+
+            const numberMatch = href.match(/episode-(\d+)/);
+            const number = numberMatch ? parseInt(numberMatch[1], 10) : 1;
+
+            const singleEpisode = [{
+                href,
+                number,
+                title: `Серія ${number}`
+            }];
+
+            console.log("Fallback to iframe:", singleEpisode);
+            return JSON.stringify(singleEpisode);
+        }
+
+        console.log("No episodes found.");
+        return JSON.stringify([]);
     } catch (error) {
         console.log('Fetch error in extractEpisodes:', error);
         return JSON.stringify([]);
