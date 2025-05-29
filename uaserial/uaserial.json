@@ -6,8 +6,8 @@
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
         "url": "https://github.com/xibrox"
     },
-    "version": "1.0.4",
-    "language": "Ukrainian (HARDSUB + DUB)",
+    "version": "1.0.5",
+    "language": "Ukrainian (DUB/SUB)",
     "streamType": "HLS",
     "quality": "1080p",
     "baseUrl": "https://uaserial.me/",

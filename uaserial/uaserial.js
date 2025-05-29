@@ -112,8 +112,8 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const responseText = await fetchv2(url);
-        const htmlText = await responseText.text();
+        const response = await fetchv2(url);
+        const htmlText = await response.text();
 
         const episodesMatch = htmlText.match(/episodes\s*:\s*(\[[\s\S]*?\])\s*,?\s*\n/);
         if (!episodesMatch) {
@@ -121,39 +121,59 @@ async function extractStreamUrl(url) {
             return null;
         }
 
-        let rawJson = episodesMatch[1];
-
-        rawJson = rawJson
+        let rawJson = episodesMatch[1]
             .replace(/\\'/g, "'")
             .replace(/,\s*}/g, '}')
             .replace(/,\s*]/g, ']');
 
         const episodes = JSON.parse(rawJson);
+        const resultStreams = [];
+        let subtitleUrl = "";
 
-        const ashdiUrl = episodes?.[0]?.src?.ashdi?.[0]?.link;
-        if (!ashdiUrl) {
-            console.log("No ashdi.vip link found.");
+        for (const episode of episodes) {
+            const srcArray = Array.isArray(episode.src) 
+                ? episode.src 
+                : episode.src?.ashdi ?? [];
+
+            for (const source of srcArray) {
+                if (!source.link.includes("ashdi.vip")) continue;
+
+                const streamRes = await fetchv2(source.link);
+                const streamHtml = await streamRes.text();
+
+                const fileMatch = streamHtml.match(/file\s*:\s*"([^"]+\.m3u8[^"]*)"/);
+                const subtitleMatch = streamHtml.match(/subtitle\s*:\s*"([^"]*)"/);
+
+                if (fileMatch) {
+                    resultStreams.push({
+                        title: source.name || episode.title || "",
+                        streamUrl: fileMatch[1],
+                        headers: {}
+                    });
+
+                    if (!subtitleUrl && subtitleMatch && subtitleMatch[1]) {
+                        const fullSubtitle = subtitleMatch[1];
+                        const cleanedSubtitle = fullSubtitle.match(/https?:\/\/[^\s"]+/)?.[0] || "";
+                        subtitleUrl = cleanedSubtitle;
+                    }
+                }
+            }
+        }
+
+        if (resultStreams.length === 0) {
+            console.log("No ashdi.vip links found.");
             return null;
         }
 
-        const streamResponse = await fetchv2(ashdiUrl);
-        const streamHtml = await streamResponse.text();
-
-        const fileMatch = streamHtml.match(/file\s*:\s*"([^"]+\.m3u8[^"]*)"/);
-        const subtitleMatch = streamHtml.match(/subtitle\s*:\s*"([^"]*)"/);
-
-        const streamUrl = fileMatch ? fileMatch[1] : null;
-        const subtitleUrl = subtitleMatch ? subtitleMatch[1] : null;
-
         const result = {
-            stream: streamUrl ? streamUrl : "",
-            subtitles: subtitleUrl ? subtitleUrl : ""
+            streams: resultStreams,
+            subtitles: subtitleUrl
         };
 
         console.log(result);
         return JSON.stringify(result);
     } catch (error) {
-        console.log('Fetch error in extractStreamUrl:', error);
+        console.log("Fetch error in extractStreamUrl:", error);
         return null;
     }
 }
