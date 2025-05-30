@@ -3,7 +3,7 @@ async function searchResults(keyword) {
         const encodedKeyword = encodeURIComponent(keyword);
         const apiUrl = `https://streamcloud.sx/data/browse/?lang=2&keyword=${encodedKeyword}`;
 
-        const responseText = await fetchv2(apiUrl);
+        const responseText = await soraFetch(apiUrl);
         const data = await responseText.json();
 
         const transformedResults = data.movies.map(result => {
@@ -33,7 +33,7 @@ async function extractDetails(url) {
         const movieId = match[2];
         const apiUrl = `https://streamcloud.sx/data/watch/?_id=${movieId}`;
 
-        const responseText = await fetchv2(apiUrl);
+        const responseText = await soraFetch(apiUrl);
         const data = await responseText.json();
 
         const aliases = `
@@ -73,7 +73,7 @@ async function extractEpisodes(url) {
 
         const apiUrl = `https://streamcloud.sx/data/watch/?_id=${movieId}`;
 
-        const responseText = await fetchv2(apiUrl);
+        const responseText = await soraFetch(apiUrl);
         const data = await responseText.json();
         
         if(data.tv === 0) {
@@ -112,50 +112,43 @@ async function extractStreamUrl(url) {
 
         const apiUrl = `https://streamcloud.sx/data/watch/?_id=${movieId}`;
 
-        const response = await fetchv2(apiUrl);
+        const response = await soraFetch(apiUrl);
         const data = await response.json();
 
         let providers = {};
 
         for (const stream of data.streams) {
+          // if stream has deleted and deleted is 1, skip it
+          if (stream.deleted === 1 || stream.e == 1) {
+            console.log(`Skipping deleted or expired stream: ${stream.stream}`);
+            continue;
+          }
             const streamUrl = stream.stream;
-            
-            if (
-                streamUrl.includes('speedfiles') ||
-                streamUrl.includes('vidmoly') ||
-                streamUrl.includes('turbovid') ||
-                streamUrl.includes('doodstream') ||
-                streamUrl.includes('voe') ||
-                streamUrl.includes('vidoza') ||
-                streamUrl.includes('mp4upload') ||
-                streamUrl.includes('veev')
-            ) {
-                try {
-                    const headResponse = await fetchv2(streamUrl, { method: 'HEAD' });
-                    if (headResponse.status !== 404) {
-                        if (streamUrl.includes('speedfiles')) {
-                            providers[streamUrl] = "speedfiles";
-                        } else if (streamUrl.includes('vidmoly')) {
-                            providers[streamUrl] = "vidmoly";
-                        } else if (streamUrl.includes('turbovid')) {
-                            providers[streamUrl] = "turbovid";
-                        } else if (streamUrl.includes('doodstream')) {
-                            providers[streamUrl] = "doodstream";
-                        } else if (streamUrl.includes('voe')) {
-                            providers[streamUrl] = "voe";
-                        } else if (streamUrl.includes('vidoza')) {
-                            providers[streamUrl] = "vidoza";
-                        } else if (streamUrl.includes('mp4upload')) {
-                            providers[streamUrl] = "mp4upload";
-                        } else if (streamUrl.includes('veev')) {
-                            providers[streamUrl] = "veev";
-                        }
-                    }
-                } catch (err) {
-                    console.log(`Error checking ${streamUrl}:`, err.message);
-                }
+            // get the hostname of the stream URL using regex, but without the extension
+            const hostnameMatch = streamUrl.match(/https?:\/\/([^\/]+)/);
+            if (!hostnameMatch) {
+              console.log(`Invalid stream URL: ${streamUrl}`);
+              continue;
             }
-        }        
+                        // remove the extension from the hostname
+            let hostname = hostnameMatch[1].replace(/\.[^/.]+$/, "");
+
+            // if is dood, its doodstream
+            if (hostname.includes("dood")) {
+                hostname = "doodstream";
+            }
+
+
+            providers[streamUrl] = hostname;
+
+            try {
+                
+            } catch (err) {
+                console.log(`Error checking ${streamUrl}:`, err.message);
+            }
+        }
+
+        console.log("Providers found:", providers);
 
         let streams = [];
         try {
@@ -175,7 +168,6 @@ async function extractStreamUrl(url) {
     }
 }
 
-// extractStreamUrl("https://streamcloud.sx/watch/the-last-of-us-staffel-2/6805c802f425fc1d6849427c/1");
 
 function generateSlug(title) {
     return title
@@ -187,7 +179,6 @@ function generateSlug(title) {
         .replace(/\s+/g, '-')               // Replace spaces with hyphens
         .replace(/-+/g, '-');               // Collapse multiple hyphens
 }
-
 /* Replace your extractStreamUrl function with the script below */
 
 /**
@@ -195,564 +186,495 @@ function generateSlug(title) {
  * @description Global extractor to be used in Sora Modules
  * @author Cufiy
  * @license MIT
- * @date 2025-05-20 22:06:18
+ * @date 2025-05-30 23:32:41
  * @note This file is automatically generated.
  */
-  
-  function globalExtractor(providers) {
-    for (const [url, provider] of Object.entries(providers)) {
-      try {
-        const streamUrl = extractStreamUrlByProvider(url, provider);
-        // check if streamUrl is not null, a string, and starts with http or https
-        if (streamUrl && typeof streamUrl === "string" && (streamUrl.startsWith("http"))) {
-          return streamUrl;
-        }
-      } catch (error) {
-        // Ignore the error and try the next provider
+
+
+function globalExtractor(providers) {
+  for (const [url, provider] of Object.entries(providers)) {
+    try {
+      const streamUrl = extractStreamUrlByProvider(url, provider);
+      // check if streamUrl is not null, a string, and starts with http or https
+      if (streamUrl && typeof streamUrl === "string" && (streamUrl.startsWith("http"))) {
+        return streamUrl;
       }
+    } catch (error) {
+      // Ignore the error and try the next provider
     }
-    return null;
   }
-  
-  async function multiExtractor(providers) {
-    /* this scheme should be returned as a JSON object
-    {
-    "streams": [
-      "FileMoon",
-      "https://filemoon.example/stream1.m3u8",
-      "StreamWish",
-      "https://streamwish.example/stream2.m3u8",
-      "Okru",
-      "https://okru.example/stream3.m3u8",
-      "MP4",
-      "https://mp4upload.example/stream4.mp4",
-      "Default",
-      "https://default.example/stream5.m3u8"
-    ]
-  }
-    */
-    const streams = [];
-    for (const [url, provider] of Object.entries(providers)) {
-      try {
-        const streamUrl = await extractStreamUrlByProvider(url, provider);
-        // check if streamUrl is not null, a string, and starts with http or https
-        if (streamUrl && typeof streamUrl === "string" && (streamUrl.startsWith("http"))) {
-          streams.push(provider);
-          streams.push(streamUrl);
-        }
-      } catch (error) {
-        // Ignore the error and try the next provider
+  return null;
+}
+
+async function multiExtractor(providers) {
+  /* this scheme should be returned as a JSON object
+  {
+  "streams": [
+    "FileMoon",
+    "https://filemoon.example/stream1.m3u8",
+    "StreamWish",
+    "https://streamwish.example/stream2.m3u8",
+    "Okru",
+    "https://okru.example/stream3.m3u8",
+    "MP4",
+    "https://mp4upload.example/stream4.mp4",
+    "Default",
+    "https://default.example/stream5.m3u8"
+  ]
+}
+  */
+  const streams = [];
+  for (const [url, provider] of Object.entries(providers)) {
+    try {
+      const streamUrl = await extractStreamUrlByProvider(url, provider);
+      // check if streamUrl is not null, a string, and starts with http or https
+      if (streamUrl && typeof streamUrl === "string" && (streamUrl.startsWith("http"))) {
+        streams.push(provider);
+        streams.push(streamUrl);
+      } else {
+        console.log(`Stream URL for provider ${provider} is not valid: ${streamUrl}`);
       }
+    } catch (error) {
+      // Ignore the error and try the next provider
     }
-    return streams;
   }
-  
-  
-  async function extractStreamUrlByProvider(url, provider) {
-    const headers = {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-      "Accept-Language": "en-US,en;q=0.5",
-      "Referer": url,
-      "Connection": "keep-alive"
-    };
-    // fetch the url
-    // and pass the response to the extractor function
-    console.log("Fetching URL: " + url);
-    const response = await soraFetch(url, {
+  return streams;
+}
+
+
+async function extractStreamUrlByProvider(url, provider) {
+
+    if (eval(`typeof ${provider}Extractor`) !== "function") {
+      // skip if the extractor is not defined
+      console.log(`Extractor for provider ${provider} is not defined, skipping...`);
+      return null;
+    }
+
+  let headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Referer": url,
+    "Connection": "keep-alive",
+    "x-Requested-With": "XMLHttpRequest"
+  };
+
+  // fetch the url
+  // and pass the response to the extractor function
+  console.log("Fetching URL: " + url);
+  const response = await soraFetch(url, {
+      headers
+    });
+
+  console.log("Response: " + response.status);
+  let html = response.text ? await response.text() : response;
+  // if title contains redirect, then get the redirect url
+  const title = html.match(/<title>(.*?)<\/title>/);
+  if (title && title[1].toLowerCase().includes("redirect")) {
+    const redirectUrl = html.match(/<meta http-equiv="refresh" content="0;url=(.*?)"/);
+    const redirectUrl2 = html.match(/window\.location\.href\s*=\s*["'](.*?)["']/);
+    const redirectUrl3 = html.match(/window\.location\.replace\s*\(\s*["'](.*?)["']\s*\)/);
+    if (redirectUrl) {
+      console.log("Redirect URL: " + redirectUrl[1]);
+      url = redirectUrl[1];
+      html = await soraFetch(url, {
         headers
       });
-  
-    console.log("Response: " + response.status);
-    let html = response.text ? await response.text() : response;
-    // if title contains redirect, then get the redirect url
-    const title = html.match(/<title>(.*?)<\/title>/);
-    if (title && title[1].toLowerCase().includes("redirect")) {
-      const redirectUrl = html.match(/<meta http-equiv="refresh" content="0;url=(.*?)"/);
-      const redirectUrl2 = html.match(/window\.location\.href\s*=\s*["'](.*?)["']/);
-      const redirectUrl3 = html.match(/window\.location\.replace\s*\(\s*["'](.*?)["']\s*\)/);
-      if (redirectUrl) {
-        console.log("Redirect URL: " + redirectUrl[1]);
-        url = redirectUrl[1];
-        html = await soraFetch(url, {
-          headers
-        });
-        html = html.text ? await html.text() : html;
-  
-      } else if (redirectUrl2) {
-        console.log("Redirect URL 2: " + redirectUrl2[1]);
-        url = redirectUrl2[1];
-        html = await soraFetch(url, {
-          headers
-        });
-        html = html.text ? await html.text() : html;
-      } else if (redirectUrl3) {
-        console.log("Redirect URL 3: " + redirectUrl3[1]);
-        url = redirectUrl3[1];
-        html = await soraFetch(url, {
-          headers
-        });
-        html = html.text ? await html.text() : html;
-      } else {
-        console.log("No redirect URL found");
-      }
-    }
-  
-    // console.log("HTML: " + html);
-    switch (provider) {
-      case "doodstream":
-        try {
-           return await doodstreamExtractor(html, url);
-        } catch (error) {
-           console.log("Error extracting stream URL from doodstream:", error);
-           return null;
-        }
-      case "mp4upload":
-        try {
-           return await mp4uploadExtractor(html, url);
-        } catch (error) {
-           console.log("Error extracting stream URL from mp4upload:", error);
-           return null;
-        }
-      case "speedfiles":
-        try {
-           return await speedfilesExtractor(html, url);
-        } catch (error) {
-           console.log("Error extracting stream URL from speedfiles:", error);
-           return null;
-        }
-      case "turbovid":
-        try {
-           return await turbovidExtractor(html, url);
-        } catch (error) {
-           console.log("Error extracting stream URL from turbovid:", error);
-           return null;
-        }
-      case "vidmoly":
-        try {
-           return await vidmolyExtractor(html, url);
-        } catch (error) {
-           console.log("Error extracting stream URL from vidmoly:", error);
-           return null;
-        }
-      case "vidoza":
-        try {
-           return await vidozaExtractor(html, url);
-        } catch (error) {
-           console.log("Error extracting stream URL from vidoza:", error);
-           return null;
-        }
-      case "voe":
-        try {
-           return await voeExtractor(html, url);
-        } catch (error) {
-           console.log("Error extracting stream URL from voe:", error);
-           return null;
-        }
-  
-      default:
-        throw new Error(`Unknown provider: ${provider}`);
+      html = html.text ? await html.text() : html;
+
+    } else if (redirectUrl2) {
+      console.log("Redirect URL 2: " + redirectUrl2[1]);
+      url = redirectUrl2[1];
+      html = await soraFetch(url, {
+        headers
+      });
+      html = html.text ? await html.text() : html;
+    } else if (redirectUrl3) {
+      console.log("Redirect URL 3: " + redirectUrl3[1]);
+      url = redirectUrl3[1];
+      html = await soraFetch(url, {
+        headers
+      });
+      html = html.text ? await html.text() : html;
+    } else {
+      console.log("No redirect URL found");
     }
   }
-  
-  
-  
-  
-  
-  /**
-   * Uses Sora's fetchv2 on ipad, fallbacks to regular fetch on Windows
-   * @author ShadeOfChaos
-   *
-   * @param {string} url The URL to make the request to.
-   * @param {object} [options] The options to use for the request.
-   * @param {object} [options.headers] The headers to send with the request.
-   * @param {string} [options.method='GET'] The method to use for the request.
-   * @param {string} [options.body=null] The body of the request.
-   *
-   * @returns {Promise<Response|null>} The response from the server, or null if the
-   * request failed.
-   */
-  async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+
+  // console.log("HTML: " + html);
+  switch (provider) {
+    case "doodstream":
       try {
-          return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-      } catch(e) {
-          try {
-              return await fetch(url, options);
-          } catch(error) {
-              return null;
-          }
+         return await doodstreamExtractor(html, url);
+      } catch (error) {
+         console.log("Error extracting stream URL from doodstream:", error);
+         return null;
       }
-  }
-  
-  ////////////////////////////////////////////////
-  //                 EXTRACTORS                 //
-  ////////////////////////////////////////////////
-  
-  // DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING //
-  
-  
-  /* --- doodstream --- */
-  
-  /**
-   * @name doodstreamExtractor
-   * @author Cufiy
-   */
-  async function doodstreamExtractor(html, url = null) {
-      console.log("DoodStream extractor called");
-      console.log("DoodStream extractor URL: " + url);
-          const streamDomain = url.match(/https:\/\/(.*?)\//, url)[0].slice(8, -1);
-          const md5Path = html.match(/'\/pass_md5\/(.*?)',/, url)[0].slice(11, -2);
-          const token = md5Path.substring(md5Path.lastIndexOf("/") + 1);
-          const expiryTimestamp = new Date().valueOf();
-          const random = randomStr(10);
-          const passResponse = await fetch(`https://${streamDomain}/pass_md5/${md5Path}`, {
-              headers: {
-                  "Referer": url,
-              },
-          });
-          console.log("DoodStream extractor response: " + passResponse.status);
-          const responseData = await passResponse.text();
-          const videoUrl = `${responseData}${random}?token=${token}&expiry=${expiryTimestamp}`;
-          console.log("DoodStream extractor video URL: " + videoUrl);
-          return videoUrl;
-  }
-  function randomStr(length) {
-      const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      let result = "";
-      for (let i = 0; i < length; i++) {
-          result += characters.charAt(Math.floor(Math.random() * characters.length));
+    case "mp4upload":
+      try {
+         return await mp4uploadExtractor(html, url);
+      } catch (error) {
+         console.log("Error extracting stream URL from mp4upload:", error);
+         return null;
       }
-      return result;
-  }
-  
-  
-  /* --- mp4upload --- */
-  
-  /**
-   * @name mp4uploadExtractor
-   * @author Cufiy
-   */
-  async function mp4uploadExtractor(html, url = null) {
-      // src: "https://a4.mp4upload.com:183/d/xkx3b4etz3b4quuo66rbmyqtjjoivahfxp27f35pti45rzapbvj5xwb4wuqtlpewdz4dirfp/video.mp4"  
-      const regex = /src:\s*"([^"]+)"/;
-    const match = html.match(regex);
-    if (match) {
-      return match[1];
-    } else {
-      console.log("No match found for mp4upload extractor");
-      return null;
-    }
-  }
-  
-  
-  /* --- speedfiles --- */
-  
-  /**
-   * @name speedfilesExtractor
-   * @author Cufiy
-   */
-  function speedfilesExtractor(sourcePageHtml) {
-    // get var _0x5opu234 = "THIS_IS_AN_ENCODED_STRING"
-    const REGEX = /var\s+_0x5opu234\s*=\s*"([^"]+)"/;
-    const match = sourcePageHtml.match(REGEX);
-    if (match == null || match[1] == null) {
-      console.log("Could not extract from Speedfiles source");
-      return null;
-    }
-    const encodedString = match[1];
-    console.log("Encoded String:" + encodedString);
-    // Step 1: Base64 decode the initial string
-    let step1 = atob(encodedString);
-    // Step 2: Swap character cases and reverse
-    let step2 = step1
-      .split("")
-      .map((c) =>
-        /[a-zA-Z]/.test(c)
-          ? c === c.toLowerCase()
-            ? c.toUpperCase()
-            : c.toLowerCase()
-          : c
-      )
-      .join("");
-    let step3 = step2.split("").reverse().join("");
-    // Step 3: Base64 decode again and reverse
-    let step4 = atob(step3);
-    let step5 = step4.split("").reverse().join("");
-    // Step 4: Hex decode pairs
-    let step6 = "";
-    for (let i = 0; i < step5.length; i += 2) {
-      step6 += String.fromCharCode(parseInt(step5.substr(i, 2), 16));
-    }
-    // Step 5: Subtract 3 from character codes
-    let step7 = step6
-      .split("")
-      .map((c) => String.fromCharCode(c.charCodeAt(0) - 3))
-      .join("");
-    // Step 6: Final case swap, reverse, and Base64 decode
-    let step8 = step7
-      .split("")
-      .map((c) =>
-        /[a-zA-Z]/.test(c)
-          ? c === c.toLowerCase()
-            ? c.toUpperCase()
-            : c.toLowerCase()
-          : c
-      )
-      .join("");
-    let step9 = step8.split("").reverse().join("");
-    // return atob(step9);
-    let decodedUrl = atob(step9);
-    return decodedUrl;
-  }
-  
-  
-  /* --- turbovid --- */
-  
-  /**
-   * @name turbovidExtractor
-   * @author Cufiy
-   */
-  async function turbovidExtractor(html, url = null) {
-    const embedUrl = url;
-    // 1. Extract critical variables from embed page
-    const { mediaType, apKey, xxId } = await extractEmbedVariables(html);
-    console.log(
-      "mediaType:" + mediaType + " | apKey:" + apKey + " | xxId:" + xxId
-    );
-    // 2. Get decryption keys
-    const juiceKeys = await fetchJuiceKeys(embedUrl);
-    console.log("juiceKeys: " + juiceKeys.juice);
-    // 3. Get encrypted video payload
-    const encryptedPayload = await fetchEncryptedPayload(embedUrl, apKey, xxId);
-   
-    // 4. Decrypt and return final url
-    const streamUrl = xorDecryptHex(encryptedPayload, juiceKeys.juice);
-    console.log("streamUrl: " + streamUrl);
-    // 5. Return the final stream URL
-    return streamUrl;
-  }
-  //   HELPERS
-  async function extractEmbedVariables(html) {
-    return {
-      mediaType: getJsVarValue(html, "media_type"),
-      // posterPath: getJsVarValue(html, 'posterPath'),
-      apKey: getJsVarValue(html, "apkey"),
-      dKey: getJsVarValue(html, "dakey"),
-      xxId: getJsVarValue(html, "xxid"),
-      xyId: getJsVarValue(html, "xyid"),
-    };
-  }
-  function getJsVarValue(html, varName) {
-    const regex = new RegExp(`const ${varName}\\s*=\\s*"([^"]+)`);
-    const match = html.match(regex);
-    return match ? match[1] : null;
-  }
-  async function fetchJuiceKeys(embedUrl) {
-    // console.log("fetchJuiceKeys called with embedUrl:", embedUrl);
-    // const headers = `Referer=${embedUrl}|Origin=${embedUrl}`;
-    const fetchUrl =
-      atob("aHR0cHM6Ly90dXJib3ZpZC5ldS9hcGkvY3Vja2VkLw==") + "juice_key";
-    // const vercelUrl = `https://sora-passthrough.vercel.app/passthrough?url=${fetchUrl}&headers=${headers} }`;
-    // const response = await fetch(vercelUrl);
-    const response = await fetch(fetchUrl, {
-      headers: {
-        method: "GET",
-        referer: embedUrl,
-      },
-    });
-    console.log("fetchJuiceKeys response:", response.status);
-    // save entire response to file  
-    return await response.json() || await JSON.parse(response);
-  }
-  async function fetchEncryptedPayload(embedUrl, apKey, xxId) {
-    const url =
-      atob("aHR0cHM6Ly90dXJib3ZpZC5ldS9hcGkvY3Vja2VkLw==") +
-      "the_juice_v2/?" +
-      apKey +
-      "=" +
-      xxId;
-    console.log("url:", url);
-    // const headers = `Referer=${embedUrl}|Origin=${embedUrl}`;
-    // const vercelUrl = `https://sora-passthrough.vercel.app/passthrough?url=${url}&headers=${headers} }`;
-    // const response = await fetch(vercelUrl);
-    const response = await fetch(url, {
-      headers: {
-        method: "GET",
-        referer: embedUrl,
-      },
-    });
-    console.log("fetchEncryptedPayload response:", response.status);
-    const data = await response.json() || await JSON.parse(response);
-    return data.data;
-  }
-  function xorDecryptHex(hexData, key) {
-    if (!hexData) {
-      throw new Error("hexData is undefined or null");
-    }
-    const buffer = new Uint8Array(
-      hexData
-        .toString()
-        .match(/../g)
-        .map((h) => parseInt(h, 16))
-    );
-    let decrypted = "";
-    for (let i = 0; i < buffer.length; i++) {
-      const keyByte = key.charCodeAt(i % key.length);
-      decrypted += String.fromCharCode(buffer[i] ^ keyByte);
-    }
-    return decrypted;
-  }
-  
-  
-  /* --- vidmoly --- */
-  
-  /**
-   * @name vidmolyExtractor
-   * @author Ibro
-   */
-  async function vidmolyExtractor(html, url = null) {
-    const regexSub = /<option value="([^"]+)"[^>]*>\s*SUB - Omega\s*<\/option>/;
-    const regexFallback = /<option value="([^"]+)"[^>]*>\s*Omega\s*<\/option>/;
-    const fallback =
-      /<option value="([^"]+)"[^>]*>\s*SUB v2 - Omega\s*<\/option>/;
-    let match =
-      html.match(regexSub) || html.match(regexFallback) || html.match(fallback);
-    if (match) {
-      const decodedHtml = atob(match[1]); // Decode base64
-      const iframeMatch = decodedHtml.match(/<iframe\s+src="([^"]+)"/);
-      if (!iframeMatch) {
-        console.log("Vidmoly extractor: No iframe match found");
-        return null;
+    case "speedfiles":
+      try {
+         return await speedfilesExtractor(html, url);
+      } catch (error) {
+         console.log("Error extracting stream URL from speedfiles:", error);
+         return null;
       }
-      const streamUrl = iframeMatch[1].startsWith("//")
-        ? "https:" + iframeMatch[1]
-        : iframeMatch[1];
-      const responseTwo = await fetchv2(streamUrl);
-      const htmlTwo = await responseTwo.text();
-      const m3u8Match = htmlTwo.match(/sources:\s*\[\{file:"([^"]+\.m3u8)"/);
-      return m3u8Match ? m3u8Match[1] : null;
-    } else {
-      console.log("Vidmoly extractor: No match found, using fallback");
-      //  regex the sources: [{file:"this_is_the_link"}]
-      const sourcesRegex = /sources:\s*\[\{file:"(https?:\/\/[^"]+)"\}/;
-      const sourcesMatch = html.match(sourcesRegex);
-      let sourcesString = sourcesMatch
-        ? sourcesMatch[1].replace(/'/g, '"')
-        : null;
-      return sourcesString;
-    }
-  }
-  
-  
-  /* --- vidoza --- */
-  
-  /**
-   * @name vidozaExtractor
-   * @author Cufiy
-   */
-  async function vidozaExtractor(html, url = null) {
-    const regex = /<source src="([^"]+)" type='video\/mp4'>/;
-    const match = html.match(regex);
-    if (match) {
-      return match[1];
-    } else {
-      console.log("No match found for vidoza extractor");
-      return null;
-    }
-  }
-  
-  
-  /* --- voe --- */
-  
-  /**
-   * @name voeExtractor
-   * @author Cufiy
-   */
-  function voeExtractor(html, url = null) {
-  // Extract the first <script type="application/json">...</script>
-      const jsonScriptMatch = html.match(
-        /<script[^>]+type=["']application\/json["'][^>]*>([\s\S]*?)<\/script>/i
-      );
-      if (!jsonScriptMatch) {
-        console.log("No application/json script tag found");
-        return null;
+    case "vidmoly":
+      try {
+         return await vidmolyExtractor(html, url);
+      } catch (error) {
+         console.log("Error extracting stream URL from vidmoly:", error);
+         return null;
       }
-  
-      const obfuscatedJson = jsonScriptMatch[1].trim();
-    let data;
+    case "vidoza":
+      try {
+         return await vidozaExtractor(html, url);
+      } catch (error) {
+         console.log("Error extracting stream URL from vidoza:", error);
+         return null;
+      }
+    case "voe":
+      try {
+         return await voeExtractor(html, url);
+      } catch (error) {
+         console.log("Error extracting stream URL from voe:", error);
+         return null;
+      }
+
+    default:
+      throw new Error(`Unknown provider: ${provider}`);
+  }
+}
+
+
+
+
+
+/**
+ * Uses Sora's fetchv2 on ipad, fallbacks to regular fetch on Windows
+ * @author ShadeOfChaos
+ *
+ * @param {string} url The URL to make the request to.
+ * @param {object} [options] The options to use for the request.
+ * @param {object} [options.headers] The headers to send with the request.
+ * @param {string} [options.method='GET'] The method to use for the request.
+ * @param {string} [options.body=null] The body of the request.
+ *
+ * @returns {Promise<Response|null>} The response from the server, or null if the
+ * request failed.
+ */
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
-      data = JSON.parse(obfuscatedJson);
-    } catch (e) {
-      throw new Error("Invalid JSON input.");
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
     }
-    if (!Array.isArray(data) || typeof data[0] !== "string") {
-      throw new Error("Input doesn't match expected format.");
-    }
-    let obfuscatedString = data[0];
-    // Step 1: ROT13
-    let step1 = voeRot13(obfuscatedString);
-    // Step 2: Remove patterns
-    let step2 = voeRemovePatterns(step1);
-    // Step 3: Base64 decode
-    let step3 = voeBase64Decode(step2);
-    // Step 4: Subtract 3 from each char code
-    let step4 = voeShiftChars(step3, 3);
-    // Step 5: Reverse string
-    let step5 = step4.split("").reverse().join("");
-    // Step 6: Base64 decode again
-    let step6 = voeBase64Decode(step5);
-    // Step 7: Parse as JSON
-    let result;
-    try {
-      result = JSON.parse(step6);
-    } catch (e) {
-      throw new Error("Final JSON parse error: " + e.message);
-    }
-    // console.log("Decoded JSON:", result);
-    // check if direct_access_url is set, not null and starts with http
-    if (result && typeof result === "object") {
-      const streamUrl =
-        result.direct_access_url ||
-        result.source
-          .map((source) => source.direct_access_url)
-          .find((url) => url && url.startsWith("http"));
-      if (streamUrl) {
-        console.log("Voe Stream URL: " + streamUrl);
-        return streamUrl;
-      } else {
-        console.log("No stream URL found in the decoded JSON");
-      }
+}
+
+////////////////////////////////////////////////
+//                 EXTRACTORS                 //
+////////////////////////////////////////////////
+
+// DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING //
+
+
+/* --- doodstream --- */
+
+/**
+ * @name doodstreamExtractor
+ * @author Cufiy
+ */
+async function doodstreamExtractor(html, url = null) {
+    console.log("DoodStream extractor called");
+    console.log("DoodStream extractor URL: " + url);
+        const streamDomain = url.match(/https:\/\/(.*?)\//, url)[0].slice(8, -1);
+        const md5Path = html.match(/'\/pass_md5\/(.*?)',/, url)[0].slice(11, -2);
+        const token = md5Path.substring(md5Path.lastIndexOf("/") + 1);
+        const expiryTimestamp = new Date().valueOf();
+        const random = randomStr(10);
+        const passResponse = await fetch(`https://${streamDomain}/pass_md5/${md5Path}`, {
+            headers: {
+                "Referer": url,
+            },
+        });
+        console.log("DoodStream extractor response: " + passResponse.status);
+        const responseData = await passResponse.text();
+        const videoUrl = `${responseData}${random}?token=${token}&expiry=${expiryTimestamp}`;
+        console.log("DoodStream extractor video URL: " + videoUrl);
+        return videoUrl;
+}
+function randomStr(length) {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return result;
+}
+
+
+/* --- mp4upload --- */
+
+/**
+ * @name mp4uploadExtractor
+ * @author Cufiy
+ */
+async function mp4uploadExtractor(html, url = null) {
+    // src: "https://a4.mp4upload.com:183/d/xkx3b4etz3b4quuo66rbmyqtjjoivahfxp27f35pti45rzapbvj5xwb4wuqtlpewdz4dirfp/video.mp4"  
+    const regex = /src:\s*"([^"]+)"/;
+  const match = html.match(regex);
+  if (match) {
+    return match[1];
+  } else {
+    console.log("No match found for mp4upload extractor");
+    return null;
   }
-  function voeRot13(str) {
-    return str.replace(/[a-zA-Z]/g, function (c) {
-      return String.fromCharCode(
-        (c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13)
-          ? c
-          : c - 26
-      );
-    });
+}
+
+
+/* --- speedfiles --- */
+
+/**
+ * @name speedfilesExtractor
+ * @author Cufiy
+ */
+function speedfilesExtractor(sourcePageHtml) {
+  // get var _0x5opu234 = "THIS_IS_AN_ENCODED_STRING"
+  const REGEX = /var\s+_0x5opu234\s*=\s*"([^"]+)"/;
+  const match = sourcePageHtml.match(REGEX);
+  if (match == null || match[1] == null) {
+    console.log("Could not extract from Speedfiles source");
+    return null;
   }
-  function voeRemovePatterns(str) {
-    const patterns = ["@$", "^^", "~@", "%?", "*~", "!!", "#&"];
-    let result = str;
-    for (const pat of patterns) {
-      result = result.split(pat).join("");
+  const encodedString = match[1];
+  console.log("Encoded String:" + encodedString);
+  // Step 1: Base64 decode the initial string
+  let step1 = atob(encodedString);
+  // Step 2: Swap character cases and reverse
+  let step2 = step1
+    .split("")
+    .map((c) =>
+      /[a-zA-Z]/.test(c)
+        ? c === c.toLowerCase()
+          ? c.toUpperCase()
+          : c.toLowerCase()
+        : c
+    )
+    .join("");
+  let step3 = step2.split("").reverse().join("");
+  // Step 3: Base64 decode again and reverse
+  let step4 = atob(step3);
+  let step5 = step4.split("").reverse().join("");
+  // Step 4: Hex decode pairs
+  let step6 = "";
+  for (let i = 0; i < step5.length; i += 2) {
+    step6 += String.fromCharCode(parseInt(step5.substr(i, 2), 16));
+  }
+  // Step 5: Subtract 3 from character codes
+  let step7 = step6
+    .split("")
+    .map((c) => String.fromCharCode(c.charCodeAt(0) - 3))
+    .join("");
+  // Step 6: Final case swap, reverse, and Base64 decode
+  let step8 = step7
+    .split("")
+    .map((c) =>
+      /[a-zA-Z]/.test(c)
+        ? c === c.toLowerCase()
+          ? c.toUpperCase()
+          : c.toLowerCase()
+        : c
+    )
+    .join("");
+  let step9 = step8.split("").reverse().join("");
+  // return atob(step9);
+  let decodedUrl = atob(step9);
+  return decodedUrl;
+}
+
+
+/* --- vidmoly --- */
+
+/**
+ * @name vidmolyExtractor
+ * @author Ibro
+ */
+async function vidmolyExtractor(html, url = null) {
+  const regexSub = /<option value="([^"]+)"[^>]*>\s*SUB - Omega\s*<\/option>/;
+  const regexFallback = /<option value="([^"]+)"[^>]*>\s*Omega\s*<\/option>/;
+  const fallback =
+    /<option value="([^"]+)"[^>]*>\s*SUB v2 - Omega\s*<\/option>/;
+  let match =
+    html.match(regexSub) || html.match(regexFallback) || html.match(fallback);
+  if (match) {
+    const decodedHtml = atob(match[1]); // Decode base64
+    const iframeMatch = decodedHtml.match(/<iframe\s+src="([^"]+)"/);
+    if (!iframeMatch) {
+      console.log("Vidmoly extractor: No iframe match found");
+      return null;
     }
-    return result;
+    const streamUrl = iframeMatch[1].startsWith("//")
+      ? "https:" + iframeMatch[1]
+      : iframeMatch[1];
+    const responseTwo = await fetchv2(streamUrl);
+    const htmlTwo = await responseTwo.text();
+    const m3u8Match = htmlTwo.match(/sources:\s*\[\{file:"([^"]+\.m3u8)"/);
+    return m3u8Match ? m3u8Match[1] : null;
+  } else {
+    console.log("Vidmoly extractor: No match found, using fallback");
+    //  regex the sources: [{file:"this_is_the_link"}]
+    const sourcesRegex = /sources:\s*\[\{file:"(https?:\/\/[^"]+)"\}/;
+    const sourcesMatch = html.match(sourcesRegex);
+    let sourcesString = sourcesMatch
+      ? sourcesMatch[1].replace(/'/g, '"')
+      : null;
+    return sourcesString;
   }
-  function voeBase64Decode(str) {
-    // atob is available in browsers and Node >= 16
-    if (typeof atob === "function") {
-      return atob(str);
+}
+
+
+/* --- vidoza --- */
+
+/**
+ * @name vidozaExtractor
+ * @author Cufiy
+ */
+async function vidozaExtractor(html, url = null) {
+  const regex = /<source src="([^"]+)" type='video\/mp4'>/;
+  const match = html.match(regex);
+  if (match) {
+    return match[1];
+  } else {
+    console.log("No match found for vidoza extractor");
+    return null;
+  }
+}
+
+
+/* --- voe --- */
+
+/**
+ * @name voeExtractor
+ * @author Cufiy
+ */
+function voeExtractor(html, url = null) {
+// Extract the first <script type="application/json">...</script>
+    const jsonScriptMatch = html.match(
+      /<script[^>]+type=["']application\/json["'][^>]*>([\s\S]*?)<\/script>/i
+    );
+    if (!jsonScriptMatch) {
+      console.log("No application/json script tag found");
+      return null;
     }
-    // Node.js fallback
-    return Buffer.from(str, "base64").toString("utf-8");
+
+    const obfuscatedJson = jsonScriptMatch[1].trim();
+  let data;
+  try {
+    data = JSON.parse(obfuscatedJson);
+  } catch (e) {
+    throw new Error("Invalid JSON input.");
   }
-  function voeShiftChars(str, shift) {
-    return str
-      .split("")
-      .map((c) => String.fromCharCode(c.charCodeAt(0) - shift))
-      .join("");
-  }  
+  if (!Array.isArray(data) || typeof data[0] !== "string") {
+    throw new Error("Input doesn't match expected format.");
+  }
+  let obfuscatedString = data[0];
+  // Step 1: ROT13
+  let step1 = voeRot13(obfuscatedString);
+  // Step 2: Remove patterns
+  let step2 = voeRemovePatterns(step1);
+  // Step 3: Base64 decode
+  let step3 = voeBase64Decode(step2);
+  // Step 4: Subtract 3 from each char code
+  let step4 = voeShiftChars(step3, 3);
+  // Step 5: Reverse string
+  let step5 = step4.split("").reverse().join("");
+  // Step 6: Base64 decode again
+  let step6 = voeBase64Decode(step5);
+  // Step 7: Parse as JSON
+  let result;
+  try {
+    result = JSON.parse(step6);
+  } catch (e) {
+    throw new Error("Final JSON parse error: " + e.message);
+  }
+  // console.log("Decoded JSON:", result);
+  // check if direct_access_url is set, not null and starts with http
+  if (result && typeof result === "object") {
+    const streamUrl =
+      result.direct_access_url ||
+      result.source
+        .map((source) => source.direct_access_url)
+        .find((url) => url && url.startsWith("http"));
+    if (streamUrl) {
+      console.log("Voe Stream URL: " + streamUrl);
+      return streamUrl;
+    } else {
+      console.log("No stream URL found in the decoded JSON");
+    }
+  }
+  return result;
+}
+function voeRot13(str) {
+  return str.replace(/[a-zA-Z]/g, function (c) {
+    return String.fromCharCode(
+      (c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13)
+        ? c
+        : c - 26
+    );
+  });
+}
+function voeRemovePatterns(str) {
+  const patterns = ["@$", "^^", "~@", "%?", "*~", "!!", "#&"];
+  let result = str;
+  for (const pat of patterns) {
+    result = result.split(pat).join("");
+  }
+  return result;
+}
+function voeBase64Decode(str) {
+  // atob is available in browsers and Node >= 16
+  if (typeof atob === "function") {
+    return atob(str);
+  }
+  // Node.js fallback
+  return Buffer.from(str, "base64").toString("utf-8");
+}
+function voeShiftChars(str, shift) {
+  return str
+    .split("")
+    .map((c) => String.fromCharCode(c.charCodeAt(0) - shift))
+    .join("");
+}
+
+
+
+
+// if is node, test
+if (typeof module !== 'undefined' && module.exports) {
+const startTime = new Date().getTime();
+
+    try {
+        console.log("Testing searchResults function...");
+        let streamsLol = extractStreamUrl("https://streamcloud.sx/watch/the-last-of-us-staffel-2/6805c802f425fc1d6849427c/1")
+        .then((result) => {
+            // console.log("Result:", JSON.parse(result));
+            const endTime = new Date().getTime();
+            console.log(`Execution time: ${endTime - startTime} ms`);
+        });
+
+
+
+    } catch (error) {
+        console.error("Error testing searchResults function:", error);
+    }
+  }
+// extractStreamUrl("");
