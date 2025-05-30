@@ -119,32 +119,43 @@ async function extractStreamUrl(url) {
 
         for (const stream of data.streams) {
             const streamUrl = stream.stream;
-
-            try {
-                const headResponse = await fetchv2(streamUrl, { method: 'HEAD' });
-                if (headResponse.status !== 404) {
-                    if (streamUrl.includes('speedfiles')) {
-                        providers[streamUrl] = "speedfiles";
-                    } else if (streamUrl.includes('vidmoly')) {
-                        providers[streamUrl] = "vidmoly";
-                    } else if (streamUrl.includes('turbovid')) {
-                        providers[streamUrl] = "turbovid";
-                    } else if (streamUrl.includes('doodstream')) {
-                        providers[streamUrl] = "doodstream";
-                    } else if (streamUrl.includes('voe')) {
-                        providers[streamUrl] = "voe";
-                    } else if (streamUrl.includes('vidoza')) {
-                        providers[streamUrl] = "vidoza";
-                    } else if (streamUrl.includes('mp4upload')) {
-                        providers[streamUrl] = "mp4upload";
-                    } else if (streamUrl.includes('veev')) {
-                        providers[streamUrl] = "veev";
+            
+            if (
+                streamUrl.includes('speedfiles') ||
+                streamUrl.includes('vidmoly') ||
+                streamUrl.includes('turbovid') ||
+                streamUrl.includes('doodstream') ||
+                streamUrl.includes('voe') ||
+                streamUrl.includes('vidoza') ||
+                streamUrl.includes('mp4upload') ||
+                streamUrl.includes('veev')
+            ) {
+                try {
+                    const headResponse = await fetchv2(streamUrl, { method: 'HEAD' });
+                    if (headResponse.status !== 404) {
+                        if (streamUrl.includes('speedfiles')) {
+                            providers[streamUrl] = "speedfiles";
+                        } else if (streamUrl.includes('vidmoly')) {
+                            providers[streamUrl] = "vidmoly";
+                        } else if (streamUrl.includes('turbovid')) {
+                            providers[streamUrl] = "turbovid";
+                        } else if (streamUrl.includes('doodstream')) {
+                            providers[streamUrl] = "doodstream";
+                        } else if (streamUrl.includes('voe')) {
+                            providers[streamUrl] = "voe";
+                        } else if (streamUrl.includes('vidoza')) {
+                            providers[streamUrl] = "vidoza";
+                        } else if (streamUrl.includes('mp4upload')) {
+                            providers[streamUrl] = "mp4upload";
+                        } else if (streamUrl.includes('veev')) {
+                            providers[streamUrl] = "veev";
+                        }
                     }
+                } catch (err) {
+                    console.log(`Error checking ${streamUrl}:`, err.message);
                 }
-            } catch (err) {
-                console.log(`Error checking ${streamUrl}:`, err.message);
             }
-        }
+        }        
 
         let streams = [];
         try {
