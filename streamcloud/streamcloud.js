@@ -16,10 +16,10 @@ async function searchResults(keyword) {
             return { title, image, href };
         });
 
-        console.log(transformedResults);
+        sendLog(transformedResults);
         return JSON.stringify(transformedResults);
     } catch (error) {
-        console.log('Fetch error in searchResults:', error);
+        sendLog('Fetch error in searchResults:', error);
         return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
     }
 }
@@ -51,10 +51,10 @@ Directors: ${data.directors ? data.directors : 'Unknown'}
             airdate
         }];
 
-        console.log(transformedResults);
+        sendLog(transformedResults);
         return JSON.stringify(transformedResults);
     } catch (error) {
-        console.log('Details error:', error);
+        sendLog('Details error:', error);
         return JSON.stringify([{
             description: 'Error loading description',
             aliases: 'Duration: Unknown',
@@ -79,7 +79,7 @@ async function extractEpisodes(url) {
         if(data.tv === 0) {
             const movie = [{ href: `https://streamcloud.sx/watch/${slug}/${movieId}/1`, number: 1, title: "Full Movie" }];
 
-            console.log(movie);
+            sendLog(movie);
             return JSON.stringify(movie);
         } else if(data.tv === 1) {            
             let allEpisodes = [];
@@ -91,13 +91,13 @@ async function extractEpisodes(url) {
                 });
             }
             
-            console.log(allEpisodes);
+            sendLog(allEpisodes);
             return JSON.stringify(allEpisodes);
         } else {
             throw new Error("Invalid URL format");
         }
     } catch (error) {
-        console.log('Fetch error in extractEpisodes:', error);
+        sendLog('Fetch error in extractEpisodes:', error);
         return JSON.stringify([]);
     }    
 }
@@ -120,14 +120,14 @@ async function extractStreamUrl(url) {
         for (const stream of data.streams) {
           // if stream has deleted and deleted is 1, skip it
           if (stream.deleted === 1 || stream.e == 1) {
-            console.log(`Skipping deleted or expired stream: ${stream.stream}`);
+            sendLog(`Skipping deleted or expired stream: ${stream.stream}`);
             continue;
           }
             const streamUrl = stream.stream;
             // get the hostname of the stream URL using regex, but without the extension
             const hostnameMatch = streamUrl.match(/https?:\/\/([^\/]+)/);
             if (!hostnameMatch) {
-              console.log(`Invalid stream URL: ${streamUrl}`);
+              sendLog(`Invalid stream URL: ${streamUrl}`);
               continue;
             }
                         // remove the extension from the hostname
@@ -135,20 +135,18 @@ async function extractStreamUrl(url) {
 
             // if is dood, its doodstream
             if (hostname.includes("dood")) {
-                hostname = "doodstream";
+                // hostname = "doodstream";
             }
 
 
             providers[streamUrl] = hostname;
-
-            try {
-                
-            } catch (err) {
-                console.log(`Error checking ${streamUrl}:`, err.message);
-            }
         }
 
-        console.log("Providers found:", providers);
+        sendLog("Providers found: " + JSON.stringify(providers));
+        if (Object.keys(providers).length === 0) {
+            sendLog("No valid providers found, returning error");
+            return JSON.stringify([{ provider: "Error", link: "" }]);
+        }
 
         let streams = [];
         try {
@@ -157,13 +155,13 @@ async function extractStreamUrl(url) {
                 streams: streams,
             };
             
-            console.log(returnedStreams);
+            sendLog(returnedStreams);
             return JSON.stringify(returnedStreams);
         } catch (error) {
             return JSON.stringify([{ provider: "Error2", link: "" }]);
         }
     } catch (error) {
-        console.log('Fetch error in extractStreamUrl:', error);
+        sendLog('Fetch error in extractStreamUrl:', error);
         return null;
     }
 }
@@ -179,6 +177,19 @@ function generateSlug(title) {
         .replace(/\s+/g, '-')               // Replace spaces with hyphens
         .replace(/-+/g, '-');               // Collapse multiple hyphens
 }
+
+
+// Debugging function to send logs
+async function sendLog(message) {
+    // send http://192.168.2.130/sora-module/log.php?action=add&message=message
+    console.log(message);
+
+    await fetch('http://192.168.2.130/sora-module/log.php?action=add&message=' + encodeURIComponent(message))
+    .catch(error => {
+        console.error('Error sending log:', error);
+    });
+}
+
 /* Replace your extractStreamUrl function with the script below */
 
 /**
@@ -224,15 +235,27 @@ async function multiExtractor(providers) {
 }
   */
   const streams = [];
+  const providersCount = {};
   for (const [url, provider] of Object.entries(providers)) {
+    // if streams is bigger than 10, return it
+    // if (streams.length >= 5) {
+    //   sendLog("Streams array is full, returning...");
+    //   return streams;
+    // }
     try {
       const streamUrl = await extractStreamUrlByProvider(url, provider);
       // check if streamUrl is not null, a string, and starts with http or https
       if (streamUrl && typeof streamUrl === "string" && (streamUrl.startsWith("http"))) {
-        streams.push(provider);
-        streams.push(streamUrl);
+        // check if provider is already in streams, if it is, add a number to it
+        if (providersCount[provider]) {
+          providersCount[provider]++;
+          streams.push(`${provider} (${providersCount[provider]})`, streamUrl);
+        } else {
+          providersCount[provider] = 1;
+          streams.push(provider, streamUrl);
+        }
       } else {
-        console.log(`Stream URL for provider ${provider} is not valid: ${streamUrl}`);
+        // sendLog(`Stream URL for provider ${provider} is not valid: ${streamUrl}`);
       }
     } catch (error) {
       // Ignore the error and try the next provider
@@ -246,7 +269,7 @@ async function extractStreamUrlByProvider(url, provider) {
 
     if (eval(`typeof ${provider}Extractor`) !== "function") {
       // skip if the extractor is not defined
-      console.log(`Extractor for provider ${provider} is not defined, skipping...`);
+      // sendLog(`Extractor for provider ${provider} is not defined, skipping...`);
       return null;
     }
 
@@ -261,12 +284,12 @@ async function extractStreamUrlByProvider(url, provider) {
 
   // fetch the url
   // and pass the response to the extractor function
-  console.log("Fetching URL: " + url);
+  sendLog("Fetching URL: " + url);
   const response = await soraFetch(url, {
       headers
-    });
+  });
 
-  console.log("Response: " + response.status);
+  sendLog("Response: " + response.status);
   let html = response.text ? await response.text() : response;
   // if title contains redirect, then get the redirect url
   const title = html.match(/<title>(.*?)<\/title>/);
@@ -275,7 +298,7 @@ async function extractStreamUrlByProvider(url, provider) {
     const redirectUrl2 = html.match(/window\.location\.href\s*=\s*["'](.*?)["']/);
     const redirectUrl3 = html.match(/window\.location\.replace\s*\(\s*["'](.*?)["']\s*\)/);
     if (redirectUrl) {
-      console.log("Redirect URL: " + redirectUrl[1]);
+      sendLog("Redirect URL: " + redirectUrl[1]);
       url = redirectUrl[1];
       html = await soraFetch(url, {
         headers
@@ -283,66 +306,66 @@ async function extractStreamUrlByProvider(url, provider) {
       html = html.text ? await html.text() : html;
 
     } else if (redirectUrl2) {
-      console.log("Redirect URL 2: " + redirectUrl2[1]);
+      sendLog("Redirect URL 2: " + redirectUrl2[1]);
       url = redirectUrl2[1];
       html = await soraFetch(url, {
         headers
       });
       html = html.text ? await html.text() : html;
     } else if (redirectUrl3) {
-      console.log("Redirect URL 3: " + redirectUrl3[1]);
+      sendLog("Redirect URL 3: " + redirectUrl3[1]);
       url = redirectUrl3[1];
       html = await soraFetch(url, {
         headers
       });
       html = html.text ? await html.text() : html;
     } else {
-      console.log("No redirect URL found");
+      sendLog("No redirect URL found");
     }
   }
 
-  // console.log("HTML: " + html);
+  // sendLog("HTML: " + html);
   switch (provider) {
     case "doodstream":
       try {
          return await doodstreamExtractor(html, url);
       } catch (error) {
-         console.log("Error extracting stream URL from doodstream:", error);
+         sendLog("Error extracting stream URL from doodstream: " + error);
          return null;
       }
     case "mp4upload":
       try {
          return await mp4uploadExtractor(html, url);
       } catch (error) {
-         console.log("Error extracting stream URL from mp4upload:", error);
+         sendLog("Error extracting stream URL from mp4upload: " + error);
          return null;
       }
     case "speedfiles":
       try {
          return await speedfilesExtractor(html, url);
       } catch (error) {
-         console.log("Error extracting stream URL from speedfiles:", error);
+         sendLog("Error extracting stream URL from speedfiles: " + error);
          return null;
       }
     case "vidmoly":
       try {
          return await vidmolyExtractor(html, url);
       } catch (error) {
-         console.log("Error extracting stream URL from vidmoly:", error);
+         sendLog("Error extracting stream URL from vidmoly: " + error);
          return null;
       }
     case "vidoza":
       try {
          return await vidozaExtractor(html, url);
       } catch (error) {
-         console.log("Error extracting stream URL from vidoza:", error);
+         sendLog("Error extracting stream URL from vidoza: " + error);
          return null;
       }
     case "voe":
       try {
          return await voeExtractor(html, url);
       } catch (error) {
-         console.log("Error extracting stream URL from voe:", error);
+         sendLog("Error extracting stream URL from voe: " + error);
          return null;
       }
 
@@ -394,8 +417,8 @@ async function soraFetch(url, options = { headers: {}, method: 'GET', body: null
  * @author Cufiy
  */
 async function doodstreamExtractor(html, url = null) {
-    console.log("DoodStream extractor called");
-    console.log("DoodStream extractor URL: " + url);
+    sendLog("DoodStream extractor called");
+    sendLog("DoodStream extractor URL: " + url);
         const streamDomain = url.match(/https:\/\/(.*?)\//, url)[0].slice(8, -1);
         const md5Path = html.match(/'\/pass_md5\/(.*?)',/, url)[0].slice(11, -2);
         const token = md5Path.substring(md5Path.lastIndexOf("/") + 1);
@@ -406,10 +429,10 @@ async function doodstreamExtractor(html, url = null) {
                 "Referer": url,
             },
         });
-        console.log("DoodStream extractor response: " + passResponse.status);
+        sendLog("DoodStream extractor response: " + passResponse.status);
         const responseData = await passResponse.text();
         const videoUrl = `${responseData}${random}?token=${token}&expiry=${expiryTimestamp}`;
-        console.log("DoodStream extractor video URL: " + videoUrl);
+        sendLog("DoodStream extractor video URL: " + videoUrl);
         return videoUrl;
 }
 function randomStr(length) {
@@ -435,7 +458,7 @@ async function mp4uploadExtractor(html, url = null) {
   if (match) {
     return match[1];
   } else {
-    console.log("No match found for mp4upload extractor");
+    sendLog("No match found for mp4upload extractor");
     return null;
   }
 }
@@ -452,11 +475,11 @@ function speedfilesExtractor(sourcePageHtml) {
   const REGEX = /var\s+_0x5opu234\s*=\s*"([^"]+)"/;
   const match = sourcePageHtml.match(REGEX);
   if (match == null || match[1] == null) {
-    console.log("Could not extract from Speedfiles source");
+    sendLog("Could not extract from Speedfiles source");
     return null;
   }
   const encodedString = match[1];
-  console.log("Encoded String:" + encodedString);
+  sendLog("Encoded String:" + encodedString);
   // Step 1: Base64 decode the initial string
   let step1 = atob(encodedString);
   // Step 2: Swap character cases and reverse
@@ -519,7 +542,7 @@ async function vidmolyExtractor(html, url = null) {
     const decodedHtml = atob(match[1]); // Decode base64
     const iframeMatch = decodedHtml.match(/<iframe\s+src="([^"]+)"/);
     if (!iframeMatch) {
-      console.log("Vidmoly extractor: No iframe match found");
+      sendLog("Vidmoly extractor: No iframe match found");
       return null;
     }
     const streamUrl = iframeMatch[1].startsWith("//")
@@ -530,7 +553,7 @@ async function vidmolyExtractor(html, url = null) {
     const m3u8Match = htmlTwo.match(/sources:\s*\[\{file:"([^"]+\.m3u8)"/);
     return m3u8Match ? m3u8Match[1] : null;
   } else {
-    console.log("Vidmoly extractor: No match found, using fallback");
+    sendLog("Vidmoly extractor: No match found, using fallback");
     //  regex the sources: [{file:"this_is_the_link"}]
     const sourcesRegex = /sources:\s*\[\{file:"(https?:\/\/[^"]+)"\}/;
     const sourcesMatch = html.match(sourcesRegex);
@@ -554,7 +577,7 @@ async function vidozaExtractor(html, url = null) {
   if (match) {
     return match[1];
   } else {
-    console.log("No match found for vidoza extractor");
+    sendLog("No match found for vidoza extractor");
     return null;
   }
 }
@@ -572,7 +595,7 @@ function voeExtractor(html, url = null) {
       /<script[^>]+type=["']application\/json["'][^>]*>([\s\S]*?)<\/script>/i
     );
     if (!jsonScriptMatch) {
-      console.log("No application/json script tag found");
+      sendLog("No application/json script tag found");
       return null;
     }
 
@@ -606,7 +629,7 @@ function voeExtractor(html, url = null) {
   } catch (e) {
     throw new Error("Final JSON parse error: " + e.message);
   }
-  // console.log("Decoded JSON:", result);
+  // sendLog("Decoded JSON: " + result);
   // check if direct_access_url is set, not null and starts with http
   if (result && typeof result === "object") {
     const streamUrl =
@@ -615,10 +638,10 @@ function voeExtractor(html, url = null) {
         .map((source) => source.direct_access_url)
         .find((url) => url && url.startsWith("http"));
     if (streamUrl) {
-      console.log("Voe Stream URL: " + streamUrl);
+      sendLog("Voe Stream URL: " + streamUrl);
       return streamUrl;
     } else {
-      console.log("No stream URL found in the decoded JSON");
+      sendLog("No stream URL found in the decoded JSON");
     }
   }
   return result;
@@ -663,18 +686,18 @@ if (typeof module !== 'undefined' && module.exports) {
 const startTime = new Date().getTime();
 
     try {
-        console.log("Testing searchResults function...");
+        sendLog("Testing searchResults function...");
         let streamsLol = extractStreamUrl("https://streamcloud.sx/watch/the-last-of-us-staffel-2/6805c802f425fc1d6849427c/1")
         .then((result) => {
-            // console.log("Result:", JSON.parse(result));
+            // sendLog("Result: " + JSON.parse(result));
             const endTime = new Date().getTime();
-            console.log(`Execution time: ${endTime - startTime} ms`);
+            sendLog(`Execution time: ${endTime - startTime} ms`);
         });
 
 
 
     } catch (error) {
-        console.error("Error testing searchResults function:", error);
+        console.error("Error testing searchResults function: " + error);
     }
   }
 // extractStreamUrl("");
