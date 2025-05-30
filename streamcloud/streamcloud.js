@@ -112,7 +112,11 @@ async function extractStreamUrl(url) {
 
         const apiUrl = `https://streamcloud.sx/data/watch/?_id=${movieId}`;
 
-        const response = await soraFetch(apiUrl);
+        const headers = {
+            'Referer': url,
+        };
+
+        const response = await soraFetch(apiUrl, headers);
         const data = await response.json();
 
         let providers = {};
@@ -167,7 +171,6 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
 
 function generateSlug(title) {
     return title
