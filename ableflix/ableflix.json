@@ -6,13 +6,13 @@
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
         "url": "https://github.com/xibrox"
     },
-    "version": "1.0.6",
+    "version": "1.1.0",
     "language": "English",
-    "streamType": "MP4",
+    "streamType": "HLS",
     "quality": "1080p",
-    "baseUrl": "https://h5.aoneroom.com/",
+    "baseUrl": "https://cloudnestra.com/",
     "searchBaseUrl": "https://api.themoviedb.org/3/search/multi?api_key=653bb8af90162bd98fc7ee32bcbbfb3d&query=%s",
     "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ableflix/ableflix.js",
-    "type": "movies",
+    "type": "anime/shows/movies",
     "asyncJS": true
 }
