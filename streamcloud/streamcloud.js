@@ -104,29 +104,27 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const match = url.match(/https:\/\/streamcloud\.sx\/watch\/([^\/]+)\/([^\/]+)\/1/);
+        const match = url.match(/https:\/\/streamcloud\.sx\/watch\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
         if (!match) throw new Error("Invalid URL format");
 
         const slug = match[1];
         const movieId = match[2];
+        const episode = match[3];
 
         const apiUrl = `https://streamcloud.sx/data/watch/?_id=${movieId}`;
 
-        const headers = {
-            'Referer': url,
-        };
-
-        const response = await soraFetch(apiUrl, headers);
+        const response = await soraFetch(apiUrl);
         const data = await response.json();
 
         let providers = {};
 
         for (const stream of data.streams) {
-          // if stream has deleted and deleted is 1, skip it
-          if (stream.deleted === 1 || stream.e == 1) {
-            sendLog(`Skipping deleted or expired stream: ${stream.stream}`);
-            continue;
-          }
+            // if stream has deleted and deleted is 1, skip it
+            if (stream.deleted === 1 || stream.e !== episode) {
+                sendLog(`Skipping deleted stream: ${stream.stream}`);
+                continue;
+            }
+
             const streamUrl = stream.stream;
             // get the hostname of the stream URL using regex, but without the extension
             const hostnameMatch = streamUrl.match(/https?:\/\/([^\/]+)/);
