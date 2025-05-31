@@ -124,10 +124,12 @@ async function extractStreamUrl(url) {
                 continue;
             }
 
-            // Filter only current episode (if episodeNumber is a string, convert for comparison)
-            if (String(stream.e) !== String(episodeNumber)) {
-                sendLog(`Skipping stream from different episode: ${stream.stream}`);
-                continue;
+            if (stream.e) {
+                // Filter only current episode (if episodeNumber is a string, convert for comparison)
+                if (String(stream.e) !== String(episodeNumber)) {
+                    sendLog(`Skipping stream from different episode: ${stream.stream}`);
+                    continue;
+                }
             }
 
             const streamUrl = stream.stream;
