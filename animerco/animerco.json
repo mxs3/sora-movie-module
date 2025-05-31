@@ -6,13 +6,13 @@
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
         "url": "https://github.com/xibrox"
     },
-    "version": "1.0.1",
+    "version": "1.0.2",
     "language": "Arabic (SUB)",
     "streamType": "HLS",
     "quality": "1080p",
     "baseUrl": "https://mp4upload.com",
     "searchBaseUrl": "https://web.animerco.org/?s=%s",
     "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/animerco/animerco.js",
-    "type": "anime/shows/movies",
+    "type": "anime",
     "asyncJS": true
 }
