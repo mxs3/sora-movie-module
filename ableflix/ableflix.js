@@ -188,8 +188,26 @@ async function extractStreamUrl(url) {
 
             const source = sourceMatch[1];
 
-            console.log(source);
-            return source;
+            const masterPlaylist = await fetchv2(source);
+            const masterPlaylistText = await masterPlaylist.text();
+
+            const matches = [...masterPlaylistText.matchAll(/#EXT-X-STREAM-INF:.*RESOLUTION=(\d+)x(\d+)[\s\S]*?\n([^\n]+)/g)];
+
+            if (matches.length === 0) throw new Error("No stream variants found.");
+
+            const bestStream = matches
+            .map(m => ({
+                width: parseInt(m[1]),
+                height: parseInt(m[2]),
+                url: m[3].trim()
+            }))
+            .sort((a, b) => (b.width * b.height) - (a.width * a.height))[0];
+
+            const baseUrlForFullUrl = new URL(masterPlaylist.url).origin;
+            const fullUrl = new URL(bestStream.url, masterPlaylist.url).href;
+
+            console.log("Highest resolution stream URL:", fullUrl);
+            return fullUrl;
         } else if (url.includes('tv')) {
             const match = url.match(/https:\/\/ableflix\.cc\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
@@ -248,9 +266,28 @@ async function extractStreamUrl(url) {
             }
 
             const source = sourceMatch[1];
+            
+            const masterPlaylist = await fetchv2(source);
+            const masterPlaylistText = await masterPlaylist.text();
 
-            console.log(source);
-            return source;
+            const matches = [...masterPlaylistText.matchAll(/#EXT-X-STREAM-INF:.*RESOLUTION=(\d+)x(\d+)[\s\S]*?\n([^\n]+)/g)];
+
+            if (matches.length === 0) throw new Error("No stream variants found.");
+
+            const bestStream = matches
+            .map(m => ({
+                width: parseInt(m[1]),
+                height: parseInt(m[2]),
+                url: m[3].trim()
+            }))
+            .sort((a, b) => (b.width * b.height) - (a.width * a.height))[0];
+
+            // Combine with base URL
+            const baseUrlForFullUrl = new URL(masterPlaylist.url).origin;
+            const fullUrl = new URL(bestStream.url, masterPlaylist.url).href;
+
+            console.log("Highest resolution stream URL:", fullUrl);
+            return fullUrl;
         } else {
             throw new Error("Invalid URL format");
         }
