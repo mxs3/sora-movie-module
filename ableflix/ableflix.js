@@ -207,7 +207,7 @@ async function extractStreamUrl(url) {
             const fullUrl = new URL(bestStream.url, masterPlaylist.url).href;
 
             console.log("Highest resolution stream URL:", fullUrl);
-            return fullUrl;
+            return JSON.stringify(fullUrl);
         } else if (url.includes('tv')) {
             const match = url.match(/https:\/\/ableflix\.cc\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
@@ -287,7 +287,7 @@ async function extractStreamUrl(url) {
             const fullUrl = new URL(bestStream.url, masterPlaylist.url).href;
 
             console.log("Highest resolution stream URL:", fullUrl);
-            return fullUrl;
+            return JSON.stringify(fullUrl);
         } else {
             throw new Error("Invalid URL format");
         }
