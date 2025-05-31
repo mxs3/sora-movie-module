@@ -109,56 +109,54 @@ async function extractStreamUrl(url) {
 
         const slug = match[1];
         const movieId = match[2];
-        const episode = match[3];
+        const episodeNumber = match[3];
 
         const apiUrl = `https://streamcloud.sx/data/watch/?_id=${movieId}`;
-
         const response = await soraFetch(apiUrl);
         const data = await response.json();
 
         let providers = {};
 
         for (const stream of data.streams) {
-            // if stream has deleted and deleted is 1, skip it
-            if (stream.deleted === 1 || stream.e !== episode) {
+            // Skip deleted streams
+            if (stream.deleted === 1) {
                 sendLog(`Skipping deleted stream: ${stream.stream}`);
                 continue;
             }
 
+            // Filter only current episode (if episodeNumber is a string, convert for comparison)
+            if (String(stream.e) !== String(episodeNumber)) {
+                sendLog(`Skipping stream from different episode: ${stream.stream}`);
+                continue;
+            }
+
             const streamUrl = stream.stream;
-            // get the hostname of the stream URL using regex, but without the extension
             const hostnameMatch = streamUrl.match(/https?:\/\/([^\/]+)/);
             if (!hostnameMatch) {
-              sendLog(`Invalid stream URL: ${streamUrl}`);
-              continue;
+                sendLog(`Invalid stream URL: ${streamUrl}`);
+                continue;
             }
-                        // remove the extension from the hostname
+
             let hostname = hostnameMatch[1].replace(/\.[^/.]+$/, "");
 
-            // if is dood, its doodstream
+            // Skip doodstream to prevent crash
             if (hostname.includes("dood")) {
-                continue; // skip doodstream, as it causes a crash
-                // hostname = "doodstream";
-
+                continue;
             }
-
 
             providers[streamUrl] = hostname;
         }
 
         sendLog("Providers found: " + JSON.stringify(providers));
+
         if (Object.keys(providers).length === 0) {
             sendLog("No valid providers found, returning error");
             return JSON.stringify([{ provider: "Error", link: "" }]);
         }
 
-        let streams = [];
         try {
-            streams = await multiExtractor(providers);
-            let returnedStreams = {
-                streams: streams,
-            };
-            
+            const streams = await multiExtractor(providers);
+            const returnedStreams = { streams };
             sendLog(returnedStreams);
             return JSON.stringify(returnedStreams);
         } catch (error) {
@@ -169,6 +167,8 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+// extractStreamUrl("https://streamcloud.sx/watch/the-last-of-us-staffel-2/6805c802f425fc1d6849427c/3");
 
 function generateSlug(title) {
     return title
