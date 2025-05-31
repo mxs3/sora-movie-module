@@ -131,129 +131,76 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        if (url.includes('movie')) {
+        const isMovie = url.includes('movie');
+        const isTV = url.includes('tv');
+
+        if (!isMovie && !isTV) throw new Error("Invalid URL format");
+
+        let embedUrl;
+
+        if (isMovie) {
             const match = url.match(/https:\/\/ableflix\.cc\/watch\/movie\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
+            if (!match) throw new Error("Invalid movie URL format");
 
             const movieId = match[1];
-            
-            const responseText = await fetchv2(`https://vidsrc.icu/embed/movie/${movieId}`);
-            const html = await responseText.text();
-
-            const videoRegex = /iframe id="videoIframe" src="([\s\S]+?)"/;
-            const videoMatch = html.match(videoRegex);
-            if(videoMatch == null) {
-                console.log('Error video match failed');
-                return null;
-            }
-            const videoUrl = videoMatch[1];
-
-            const videoResponse = await fetchv2(videoUrl);
-            const videoHtml = await videoResponse.text();
-
-            console.log(videoUrl);
-
-            const iframeRegex = /id="player_iframe"[\s\S]+?src="([\s\S]+?)"/;
-            const iframeMatch = videoHtml.match(iframeRegex);
-            if(iframeMatch == null) {
-                console.log('Error iframe match failed');
-                return null;
-            }
-            const iframeUrl = iframeMatch[1];
-            const iframeFullUrl = 'https:' + iframeUrl;
-
-            const iframeResponse = await fetchv2(iframeFullUrl);
-            const iframeHtml = await iframeResponse.text();
-            
-            const iframe2Regex = /src: '([\s\S]+?)'/;
-            const iframe2Match = iframeHtml.match(iframe2Regex);
-            if(iframe2Match == null) {
-                console.log('Error iframe2 match failed');
-                return null;
-            }
-
-            const index = iframeFullUrl.indexOf('/rcp');
-            const baseUrl = iframeFullUrl.substring(0, index);
-            const iframe2Url = baseUrl + iframe2Match[1];
-
-            const iframe2Response = await fetchv2(iframe2Url, { headers: { 'Referer': iframeFullUrl } });
-            const iframe2Html = await iframe2Response.text();
-
-            const sourceRegex = /id:"player_parent", file: '([\s\S]+?)'/;
-            const sourceMatch = iframe2Html.match(sourceRegex);
-            if(sourceMatch == null) {
-                console.log('Error source match failed');
-                return null;
-            }
-
-            const source = sourceMatch[1];
-
-            console.log(source);
-            return source;
-        } else if (url.includes('tv')) {
-            const match = url.match(/https:\/\/ableflix\.cc\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const showId = match[1];
-            const seasonNumber = match[2];
-            const episodeNumber = match[3];
-
-            const responseText = await fetchv2(`https://vidsrc.icu/embed/tv/${showId}/${seasonNumber}/${episodeNumber}`);
-            const html = await responseText.text();
-
-            const videoRegex = /iframe id="videoIframe" src="([\s\S]+?)"/;
-            const videoMatch = html.match(videoRegex);
-            if(videoMatch == null) {
-                console.log('Error video match failed');
-                return null;
-            }
-            const videoUrl = videoMatch[1];
-
-            const videoResponse = await fetchv2(videoUrl);
-            const videoHtml = await videoResponse.text();
-
-            console.log(videoUrl);
-
-            const iframeRegex = /id="player_iframe"[\s\S]+?src="([\s\S]+?)"/;
-            const iframeMatch = videoHtml.match(iframeRegex);
-            if(iframeMatch == null) {
-                console.log('Error iframe match failed');
-                return null;
-            }
-            const iframeUrl = iframeMatch[1];
-            const iframeFullUrl = 'https:' + iframeUrl;
-
-            const iframeResponse = await fetchv2(iframeFullUrl);
-            const iframeHtml = await iframeResponse.text();
-            
-            const iframe2Regex = /src: '([\s\S]+?)'/;
-            const iframe2Match = iframeHtml.match(iframe2Regex);
-            if(iframe2Match == null) {
-                console.log('Error iframe2 match failed');
-                return null;
-            }
-
-            const index = iframeFullUrl.indexOf('/rcp');
-            const baseUrl = iframeFullUrl.substring(0, index);
-            const iframe2Url = baseUrl + iframe2Match[1];
-
-            const iframe2Response = await fetchv2(iframe2Url, { headers: { 'Referer': iframeFullUrl } });
-            const iframe2Html = await iframe2Response.text();
-
-            const sourceRegex = /id:"player_parent", file: '([\s\S]+?)'/;
-            const sourceMatch = iframe2Html.match(sourceRegex);
-            if(sourceMatch == null) {
-                console.log('Error source match failed');
-                return null;
-            }
-
-            const source = sourceMatch[1];
-
-            console.log(source);
-            return source;
+            embedUrl = `https://vidsrc.icu/embed/movie/${movieId}`;
         } else {
-            throw new Error("Invalid URL format");
+            const match = url.match(/https:\/\/ableflix\.cc\/watch\/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
+            if (!match) throw new Error("Invalid TV URL format");
+
+            const [_, showId, season, episode] = match;
+            embedUrl = `https://vidsrc.icu/embed/tv/${showId}/${season}/${episode}`;
         }
+
+        const responseText = await fetchv2(embedUrl);
+        const html = await responseText.text();
+
+        const videoMatch = html.match(/iframe id="videoIframe" src="([\s\S]+?)"/);
+        if (!videoMatch) throw new Error("Video iframe not found");
+
+        const videoUrl = videoMatch[1];
+        const videoResponse = await fetchv2(videoUrl);
+        const videoHtml = await videoResponse.text();
+
+        const iframeMatch = videoHtml.match(/id="player_iframe"[\s\S]+?src="([\s\S]+?)"/);
+        if (!iframeMatch) throw new Error("Player iframe not found");
+
+        const iframeFullUrl = 'https:' + iframeMatch[1];
+        const iframeResponse = await fetchv2(iframeFullUrl);
+        const iframeHtml = await iframeResponse.text();
+
+        const iframe2Match = iframeHtml.match(/src: '([\s\S]+?)'/);
+        if (!iframe2Match) throw new Error("Second iframe src not found");
+
+        const baseUrl = iframeFullUrl.split('/rcp')[0];
+        const iframe2Url = baseUrl + iframe2Match[1];
+
+        const iframe2Response = await fetchv2(iframe2Url, {
+            headers: { Referer: iframeFullUrl }
+        });
+        const iframe2Html = await iframe2Response.text();
+
+        const sourceMatch = iframe2Html.match(/id:"player_parent", file: '([\s\S]+?)'/);
+        if (!sourceMatch) throw new Error("Stream source not found");
+
+        const streamUrl = sourceMatch[1];
+
+        const results = {
+            streams: [
+                {
+                    title: "",
+                    streamUrl,
+                    headers: {
+                        origin: "https://cloudnestra.com",
+                        referrer: "https://cloudnestra.com/"
+                    }
+                }
+            ],
+            subtitles: ""
+        };
+
+        console.log(results);
+        return JSON.stringify(results);
     } catch (error) {
         console.log('Fetch error in extractStreamUrl:', error);
         return null;
