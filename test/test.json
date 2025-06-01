@@ -6,13 +6,13 @@
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
         "url": "https://github.com/xibrox"
     },
-    "version": "0.0.1",
+    "version": "0.0.2",
     "language": "TEST",
-    "streamType": "HLS",
-    "quality": "1080p",
-    "baseUrl": "https://yummy-anime.ru/",
-    "searchBaseUrl": "https://yummy-anime.ru/api/search?q=%s&limit=20&offset=0",
+    "streamType": "TEST",
+    "quality": "TEST",
+    "baseUrl": "https://google.com/",
+    "searchBaseUrl": "https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=%s&include_adult=false",
     "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/test/test.js",
-    "type": "anime",
+    "type": "TEST",
     "asyncJS": true
 }
