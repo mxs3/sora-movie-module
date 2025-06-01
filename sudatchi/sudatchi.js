@@ -136,4 +136,4 @@ async function extractStreamUrl(url) {
     }
 }
 
-extractStreamUrl(`https://sudatchi.com/watch/167143/1`);
+// extractStreamUrl(`https://sudatchi.com/watch/167143/1`);
