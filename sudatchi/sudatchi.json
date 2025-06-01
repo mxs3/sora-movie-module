@@ -6,8 +6,8 @@
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
         "url": "https://github.com/xibrox"
     },
-    "version": "1.0.3",
-    "language": "English",
+    "version": "1.0.4",
+    "language": "Spanish",
     "streamType": "HLS",
     "quality": "1080p",
     "baseUrl": "https://sudatchi-api.vercel.app/",

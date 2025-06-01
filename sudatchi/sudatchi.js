@@ -90,11 +90,14 @@ async function extractStreamUrl(url) {
 
             const streamApiUrl = `https://sudatchi.com/api/streams?episodeId=${episode.id}`;
             
-            const responseTextStream = await fetchv2(streamApiUrl);
-            const streamData = await responseTextStream.text();
+            // const responseTextStream = await fetchv2(streamApiUrl);
+            // const streamData = await responseTextStream.text();
 
-            console.log(streamData);
+            // console.log(streamData);
 
+
+
+            
             // const hlsSource = `https://sudatchi.com/${streamData.url}`;
 
             // const responseFile = await fetch(hlsSource);
@@ -120,8 +123,8 @@ async function extractStreamUrl(url) {
             //     subtitles: subtitleTrack ? `https://ipfs.sudatchi.com${subtitleTrack}` : null,
             // };
             
-            console.log(streamData);
-            return streamData;
+            console.log(streamApiUrl);
+            return streamApiUrl;
         } catch (err) {
             console.log(`Fetch error for show ${showId}:`, err);
         }
