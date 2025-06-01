@@ -104,13 +104,13 @@ async function extractStreamUrl(url) {
         const data = await response.json();
 
         const episode = data.anime.episodes.find(ep => ep.number === episodeNumber);
-        if (!episode || !episode.primarySource) {
+        if (!episode || !episode.secondarySource) {
             throw new Error("Episode or stream data not found");
         }
 
         const qualityOrder = ["FHD", "HD", "SD"];
 
-        const streams = Object.entries(episode.primarySource)
+        const streams = Object.entries(episode.secondarySource)
             .filter(([quality, streamUrl]) => !streamUrl.toLowerCase().endsWith(".mkv"))
             .sort(([a], [b]) => qualityOrder.indexOf(a) - qualityOrder.indexOf(b))
             .map(([quality, streamUrl]) => ({
