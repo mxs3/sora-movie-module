@@ -1,12 +1,12 @@
 {
     "sourceName": "Sudatchi",
-    "iconUrl": "https://sudatchi.com/favicon.ico",
+    "iconUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/sudatchi/icon.png",
     "author": {
         "name": "ibro",
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
         "url": "https://github.com/xibrox"
     },
-    "version": "1.0.5",
+    "version": "1.0.6",
     "language": "Spanish",
     "streamType": "HLS",
     "quality": "1080p",
