@@ -1,8 +1,8 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetch(`https://sudatchi-api.vercel.app/api/search?q=${encodedKeyword}`);
-        const data = JSON.parse(responseText);
+        const responseText = await fetchv2(`https://sudatchi-api.vercel.app/api/search?q=${encodedKeyword}`);
+        const data = await responseText.json();
 
         const transformedResults = data.media.map(result => {
             return {
@@ -25,15 +25,16 @@ async function extractDetails(url) {
         if (!match) throw new Error("Invalid URL format");
 
         const showId = match[1];
-        const responseText = await fetch(`https://sudatchi.com/api/anime/${showId}`);
-        const data = JSON.parse(responseText);
+        const responseText = await fetchv2(`https://sudatchi.com/api/anime/${showId}`);
+        const data = await responseText.json();
 
         const transformedResults = [{
             description: data.description || 'No description available',
-            aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : "Unknown"}`,
+            aliases: `Duration: ${data.duration ? data.duration : "Unknown"}`,
             airdate: `Aired: ${data.startDate.day}.${data.startDate.month}.${data.startDate.year}` || 'Aired: Unknown'
         }];
 
+        console.log(transformedResults);
         return JSON.stringify(transformedResults);
     } catch (error) {
         console.log('Details error:', error);
@@ -52,8 +53,8 @@ async function extractEpisodes(url) {
         if (!match) throw new Error("Invalid URL format");
             
         const showId = match[1];
-        const responseText = await fetch(`https://sudatchi.com/api/anime/${showId}`);
-        const data = JSON.parse(responseText);
+        const responseText = await fetchv2(`https://sudatchi.com/api/anime/${showId}`);
+        const data = await responseText.json();
 
         const transformedResults = data.episodes.map(episode => {
             return {
@@ -62,7 +63,8 @@ async function extractEpisodes(url) {
                 title: episode.title || ""
             };
         });
-            
+        
+        console.log(transformedResults);
         return JSON.stringify(transformedResults);
     } catch (error) {
         console.log('Fetch error in extractEpisodes:', error);
@@ -81,40 +83,45 @@ async function extractStreamUrl(url) {
         try {
             const episodesApiUrl = `https://sudatchi.com/api/episode/${showId}/${episodeNumber}`;
 
-            const responseTextEpisodes = await fetch(episodesApiUrl);
-            const episodesData = JSON.parse(responseTextEpisodes);
+            const responseTextEpisodes = await fetchv2(episodesApiUrl);
+            const episodesData = await responseTextEpisodes.json();
 
             const episode = episodesData?.episodes?.find(episode => String(episode.number) === episodeNumber);
 
             const streamApiUrl = `https://sudatchi.com/api/streams?episodeId=${episode.id}`;
             
-            const responseTextStream = await fetch(streamApiUrl);
-            const streamData = JSON.parse(responseTextStream);
+            const responseTextStream = await fetchv2(streamApiUrl);
+            const streamData = await responseTextStream.text();
 
-            const hlsSource = `https://sudatchi.com/${streamData.url}`;
+            console.log(streamData);
 
-            const responseFile = await fetch(hlsSource);
-            const fileData = responseFile;
+            // const hlsSource = `https://sudatchi.com/${streamData.url}`;
 
-            const audioRegex = /#EXT-X-MEDIA:[^\n]*TYPE=AUDIO[^\n]*URI="(https?:\/\/[^"]+)"/;
-            const audioMatch = fileData.match(audioRegex);
+            // const responseFile = await fetch(hlsSource);
+            // const fileData = await responseFile.text();
 
-            if (audioMatch && audioMatch[1]) {
-                const audioUrl = audioMatch[1];
+            // console.log(fileData);
 
-                console.log(audioUrl);
+            // const audioRegex = /#EXT-X-MEDIA:[^\n]*TYPE=AUDIO[^\n]*URI="(https?:\/\/[^"]+)"/;
+            // const audioMatch = fileData.match(audioRegex);
 
-                return audioUrl;
-            }
+            // if (audioMatch && audioMatch[1]) {
+            //     const audioUrl = audioMatch[1];
 
-            //const subtitleTrack = episodesData.subtitlesMap["1"];
+            //     console.log(audioUrl);
+
+            //     return audioUrl;
+            // }
+
+            // const subtitleTrack = episodesData.subtitlesMap["1"];
 
             // const result = {
             //     stream: hlsSource ? hlsSource : null,
             //     subtitles: subtitleTrack ? `https://ipfs.sudatchi.com${subtitleTrack}` : null,
             // };
             
-            // return hlsSource;
+            console.log(streamData);
+            return streamData;
         } catch (err) {
             console.log(`Fetch error for show ${showId}:`, err);
         }
