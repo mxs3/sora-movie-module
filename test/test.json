@@ -1,0 +1,18 @@
+{
+    "sourceName": "TEST",
+    "iconUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/test/icon.png",
+    "author": {
+        "name": "ibro",
+        "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
+        "url": "https://github.com/xibrox"
+    },
+    "version": "0.0.1",
+    "language": "TEST",
+    "streamType": "HLS",
+    "quality": "1080p",
+    "baseUrl": "https://yummy-anime.ru/",
+    "searchBaseUrl": "https://yummy-anime.ru/api/search?q=%s&limit=20&offset=0",
+    "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/test/test.js",
+    "type": "anime",
+    "asyncJS": true
+}
