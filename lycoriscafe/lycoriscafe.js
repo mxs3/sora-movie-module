@@ -31,7 +31,7 @@ async function extractDetails(url) {
         const response = await fetchv2(`https://www.lycoris.cafe/api/anime/${animeId}`);
         const data = await response.json();
 
-        const description = data.anime.synopsis || 'No description available';
+        const description = decodeHTMLEntities(data.anime.synopsis) || 'No description available';
         const airdate = `Released: ${data.anime.startDate ? `${data.anime.startDate}` : 'Unknown'}`
 
         const aliases = `
@@ -111,11 +111,14 @@ async function extractStreamUrl(url) {
         const qualityOrder = ["FHD", "HD", "SD"];
 
         const streams = Object.entries(episode.secondarySource)
-            .filter(([quality, streamUrl]) => !streamUrl.toLowerCase().endsWith(".mkv"))
+            .filter(([quality, streamUrl]) =>
+                !["Source", "SourceMKV"].includes(quality) &&
+                !streamUrl.toLowerCase().endsWith(".mkv")
+            )
             .sort(([a], [b]) => qualityOrder.indexOf(a) - qualityOrder.indexOf(b))
             .map(([quality, streamUrl]) => ({
                 title: quality,
-                streamUrl: streamUrl,
+                streamUrl,
                 headers: {
                     Referer: "https://www.lycoris.cafe/"
                 }
@@ -143,6 +146,24 @@ function generateSlug(title) {
         .trim()                             // Remove leading/trailing whitespace
         .replace(/\s+/g, '-')               // Replace spaces with hyphens
         .replace(/-+/g, '-');               // Collapse multiple hyphens
+}
+
+function decodeHTMLEntities(text) {
+    text = text.replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec));
+    
+    const entities = {
+        '&quot;': '"',
+        '&amp;': '&',
+        '&apos;': "'",
+        '&lt;': '<',
+        '&gt;': '>'
+    };
+    
+    for (const entity in entities) {
+        text = text.replace(new RegExp(entity, 'g'), entities[entity]);
+    }
+
+    return text;
 }
 
 // extractStreamUrl('https://www.lycoris.cafe/anime/167143/undefined/watch/1');
