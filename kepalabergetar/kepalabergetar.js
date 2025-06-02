@@ -142,9 +142,9 @@ async function extractStreamUrl(url) {
         if (match3) {
             const streamUrl = match3[1];
             
-            console.log('Stream URL:', streamUrl);
+            console.log(`Stream URL: ${streamUrl}`);
 
-            return JSON.stringify(streamUrl);
+            return streamUrl;
         } else {
             console.log('No match found.');
             return null;
