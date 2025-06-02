@@ -44,7 +44,7 @@ async function extractDetails(url) {
 
         const transformedResults = [{
             description: description,
-            aliases: `Duration: ${duration}\n Genres: ${genres}\n Rating: ${rating}`,
+            aliases: `Duration: ${duration}\nGenres: ${genres}\nRating: ${rating}`,
             airdate: `Released: ${releasedAt}`
         }];
 
@@ -90,24 +90,25 @@ async function extractStreamUrl(url) {
 
             const apiUrl = generateCinePulseUrl(movieId, 'movie');
 
-            const responseText = await fetch(apiUrl);
+            const responseText = await fetchv2(apiUrl);
             const data = await responseText.json();
 
-            let result = [];
-
-            const streamUrls = data.data.items.map(item => {
-                return {
-                    label: item.label,
-                    url: item.url
+            const streams = data.data.items
+            .filter(item => item.url.includes('mp4') || item.url.includes('m3u8') || item.url.includes('hls'))
+            .map(item => ({
+                title: item.label || "Stream",
+                streamUrl: item.url,
+                headers: {
+                    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0",
+                    "Origin": "https://cinepulse.to",
+                    "Referer": "https://cinepulse.to/"
                 }
-            });
+            }));
 
-            const filteredStreamUrls = streamUrls.filter(url => url.url.includes('mp4') || url.url.includes('m3u8') || url.url.includes('hls'));
-
-            for (let i = 0; i < filteredStreamUrls.length; i++) {
-                result.push(filteredStreamUrls[i].label);
-                result.push(filteredStreamUrls[i].url);
-            }
+            const result = {
+                streams,
+                subtitles: ""
+            };
 
             console.log(result);
             return JSON.stringify(result);
@@ -123,7 +124,7 @@ async function extractStreamUrl(url) {
 // searchResults("flash");
 // extractDetails("https://cinepulse.to/watch/298618");
 // extractEpisodes("https://cinepulse.to/watch/298618");
-// extractStreamUrl("https://cinepulse.to/watch/298618");
+// extractStreamUrl("https://cinepulse.to/watch/157336");
 
 
 
