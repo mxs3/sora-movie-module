@@ -94,7 +94,7 @@ async function extractEpisodes(url) {
                 if (hrefMatch && numberMatch) {
                     episodes.push({
                         href: `https://anibunker.com${hrefMatch[1].trim()}`,
-                        number: numberMatch[1].trim(),
+                        number: Number(numberMatch[1].trim()),
                         title: titleMatch ? titleMatch[1].trim() : ''
                     });
                 }
@@ -113,35 +113,39 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const match = url.match(/https:\/\/anibunker\.com\/anime\/([^\/]+)/);
-            
-        if (!match) throw new Error("Invalid URL format");
-        
-        const movieId = match[1];
-
-        const responseText = await fetchv2(`https://anibunker.com/anime/${movieId}`);
+        const responseText = await fetchv2(url);
         const html = await responseText.text();
 
-        const matchId = html.match(/data-video-id="(\d+)"/);
-        const videoId = matchId[1];
+        const match = html.match(/<video[^>]+src="([^"]+)"/);
+        const videoUrl = match[1];
 
-        const playerId1 = "url_hd_1";
-        const playerId2 = "url_hd_2";
+        // const matchId = html.match(/data-video-id="(\d+)"/);
+        // const videoId = matchId[1];
 
-        const postData = {
-            player_id: playerId2,
-            video_id: videoId
-        };
+        // const playerId1 = "url_hd_1";
+        // const playerId2 = "url_hd_2";
 
-        const headers = {
-            'Origin': 'https://anibunker.com'
-        };
+        // const postData = {
+        //     player_id: "url_hd_2",
+        //     video_id: "43016"
+        // };
 
-        const loader = await fetchv2(`https://anibunker.com/php/loader.php`, headers, "POST", postData);
-        const loaderJSON = await loader.json();
+        // console.log(`Extracting stream URL for video ID: ${videoId}`);
+        // console.log(`Using player ID: ${playerId2}`);
+        // console.log(`Post data: ${JSON.stringify(postData)}`);
 
-        console.log(loaderJSON);
-        return JSON.stringify(loaderJSON.url);
+        // const headers = {
+        //     'Origin': 'https://anibunker.com',
+        //     "Content-Type": "application/x-www-form-urlencoded",
+        //     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0',
+        //     'Referer': url,
+        // };
+
+        // const loader = await fetchv2(`https://anibunker.com/php/loader.php`, headers, "POST", postData);
+        // const loaderJSON = await loader.text();
+
+        console.log(videoUrl);
+        return videoUrl;
     } catch (error) {
         console.error('extractStreamUrl error:', error);
         return null;
