@@ -128,7 +128,12 @@ async function extractStreamUrl(url) {
         const match2 = html2.match(/<iframe[^>]+src="([^"]+)"/);
         const iframeUrl2 = match2 ? match2[1] : null;
 
-        const responseText3 = await fetchv2(iframeUrl2);
+        const headers = {
+            "Referer": "https://filemoon.to/",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+        };
+
+        const responseText3 = await fetchv2(iframeUrl2, headers);
         const html3 = await responseText3.text();
 
         const packedScriptMatch = html3.match(/(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
@@ -139,16 +144,10 @@ async function extractStreamUrl(url) {
         const regex = /sources:\s*\[\s*{file:"([^"]+)"\}\s*\]/;
         const match3 = unpackedScript.match(regex);
 
-        if (match3) {
-            const streamUrl = match3[1];
+        const streamUrl = match3[1];
             
-            console.log(`Stream URL: ${streamUrl}`);
-
-            return streamUrl;
-        } else {
-            console.log('No match found.');
-            return null;
-        }
+        console.log(`Stream URL: ${streamUrl}`);
+        return streamUrl;
     } catch (error) {
         console.error('extractStreamUrl error:', error);
         return null;
