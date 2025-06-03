@@ -125,44 +125,27 @@ async function extractStreamUrl(url) {
         const playerId1 = "url_hd_1";
         const playerId2 = "url_hd_2";
 
-        // const postData = {
-        //     player_id: "url_hd_2",
-        //     video_id: "43016"
-        // };
+        const postData = {
+            player_id: playerId2,
+            video_id: videoId
+        };
 
-        // const headers = {
-        //     'Origin': 'https://anibunker.com',
-        //     "Content-Type": "application/x-www-form-urlencoded",
-        //     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0',
-        //     'Referer': url,
-        // };
+        console.log(`Extracting stream URL for video ID: ${videoId}`);
+        console.log(`Using player ID: ${playerId2}`);
+        console.log(`Post data: ${JSON.stringify(postData)}`);
 
-        const response = await fetchv3('https://anibunker.com/php/loader.php', {
-            method: 'POST',
-            headers: {
-                'Origin': 'https://anibunker.com',
-                "Content-Type": "application/x-www-form-urlencoded",
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0',
-                'Referer': url,
-            },
-            body: {
-                player_id: playerId2,
-                video_id: videoId
-            },
-            contentType: 'application/x-www-form-urlencoded'
-        });
+        const headers = {
+            'Origin': 'https://anibunker.com',
+            "Content-Type": "application/x-www-form-urlencoded",
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0',
+            'Referer': url,
+        };
 
-        return await response.json();
+        const loader = await fetchv2(`https://anibunker.com/php/loader.php`, headers, "POST", postData);
+        const loaderJSON = await loader.json();
 
-        // console.log(`Extracting stream URL for video ID: ${videoId}`);
-        // console.log(`Using player ID: ${playerId2}`);
-        // console.log(`Post data: ${JSON.stringify(postData)}`);
-
-        // const loader = await fetchv2(`https://anibunker.com/php/loader.php`, headers, "POST", postData);
-        // const loaderJSON = await loader.text();
-
-        // console.log(videoUrl);
-        // return videoUrl;
+        console.log(loaderJSON.url);
+        return loaderJSON.url;
     } catch (error) {
         console.error('extractStreamUrl error:', error);
         return null;
