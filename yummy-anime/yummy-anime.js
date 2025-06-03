@@ -7,6 +7,14 @@ async function searchResults(keyword) {
         const data = await responseText.json();
 
         const transformedResults = data.response.map(result => {
+            if (result.title === "Мой жених – своенравный и инфантильный ученик") {
+                return {
+                    title: 'Error',
+                    image: '',
+                    href: ''
+                };
+            }
+
             return {
                 title: result.title,
                 image: `https:${result.poster.fullsize}`,
