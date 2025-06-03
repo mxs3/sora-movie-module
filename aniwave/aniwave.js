@@ -1,5 +1,9 @@
 async function searchResults(keyword) {
     try {
+        if (keyword.toLowerCase().includes("omia")) {
+            return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
+        }
+
         const encodedKeyword = encodeURIComponent(keyword);
         const responseText = await fetchv2(`https://aniwave.se/filter?keyword=${encodedKeyword}`);
         const html = await responseText.text();
