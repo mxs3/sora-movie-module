@@ -134,18 +134,39 @@ async function extractStreamUrl(url) {
         console.log(`Using player ID: ${playerId2}`);
         console.log(`Post data: ${JSON.stringify(postData)}`);
 
-        const headers = {
-            'Origin': 'https://anibunker.com',
-            "Content-Type": "application/x-www-form-urlencoded",
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0',
-            'Referer': url,
+        // const headers = {
+        //     'Origin': 'https://anibunker.com',
+        //     "Content-Type": "application/x-www-form-urlencoded",
+        //     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0',
+        //     'Referer': url,
+        // };
+
+        const url = "https://sora-passthrough.vercel.app/form";
+        const data = {
+            "url": "https://anibunker.com/php/loader.php",
+            "form": {
+                "player_id": playerId2,
+                "video_id": videoId
+            },
+            "headers": {
+                "Host": "anibunker.com",
+                "Origin": "https://anibunker.com",
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0",
+                "Referer": url,
+            }
         };
 
-        const loader = await fetchv2(`https://anibunker.com/php/loader.php`, headers, "POST", postData);
-        const loaderJSON = await loader.json();
+        const response = await fetchv2(url, "POST", { "Content-Type": "application/json" }, JSON.stringify(data));
+        const json = typeof response === 'object' ? await response.json() : await JSON.parse(response);
 
-        console.log(loaderJSON.url);
-        return loaderJSON.url;
+        console.log(JSON.stringify(json));
+        return json.url;
+
+        // const loader = await fetchv2(`https://anibunker.com/php/loader.php`, headers, "POST", postData);
+        // const loaderJSON = await loader.json();
+
+        // console.log(loaderJSON.url);
+        // return loaderJSON.url;
     } catch (error) {
         console.error('extractStreamUrl error:', error);
         return null;
