@@ -1,11 +1,7 @@
 async function searchResults(keyword) {
     try {
-        if (keyword.toLowerCase().includes("omia")) {
-            return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
-        }
-
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetchv2(`https://aniwave.se/filter?keyword=${encodedKeyword}`);
+        const responseText = await fetch(`https://aniwave.se/filter?keyword=${encodedKeyword}`);
         const html = await responseText.text();
 
         const regex = /<div\s+class="item\s*">[\s\S]*?<a\s+href="([^"]+)">[\s\S]*?<img\s+src="([^"]+)"[^>]*>[\s\S]*?<a\s+class="name\s+d-title"[^>]*>([^<]+)<\/a>/g;
@@ -14,11 +10,15 @@ async function searchResults(keyword) {
         let match;
 
         while ((match = regex.exec(html)) !== null) {
-        results.push({
-            title: match[3].trim(),
-            image: match[2].trim(),
-            href: `https://aniwave.se${match[1].trim()}`
-        });
+            if (match[3].trim() === "Omiai Aite Wa Oshiego Tsuyokina Mondaiji") {
+                continue;
+            }
+
+            results.push({
+                title: match[3].trim(),
+                image: match[2].trim(),
+                href: `https://aniwave.se${match[1].trim()}`
+            });
         }
 
         console.log(results);
