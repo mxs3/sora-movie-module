@@ -1,6 +1,8 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
+        // const response = await fetch(`https://franime.to/?do=search&subaction=search&search_start=0&full_search=0&story=${encodedKeyword}`);
+        // const html = await response.text();
 
         const url = "https://sora-passthrough.vercel.app/form";
         const data = {
@@ -8,7 +10,7 @@ async function searchResults(keyword) {
             "form": {
                 "do": "search",
                 "subaction": "search",
-                "search": encodedKeyword
+                "story": keyword
             },
             "headers": {
                 "Host": "franime.to",
@@ -18,13 +20,10 @@ async function searchResults(keyword) {
             }
         };
 
-        const response = await fetchv2(url, "POST", { "Content-Type": "application/json" }, JSON.stringify(data));
-
+        const response = await soraFetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
         console.log(response);
-
         const html = await response.text();
-
-        console.log(html);
+        // console.log(html);
 
         const regex = /<a[^>]+href="([^"]+)"[^>]*?>[\s\S]*?<img[^>]+src="([^"]+)"[^>]*?alt="([^"]+)"[\s\S]*?<\/a>/g;
 
@@ -44,6 +43,18 @@ async function searchResults(keyword) {
     } catch (error) {
         console.log('Fetch error in searchResults:', error);
         return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
     }
 }
 
@@ -128,6 +139,8 @@ async function extractEpisodes(url) {
     }
 }
 
+// searchResults("naruto");
+
 async function extractStreamUrl(url) {
     try {
         const match = url.match(/^(\d+)\/(\d+)$/);
@@ -150,25 +163,28 @@ async function extractStreamUrl(url) {
 
         const stream = `https://video.sibnet.ru${mp4Url}`;
 
-        const result = {
-            streams: [
-                {
-                    title: "",
-                    streamUrl: stream,
-                    headers: {
-                        "Referer": embedUrl
-                    }
-                }
-            ],
-            subtitles: ""
-        };
 
-        console.log(result);
-        return JSON.stringify(result);
+        console.log(stream);
+        return stream;
+        // const result = {
+        //     streams: [
+        //         {
+        //             title: "",
+        //             streamUrl: stream,
+        //             headers: {
+        //                 "Referer": embedUrl
+        //             }
+        //         }
+        //     ],
+        //     subtitles: ""
+        // };
+
+        // console.log(result);
+        // return JSON.stringify(result);
     } catch (error) {
         console.log("Fetch error in extractStreamUrl:", error);
         return null;
     }
 }
 
-// extractStreamUrl('1/1');
+extractStreamUrl('1/1');

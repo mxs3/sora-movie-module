@@ -105,98 +105,42 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
-    try {
-        const match = url.match(/https:\/\/uaserial\.me\/embed\/([^\/]+)\/season-([^\/]+)\/episode-([^\/]+)/);
-        if (!match) throw new Error("Invalid URL format");
+    console.error("Extracting stream URL from:", url);
+    const response = await fetch(url);
+    const html = await response.text();
 
-        const showId = match[1];
-        const seasonNumber = match[2];
-        const episodeNumber = match[3];
+    const iframeMatch = html.match(/<iframe[^>]+src="(https:\/\/megaplay\.buzz\/stream\/[^"]+)"/);
 
-        const response = await fetchv2(url);
-        const htmlText = await response.text();
+    console.log(iframeMatch);
+    if (!iframeMatch) return null;
 
-        const episodesMatch = htmlText.match(/episodes\s*:\s*(\[[\s\S]*?\])\s*,?\s*\n/);
-        if (!episodesMatch) {
-            console.log("No episodes block found.");
-            return null;
-        }
+    console.log(iframeMatch);
 
-        let rawJson = episodesMatch[1]
-            .replace(/\\'/g, "'")
-            .replace(/,\s*}/g, '}')
-            .replace(/,\s*]/g, ']');
+    const iframeUrl = iframeMatch[1];
+    const streamResponse = await fetch(iframeUrl);
+    const streamHtml = await streamResponse.text();
+    console.erorr("Stream HTML:", streamHtml);
 
-        const episodes = JSON.parse(rawJson);
-        const resultStreams = [];
-        let subtitleUrl = "";
+    const idMatch = streamHtml.match(/data-id="(\d+)"/);
+    if (!idMatch) return null;
 
-        // Try to match episode for series
-        let targetEpisode = episodes.find(ep => {
-            const title = ep.title || "";
-            return title.includes(`Серія ${episodeNumber}`) || title.includes(`Серия ${episodeNumber}`);
-        });
+    const id = idMatch[1];
+    const finalUrl = `https://megaplay.buzz/stream/getSources?id=${id}&id=${id}`;
+    console.log("Final URL:", finalUrl);
+    const finalResponse = await fetch(finalUrl);
+    const finalData = await finalResponse.json();
+    console.error("Final Data:", finalData);
 
-        // If not found (movie), fallback to entry with ashdi.vip links
-        if (!targetEpisode) {
-            targetEpisode = episodes.find(ep => {
-                const sources = Array.isArray(ep.src) ? ep.src : ep.src?.ashdi ?? [];
-                return sources.some(s => s.link && s.link.includes("ashdi.vip"));
-            });
+    const streams = finalData.sources?.file ?? null;
+    const subtitles = finalData.tracks?.find(track => track.label === "English")?.file ?? null;
 
-            if (!targetEpisode) {
-                console.log(`Episode ${episodeNumber} or ashdi sources not found.`);
-                return null;
-            }
-        }
+    const result = {
+        streams,
+        subtitles
+    };
 
-        // Use proper source extraction
-        const srcArray = Array.isArray(targetEpisode.src)
-            ? targetEpisode.src
-            : targetEpisode.src?.ashdi ?? [];
-
-        for (const source of srcArray) {
-            if (!source.link.includes("ashdi.vip")) continue;
-
-            const streamRes = await fetchv2(source.link);
-            const streamHtml = await streamRes.text();
-
-            const fileMatch = streamHtml.match(/file\s*:\s*"([^"]+\.m3u8[^"]*)"/);
-            const subtitleMatch = streamHtml.match(/subtitle\s*:\s*"([^"]*)"/);
-
-            if (fileMatch) {
-                resultStreams.push({
-                    title: source.name || targetEpisode.title || "",
-                    streamUrl: fileMatch[1],
-                    headers: {}
-                });
-
-                if (!subtitleUrl && subtitleMatch && subtitleMatch[1]) {
-                    const fullSubtitle = subtitleMatch[1];
-                    const cleanedSubtitle = fullSubtitle.match(/https?:\/\/[^\s"\]]+/)?.[0] || "";
-                    subtitleUrl = cleanedSubtitle;
-                }
-            }
-        }
-
-        if (resultStreams.length === 0) {
-            console.log("No ashdi.vip links found.");
-            return null;
-        }
-
-        const result = {
-            streams: resultStreams,
-            subtitles: subtitleUrl
-        };
-
-        console.log(result);
-        return JSON.stringify(result);
-    } catch (error) {
-        console.log("Fetch error in extractStreamUrl:", error);
-        return null;
-    }
+    console.error("Result:", result);
+    return JSON.stringify(result);
 }
 
-
-// extractStreamUrl('https://uaserial.me/embed/naruto/season-1/episode-2');
-// extractStreamUrl('https://uaserial.me/embed/naruto-legend-of-the-stone-of-gelel/season-1/episode-1');
+extractStreamUrl('https://kickassanime.com.es/one-piece-yuruganu-seigi-kaigun-no-hokoritakaki-log-episode-1-english-subbed/');
