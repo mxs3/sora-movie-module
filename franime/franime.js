@@ -19,7 +19,12 @@ async function searchResults(keyword) {
         };
 
         const response = await fetchv2(url, "POST", { "Content-Type": "application/json" }, JSON.stringify(data));
+
+        console.log(response);
+
         const html = await response.text();
+
+        console.log(html);
 
         const regex = /<a[^>]+href="([^"]+)"[^>]*?>[\s\S]*?<img[^>]+src="([^"]+)"[^>]*?alt="([^"]+)"[\s\S]*?<\/a>/g;
 
