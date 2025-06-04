@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetch(`https://aniwave.se/filter?keyword=${encodedKeyword}`);
+        const responseText = await fetchv2(`https://aniwave.se/filter?keyword=${encodedKeyword}`);
         const html = await responseText.text();
 
         const regex = /<div\s+class="item\s*">[\s\S]*?<a\s+href="([^"]+)">[\s\S]*?<img\s+src="([^"]+)"[^>]*>[\s\S]*?<a\s+class="name\s+d-title"[^>]*>([^<]+)<\/a>/g;
