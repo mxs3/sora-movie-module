@@ -116,48 +116,66 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const responseText = await fetchv2(url);
+        const responseText = await fetch(url);
         const html = await responseText.text();
 
         const match = html.match(/<iframe[^>]+src="([^"]+)"/);
         const iframeUrl1 = match ? match[1] : null;
+        if (!iframeUrl1) throw new Error("First iframe not found");
 
-        const responseText2 = await fetchv2(iframeUrl1);
+        const responseText2 = await fetch(iframeUrl1);
         const html2 = await responseText2.text();
+
+        console.log(iframeUrl1);
 
         const match2 = html2.match(/<iframe[^>]+src="([^"]+)"/);
         const iframeUrl2 = match2 ? match2[1] : null;
+        if (!iframeUrl2) throw new Error("Second iframe not found");
 
         const headers = {
             "Referer": "https://filemoon.to/",
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
         };
 
-        const responseText3 = await fetchv2(iframeUrl2, headers);
+        const responseText3 = await fetch(iframeUrl2, headers);
         const html3 = await responseText3.text();
 
         const packedScriptMatch = html3.match(/(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
-        if (!packedScriptMatch) return null;
+        if (!packedScriptMatch) throw new Error("Packed script not found");
+        
         const packedScript = packedScriptMatch[1];
         const unpackedScript = unpack(packedScript);
 
         const regex = /sources:\s*\[\s*{file:"([^"]+)"\}\s*\]/;
         const match3 = unpackedScript.match(regex);
+        if (!match3) throw new Error("Stream URL not found");
 
         const streamUrl = match3[1];
-            
-        console.log(`Stream URL: ${streamUrl}`);
-        return streamUrl;
+
+        const result = {
+            streams: [{
+                title: "HD Server - Part 1",
+                streamUrl: streamUrl,
+                headers: headers
+            }],
+            subtitles: ""
+        }
+
+        console.log(result);
+        return JSON.stringify(result);
     } catch (error) {
         console.error('extractStreamUrl error:', error);
-        return null;
+        return {
+            streams: [],
+            subtitles: ""
+        };
     }
 }
 
-// searchResults("dendam");
-// extractDetails("https://ww31.kepalabergetar9.com/dendam-seorang-madu-episod-55-tonton-drama-video/");
-// extractEpisodes("https://ww31.kepalabergetar9.com/dendam-seorang-madu-episod-55-tonton-drama-video/");
-// extractStreamUrl("https://ww31.kepalabergetar9.com/dendam-seorang-madu-episod-55-tonton-drama-video/");
+// searchResults("keluarga");
+// extractDetails("https://ww31.kepalabergetar9.com/keluarga-itu-episod-22-tonton-drama-video/");
+// extractEpisodes("https://ww31.kepalabergetar9.com/keluarga-itu-episod-22-tonton-drama-video/");
+// extractStreamUrl("https://ww31.kepalabergetar9.com/keluarga-itu-episod-22-tonton-drama-video/");
 
 class Unbaser {
     constructor(base) {

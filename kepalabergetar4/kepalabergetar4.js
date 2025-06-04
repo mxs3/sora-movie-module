@@ -73,17 +73,17 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const responseText = await fetchv2(url);
+        const responseText = await fetch(url);
         const html = await responseText.text();
 
         const iframeMatches = [...html.matchAll(/<iframe[^>]+src="([^"]+)"/g)];
         const iframeUrls = iframeMatches.map(m => m[1]);
 
-        const streamUrls = [];
+        const streams = [];
 
         for (const iframeUrl1 of iframeUrls) {
             try {
-                const responseText2 = await fetchv2(iframeUrl1);
+                const responseText2 = await fetch(iframeUrl1);
                 const html2 = await responseText2.text();
 
                 if (html2.includes("This video is unavailable due to server maintenance.")) {
@@ -92,11 +92,11 @@ async function extractStreamUrl(url) {
 
                 if (iframeUrl1.includes("https://tamilembed.lol/")) {
                     const loaderUrl = getTamilembedLoaderUrl(iframeUrl1);
-                    const responseText3 = await fetchv2(loaderUrl);
+                    const responseText3 = await fetch(loaderUrl);
                     const html3 = await responseText3.text();
 
                     const src = extractIframeSrc(html3);
-                    const responseText4 = await fetchv2(src);
+                    const responseText4 = await fetch(src);
                     const html4 = await responseText4.text();
 
                     const packedScriptMatch = html4.match(/(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
@@ -110,7 +110,17 @@ async function extractStreamUrl(url) {
 
                     if (match3 && match3[1]) {
                         const streamUrl = match3[1];
-                        streamUrls.push(streamUrl);
+
+                        const headers = {
+                            "Referer": "https://blogger.com/",
+                            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+                        };
+
+                        streams.push({
+                            title: "Tamilembed Stream",
+                            streamUrl: streamUrl,
+                            headers: headers
+                        });
                     }
                 }
             } catch (innerErr) {
@@ -120,15 +130,18 @@ async function extractStreamUrl(url) {
         }
 
         const result = {
-            streams: streamUrls,
+            streams: streams,
             subtitles: ""
-        }
+        };
 
         console.log(`All Available Stream URLs: ${JSON.stringify(result)}`);
         return JSON.stringify(result);
     } catch (error) {
         console.error('extractStreamUrl error:', error);
-        return [];
+        return JSON.stringify({
+            streams: [],
+            subtitles: ""
+        });
     }
 }
 
