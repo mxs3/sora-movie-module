@@ -4,10 +4,11 @@ async function searchResults(keyword) {
 
         const url = "https://sora-passthrough.vercel.app/form";
         const data = {
-            "url": "https://anibunker.com/php/loader.php",
+            "url": "https://franime.to/",
             "form": {
-                "player_id": "url_hd_2",
-                "video_id": "40900"
+                "do": "search",
+                "subaction": "search",
+                "search": encodedKeyword
             },
             "headers": {
                 "Host": "franime.to",
@@ -18,21 +19,18 @@ async function searchResults(keyword) {
         };
 
         const response = await fetchv2(url, "POST", { "Content-Type": "application/json" }, JSON.stringify(data));
-        const json = typeof response === 'object' ? await response.json() : await JSON.parse(response);
+        const html = await response.text();
 
-        const responseText = await fetchv2(`https://franime.to/${encodedKeyword}`);
-        const html = await responseText.text();
-
-        const regex = /<a\s+href="([^"]+)"\s+title="([^"]+)">[\s\S]*?<img[^>]+src="([^"]+)"[\s\S]*?<\/a>/g;
+        const regex = /<a[^>]+href="([^"]+)"[^>]*?>[\s\S]*?<img[^>]+src="([^"]+)"[^>]*?alt="([^"]+)"[\s\S]*?<\/a>/g;
 
         const results = [];
         let match;
 
         while ((match = regex.exec(html)) !== null) {
             results.push({
-                title: match[2].trim(),
-                image: `https://uaserial.me${match[3].trim()}`,
-                href: `https://uaserial.me${match[1].trim()}`
+                title: match[3].trim(),
+                image: `https://franime.to${match[2].trim()}`,
+                href: match[1].startsWith('http') ? match[1].trim() : `https://franime.to${match[1].trim()}`
             });
         }
 
@@ -49,24 +47,29 @@ async function extractDetails(url) {
         const response = await fetchv2(url);
         const htmlText = await response.text();
 
-        const descriptionMatch = htmlText.match(/<div class="player__description description bordered">[\s\S]*?<div class="text">([\s\S]*?)<\/div>/);
-        const description = descriptionMatch ? descriptionMatch[1].replace(/<br\s*\/?>/g, '\n').trim() : 'No description available';
+        const descriptionMatch = htmlText.match(/<div class="ftext full-text cleasrfix">[\s\S]*?<h2 class="fsubtitle">Synopsis<\/h2>\s*([\s\S]*?)<\/div>/);
+        const description = descriptionMatch ? descriptionMatch[1].replace(/<[^>]+>/g, '').trim() : 'No description available';
 
-        const airdateMatch = htmlText.match(/<div class="movie-data-item movie-data-item--date flex start">[\s\S]*?<span>(\d{1,2}\s[^\s<]+)<\/span>[\s\S]*?selection\/anime\/year-(\d{4})/);
-        const airdate = airdateMatch ? `Дата релізу: ${airdateMatch[1]} ${airdateMatch[2]}` : 'Дата релізу: Unknown';
+        const airdateMatch = htmlText.match(/<li><span>Date de Sortie:<\/span>\s*(\d{4}-\d{2}-\d{2})<\/li>/);
+        const airdate = airdateMatch ? `Date de Sortie: ${airdateMatch[1]}` : 'Date de Sortie: Unknown';
 
-        const countryMatch = htmlText.match(/<div class="type color-text">Країна:<\/div>\s*<div class="value">\s*<a [^>]+>(.*?)<\/a>/);
-        const studioMatch = htmlText.match(/<div class="type color-text">Студія:<\/div>\s*<div class="value">(.*?)<\/div>/);
-        const timeMatch = htmlText.match(/<div class="type color-text">Час:<\/div>\s*<div class="value">(.*?)<\/div>/);
-        const statusMatch = htmlText.match(/<div class="type color-text">Статус:<\/div>\s*<div class="value">(.*?)<\/div>/);
-        const ratingMatch = htmlText.match(/<div class="type color-text">Рейтинг:<\/div>\s*<div class="value">(.*?)<\/div>/);
+        const genreMatch = htmlText.match(/<li><span>Genre:<\/span>\s*<span[^>]*itemprop="genre"[^>]*>\s*([^<]+)\s*<\/span>/);
+        const genres = genreMatch ? genreMatch[1].replace(/&amp;/g, '&').trim() : 'Unknown';
+
+        const studioMatch = htmlText.match(/<li><span>Studio:<\/span>\s*([^<]+)<\/li>/);
+        const studio = studioMatch ? studioMatch[1].trim() : 'Unknown';
+
+        const timeMatch = htmlText.match(/<li><span>Durée:<\/span>\s*([^<]+)<\/li>/);
+        const duration = timeMatch ? timeMatch[1].trim() : 'Unknown';
+
+        const ratingMatch = htmlText.match(/<div class="mrating">([\d.]+)\/10 TMDB<\/div>/);
+        const rating = ratingMatch ? ratingMatch[1] : 'Unknown';
 
         const aliases = `
-Країна: ${countryMatch ? countryMatch[1] : 'Unknown'}
-Студія: ${studioMatch ? studioMatch[1] : 'Unknown'}
-Час: ${timeMatch ? timeMatch[1] : 'Unknown'}
-Статус: ${statusMatch ? statusMatch[1] : 'Unknown'}
-Рейтинг: ${ratingMatch ? ratingMatch[1] : 'Unknown'}
+Genre: ${genres}
+Studio: ${studio}
+Durée: ${duration}
+TMDB: ${rating}
         `.trim();
 
         const transformedResults = [{
@@ -89,40 +92,31 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+        const match = url.match(/https:\/\/franime\.to\/(\d+)-/);
+        const showId = match ? match[1] : null;
 
-        const episodeOptions = [...html.matchAll(
-            /<option[^>]*?data-series-number="(\d+)"[^>]*?value="([^"]+)"[^>]*?>([^<]+)<\/option>/g
-        )];
+        const response = await fetchv2(`https://franime.to/engine/ajax/controller.php?mod=iframe_player&post_id=${showId}`);
+        const json = await response.json();
 
-        if (episodeOptions.length > 0) {
-            const episodes = episodeOptions.map(([, number, value, label]) => ({
-                href: value.startsWith('http') ? value : `https://uaserial.me${value}`,
-                number: parseInt(number, 10),
-                title: label.trim()
-            }));
+        const matches = [...json.selectors.matchAll(/<option value="(\d+)"[^>]*?>épisode \d+<\/option>/g)];
+        const episodes = matches.map(match => match[1]);
 
-            console.log('Show episodes:', episodes);
-            return JSON.stringify(episodes);
+        console.log(episodes.length);
+
+        let allEpisodes = [];
+
+        for (let i = 0; i < episodes.length; i++) {
+            const episode = episodes[i];
+
+            allEpisodes.push({
+                href: `${number}/${episode}`,
+                number: Number(episode),
+                title: `Episode ${episode}`
+            });
         }
 
-        const iframeMatch = html.match(/<iframe[^>]+src="([^"]+)"[^>]*>/i);
-
-        if (iframeMatch) {
-            const iframeSrc = iframeMatch[1];
-            const movieEpisode = {
-                href: iframeSrc.startsWith('http') ? iframeSrc : `https://uaserial.me${iframeSrc}`,
-                number: 1,
-                title: "Серія 1"
-            };
-
-            console.log('Movie episode:', movieEpisode);
-            return JSON.stringify([movieEpisode]);
-        }
-
-        console.log('No episodes or iframe found');
-        return JSON.stringify([]);
+        console.log(allEpisodes);
+        return JSON.stringify(allEpisodes);
     } catch (error) {
         console.log('Fetch error in extractEpisodes:', error);
         return JSON.stringify([]);
@@ -131,87 +125,37 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const match = url.match(/https:\/\/uaserial\.me\/embed\/([^\/]+)\/season-([^\/]+)\/episode-([^\/]+)/);
+        const match = url.match(/^(\d+)\/(\d+)$/);
         if (!match) throw new Error("Invalid URL format");
 
         const showId = match[1];
-        const seasonNumber = match[2];
-        const episodeNumber = match[3];
+        const episodeNumber = match[2];
 
-        const response = await fetchv2(url);
-        const htmlText = await response.text();
+        const response = await fetchv2(`https://franime.to/engine/ajax/controller.php?mod=iframe_player&post_id=${showId}&select=series=${episodeNumber}`);
+        const json = await response.json();
 
-        const episodesMatch = htmlText.match(/episodes\s*:\s*(\[[\s\S]*?\])\s*,?\s*\n/);
-        if (!episodesMatch) {
-            console.log("No episodes block found.");
-            return null;
-        }
+        const embedUrlMatch = json.player.match(/<iframe[^>]+src="([^"]+)"/);
+        const embedUrl = embedUrlMatch ? embedUrlMatch[1] : null;
 
-        let rawJson = episodesMatch[1]
-            .replace(/\\'/g, "'")
-            .replace(/,\s*}/g, '}')
-            .replace(/,\s*]/g, ']');
+        const responseText = await fetchv2(embedUrl);
+        const html = await responseText.text();
 
-        const episodes = JSON.parse(rawJson);
-        const resultStreams = [];
-        let subtitleUrl = "";
+        const mp4UrlMatch = html.match(/src:\s*"([^"]+\.mp4)"/);
+        const mp4Url = mp4UrlMatch ? mp4UrlMatch[1] : null;
 
-        // Try to match episode for series
-        let targetEpisode = episodes.find(ep => {
-            const title = ep.title || "";
-            return title.includes(`Серія ${episodeNumber}`) || title.includes(`Серия ${episodeNumber}`);
-        });
-
-        // If not found (movie), fallback to entry with ashdi.vip links
-        if (!targetEpisode) {
-            targetEpisode = episodes.find(ep => {
-                const sources = Array.isArray(ep.src) ? ep.src : ep.src?.ashdi ?? [];
-                return sources.some(s => s.link && s.link.includes("ashdi.vip"));
-            });
-
-            if (!targetEpisode) {
-                console.log(`Episode ${episodeNumber} or ashdi sources not found.`);
-                return null;
-            }
-        }
-
-        // Use proper source extraction
-        const srcArray = Array.isArray(targetEpisode.src)
-            ? targetEpisode.src
-            : targetEpisode.src?.ashdi ?? [];
-
-        for (const source of srcArray) {
-            if (!source.link.includes("ashdi.vip")) continue;
-
-            const streamRes = await fetchv2(source.link);
-            const streamHtml = await streamRes.text();
-
-            const fileMatch = streamHtml.match(/file\s*:\s*"([^"]+\.m3u8[^"]*)"/);
-            const subtitleMatch = streamHtml.match(/subtitle\s*:\s*"([^"]*)"/);
-
-            if (fileMatch) {
-                resultStreams.push({
-                    title: source.name || targetEpisode.title || "",
-                    streamUrl: fileMatch[1],
-                    headers: {}
-                });
-
-                if (!subtitleUrl && subtitleMatch && subtitleMatch[1]) {
-                    const fullSubtitle = subtitleMatch[1];
-                    const cleanedSubtitle = fullSubtitle.match(/https?:\/\/[^\s"\]]+/)?.[0] || "";
-                    subtitleUrl = cleanedSubtitle;
-                }
-            }
-        }
-
-        if (resultStreams.length === 0) {
-            console.log("No ashdi.vip links found.");
-            return null;
-        }
+        const stream = `https://video.sibnet.ru${mp4Url}`;
 
         const result = {
-            streams: resultStreams,
-            subtitles: subtitleUrl
+            streams: [
+                {
+                    title: "",
+                    streamUrl: stream,
+                    headers: {
+                        "Referer": embedUrl
+                    }
+                }
+            ],
+            subtitles: ""
         };
 
         console.log(result);
@@ -222,6 +166,4 @@ async function extractStreamUrl(url) {
     }
 }
 
-
-// extractStreamUrl('https://uaserial.me/embed/naruto/season-1/episode-2');
-// extractStreamUrl('https://uaserial.me/embed/naruto-legend-of-the-stone-of-gelel/season-1/episode-1');
+// extractStreamUrl('1/1');
