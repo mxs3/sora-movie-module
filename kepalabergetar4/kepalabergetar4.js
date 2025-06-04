@@ -62,14 +62,9 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        const episode = {
-            href: url,
-            number: 1,
-            label: "1"
-        }
-
-        console.log(episode);
-        return JSON.stringify(episode);
+        return JSON.stringify([
+            { href: url, number: 1 }
+        ]);
     } catch (error) {
         console.log('Fetch error in extractEpisodes:', error);
         return [];
@@ -124,8 +119,13 @@ async function extractStreamUrl(url) {
             }
         }
 
-        console.log(`All Available Stream URLs: ${streamUrls}`);
-        return streamUrls;
+        const result = {
+            streams: streamUrls,
+            subtitles: ""
+        }
+
+        console.log(`All Available Stream URLs: ${JSON.stringify(result)}`);
+        return JSON.stringify(result);
     } catch (error) {
         console.error('extractStreamUrl error:', error);
         return [];

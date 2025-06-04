@@ -6,7 +6,7 @@
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
         "url": "https://github.com/xibrox"
     },
-    "version": "1.0.0",
+    "version": "1.0.1",
     "language": "Malay",
     "streamType": "HLS",
     "quality": "720p",
@@ -14,5 +14,6 @@
     "searchBaseUrl": "https://kepalabergetardramas.cfd/?s=keluarga",
     "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/kepalabergetar4/kepalabergetar4.js",
     "type": "shows/movies",
-    "asyncJS": true
+    "asyncJS": true,
+    "softsub": true
 }
