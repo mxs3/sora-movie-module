@@ -110,6 +110,7 @@ async function extractEpisodes(url) {
     try {
         const match = url.match(/https:\/\/franime\.to\/(\d+)-/);
         const showId = match ? match[1] : null;
+        if (!showId) throw new Error("Show ID not found in URL");
 
         const response = await fetchv2(`https://franime.to/engine/ajax/controller.php?mod=iframe_player&post_id=${showId}`);
         const json = await response.json();
@@ -117,16 +118,14 @@ async function extractEpisodes(url) {
         const matches = [...json.selectors.matchAll(/<option value="(\d+)"[^>]*?>épisode \d+<\/option>/g)];
         const episodes = matches.map(match => match[1]);
 
-        console.log(episodes.length);
-
         let allEpisodes = [];
 
         for (let i = 0; i < episodes.length; i++) {
             const episode = episodes[i];
-
+            const epNum = Number(episode);
             allEpisodes.push({
-                href: `${number}/${episode}`,
-                number: Number(episode),
+                href: `${showId}/${episode}`,
+                number: epNum,
                 title: `Episode ${episode}`
             });
         }
@@ -139,7 +138,6 @@ async function extractEpisodes(url) {
     }
 }
 
-// searchResults("naruto");
 
 async function extractStreamUrl(url) {
     try {
@@ -163,24 +161,20 @@ async function extractStreamUrl(url) {
 
         const stream = `https://video.sibnet.ru${mp4Url}`;
 
-
-        console.log(stream);
-        return stream;
         // const result = {
         //     streams: [
         //         {
-        //             title: "",
+        //             title: "YES?",
         //             streamUrl: stream,
         //             headers: {
         //                 "Referer": embedUrl
         //             }
         //         }
-        //     ],
-        //     subtitles: ""
+        //     ]
         // };
 
-        // console.log(result);
-        // return JSON.stringify(result);
+        console.log(stream);
+        return stream;
     } catch (error) {
         console.log("Fetch error in extractStreamUrl:", error);
         return null;
