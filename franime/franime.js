@@ -138,6 +138,7 @@ async function extractEpisodes(url) {
     }
 }
 
+// extractEpisodes("https://franime.to/233-naruto.html");
 
 async function extractStreamUrl(url) {
     try {
@@ -147,17 +148,28 @@ async function extractStreamUrl(url) {
         const showId = match[1];
         const episodeNumber = match[2];
 
+        console.log("SHOW ID: " + showId);
+        console.log("EPISODE NUMBER: " + episodeNumber);
+
         const response = await fetchv2(`https://franime.to/engine/ajax/controller.php?mod=iframe_player&post_id=${showId}&select=series=${episodeNumber}`);
         const json = await response.json();
+
+        console.log("JSON: " + json);
 
         const embedUrlMatch = json.player.match(/<iframe[^>]+src="([^"]+)"/);
         const embedUrl = embedUrlMatch ? embedUrlMatch[1] : null;
 
+        console.log("EMBED URL: " + embedUrl);
+
         const responseText = await fetchv2(embedUrl);
         const html = await responseText.text();
 
+        console.log("HTML: " + html);
+
         const mp4UrlMatch = html.match(/src:\s*"([^"]+\.mp4)"/);
         const mp4Url = mp4UrlMatch ? mp4UrlMatch[1] : null;
+
+        console.log("MP4 URL: " + mp4Url);
 
         const stream = `https://video.sibnet.ru${mp4Url}`;
 
@@ -181,4 +193,4 @@ async function extractStreamUrl(url) {
     }
 }
 
-extractStreamUrl('1/1');
+// extractStreamUrl('233/100');
