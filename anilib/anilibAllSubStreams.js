@@ -89,25 +89,31 @@ async function extractStreamUrl(url) {
         const responseText = await fetch(`https://api2.mangalib.me/api/episodes/${episodeId}`);
         const data = await responseText.json();
 
+        console.log(data);
+
         const animePlayers = data.data.players;
 
+        console.log(animePlayers);
+
         let streams = [];
-        const subtitles = animePlayers[0].subtitles.find(subtitle => subtitle.format === "vtt");
+        // const subtitles = animePlayers[0].subtitles.find(subtitle => subtitle.format === "vtt");
 
         for (let i = 0; i < animePlayers.length; i++) {
-            if (animePlayers[i].player === "Animelib" && animePlayers[i].translation_type.label === "Субтитры") {
+            if (animePlayers[i].player === "Kodik" && animePlayers[i].translation_type.label === "Субтитры") {
                 streams.push(animePlayers[i].src);
                 break;
             }
         }
 
-        const result = {
-            stream: streams,
-            subtitles: subtitles ? subtitles.src : ""
-        };
+        console.log(streams);
 
-        console.log(result);
-        return JSON.stringify(result);
+        // const result = {
+        //     stream: streams,
+        //     subtitles: subtitles ? subtitles.src : ""
+        // };
+
+        // console.log(result);
+        // return JSON.stringify(result);
     } catch (error) {
         console.log('Fetch error in extractStreamUrl:', error);
         return null;

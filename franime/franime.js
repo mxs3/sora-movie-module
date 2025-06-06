@@ -151,7 +151,7 @@ async function extractStreamUrl(url) {
         console.log("SHOW ID: " + showId);
         console.log("EPISODE NUMBER: " + episodeNumber);
 
-        const response = await fetchv2(`https://franime.to/engine/ajax/controller.php?mod=iframe_player&post_id=${showId}&select=series=${episodeNumber}`);
+        const response = await fetch(`https://franime.to/engine/ajax/controller.php?mod=iframe_player&post_id=${showId}&select=series=${episodeNumber}`);
         const json = await response.json();
 
         console.log("JSON: " + json);
@@ -161,7 +161,7 @@ async function extractStreamUrl(url) {
 
         console.log("EMBED URL: " + embedUrl);
 
-        const responseText = await fetchv2(embedUrl);
+        const responseText = await fetch(embedUrl);
         const html = await responseText.text();
 
         console.log("HTML: " + html);
@@ -193,4 +193,4 @@ async function extractStreamUrl(url) {
     }
 }
 
-// extractStreamUrl('233/100');
+extractStreamUrl('233/100');
