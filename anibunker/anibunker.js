@@ -156,8 +156,11 @@ async function extractStreamUrl(url) {
             }
         };
 
-        const response = await fetchv2(url, "POST", { "Content-Type": "application/json" }, JSON.stringify(data));
-        const json = typeof response === 'object' ? await response.json() : await JSON.parse(response);
+        const response = await soraFetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+        const json = await response.json();
+
+        // const response = await fetchv2(url, "POST", { "Content-Type": "application/json" }, JSON.stringify(data));
+        // const json = typeof response === 'object' ? await response.json() : await JSON.parse(response);
 
         console.log(JSON.stringify(json));
         return json.url;
@@ -174,3 +177,15 @@ async function extractStreamUrl(url) {
 }
 
 // extractStreamUrl("https://anibunker.com/anime/hibi-wa-sugiredo-meshi-umashi-episodio-1-legendado");
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
+    }
+}
