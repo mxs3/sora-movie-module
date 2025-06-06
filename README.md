@@ -9,4 +9,4 @@
 
 ---
 
-<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/clannad_banner.jpg" alt="Clannad Banner" width="1020" height="200">
+<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/clannad_banner.jpg" alt="Clannad Banner" width="4137" height="2526">
