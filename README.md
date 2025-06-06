@@ -9,4 +9,4 @@
 
 ---
 
-<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/clannad_banner.jpg" alt="Clannad Banner" width="4137" height="2526">
+<img src="https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/ibra_banner.jpg" alt="IBRA Banner" width="4137" height="2526">
