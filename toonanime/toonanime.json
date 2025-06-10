@@ -14,5 +14,6 @@
     "searchBaseUrl": "https://www.toonanime.biz/api/search?keyword=%s&limit=25&order=default&page=1",
     "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/toonanime/toonanime.js",
     "type": "anime",
-    "asyncJS": true
+    "asyncJS": true,
+    "softsub": true
 }

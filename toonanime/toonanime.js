@@ -227,8 +227,13 @@ async function extractStreamUrl(url) {
             }
         }
 
-        console.log(streams);
-        return JSON.stringify(streams);
+        const result = {
+            streams: streams,
+            subtitles: ""
+        }
+
+        console.log(result);
+        return JSON.stringify(result);
     } catch (error) {
         console.log("Fetch error in extractStreamUrl:", error);
         return null;
@@ -279,7 +284,7 @@ async function soraFetch(url, options = { headers: {}, method: 'GET', body: null
 
 function getEpisodeEmbeds(html, episodeNumber) {
     const episodePattern = `number:\\s*${episodeNumber}[\\s\\S]*?data:\\s*\\{([\\s\\S]*?)\\}\\s*\\}(?=\\s*,\\s*\\{|\\s*\\])`;
-    const episodeMatch = html.match(new RegExp(episodePattern));
+    const episodeMatch = html.match(episodePattern);
     
     if (!episodeMatch) {
         throw new Error(`Episode ${episodeNumber} not found`);
