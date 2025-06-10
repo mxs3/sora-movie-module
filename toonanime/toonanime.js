@@ -129,7 +129,26 @@ async function extractStreamUrl(url) {
         const response = await soraFetch(cleanUrl);
         const html = await response.text();
 
-        const embeds = getEpisodeEmbeds(html, episodeNumber);
+        const episodePattern = `number:\\s*${episodeNumber}[\\s\\S]*?data:\\s*\\{([\\s\\S]*?)\\}\\s*\\}(?=\\s*,\\s*\\{|\\s*\\])`;
+        const episodeMatch = html.match(episodePattern);
+        
+        if (!episodeMatch) {
+            throw new Error(`Episode ${episodeNumber} not found`);
+        }
+        
+        console.log("Matched episode data:", episodeMatch[1]);
+        
+        const urlMatches = episodeMatch[1].match(/server_url:\s*"([^"]+)"/g);
+        const embeds = [];
+        
+        if (urlMatches) {
+            urlMatches.forEach(match => {
+                const url = match.match(/server_url:\s*"([^"]+)"/)[1];
+                embeds.push(url);
+            });
+        }
+        
+        // console.log("Found embeds:", embeds);
 
         let streams = [];
 
@@ -153,8 +172,8 @@ async function extractStreamUrl(url) {
                     streamUrl: stream,
                     headers: {
                         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0",
-                        "Origin": "https://vidcdn.xyz",
-                        "Referer": "https://vidcdn.xyz/"
+                        // "Origin": "https://vidcdn.xyz",
+                        // "Referer": "https://vidcdn.xyz/"
                     }
                 }
 
@@ -174,8 +193,8 @@ async function extractStreamUrl(url) {
                     streamUrl: json.sources[0].file,
                     headers: {
                         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0",
-                        "Origin": "https://play.vidcdn.xyz",
-                        "Referer": "https://play.vidcdn.xyz/"
+                        // "Origin": "https://play.vidcdn.xyz",
+                        // "Referer": "https://play.vidcdn.xyz/"
                     }
                 }
 
@@ -202,30 +221,29 @@ async function extractStreamUrl(url) {
                 }
 
                 streams.push(addToStreams);
-            } 
-            // else if (embed.includes("https://video.sibnet.ru/shell.php")) {
-            //     const responseText = await soraFetch(embed);
-            //     const htmlText = await responseText.text();
+            } else if (embed.includes("https://video.sibnet.ru/shell.php")) {
+                const responseText = await soraFetch(embed);
+                const htmlText = await responseText.text();
 
-            //     const mp4UrlMatch = htmlText.match(/src:\s*"([^"]+\.mp4)"/);
-            //     const mp4Url = mp4UrlMatch ? mp4UrlMatch[1] : null;
+                const mp4UrlMatch = htmlText.match(/src:\s*"([^"]+\.mp4)"/);
+                const mp4Url = mp4UrlMatch ? mp4UrlMatch[1] : null;
 
-            //     // console.log(mp4Url);
+                // console.log(mp4Url);
 
-            //     const stream = `https://video.sibnet.ru${mp4Url}`;
-            //     // console.log("Flexible extraction:", stream);
+                const stream = `https://video.sibnet.ru${mp4Url}`;
+                // console.log("Flexible extraction:", stream);
 
-            //     const addToStreams = {
-            //         title: "Sibnet",
-            //         streamUrl: stream,
-            //         headers: {
-            //             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0",
-            //             "Referer": "https://video.sibnet.ru/"
-            //         }
-            //     }
+                const addToStreams = {
+                    title: "Sibnet",
+                    streamUrl: stream,
+                    headers: {
+                        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0",
+                        "Referer": "https://video.sibnet.ru/"
+                    }
+                }
 
-            //     streams.push(addToStreams);
-            // }
+                streams.push(addToStreams);
+            }
         }
 
         const result = {
@@ -233,7 +251,7 @@ async function extractStreamUrl(url) {
             subtitles: ""
         }
 
-        console.log(result);
+        console.log(JSON.stringify(result));
         return JSON.stringify(result);
     } catch (error) {
         console.log("Fetch error in extractStreamUrl:", error);
@@ -247,7 +265,7 @@ async function extractStreamUrl(url) {
 
 // extractEpisodes("https://www.toonanime.biz/anime-vf/solo-leveling-vf");
 
-extractStreamUrl("https://www.toonanime.biz/anime-vf/solo-leveling-vf|1");
+// extractStreamUrl("https://www.toonanime.biz/anime-vf/solo-leveling-vf|1");
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
@@ -259,28 +277,4 @@ async function soraFetch(url, options = { headers: {}, method: 'GET', body: null
             return null;
         }
     }
-}
-
-function getEpisodeEmbeds(html, episodeNumber) {
-    const episodePattern = `number:\\s*${episodeNumber}[\\s\\S]*?data:\\s*\\{([\\s\\S]*?)\\}\\s*\\}(?=\\s*,\\s*\\{|\\s*\\])`;
-    const episodeMatch = html.match(episodePattern);
-    
-    if (!episodeMatch) {
-        throw new Error(`Episode ${episodeNumber} not found`);
-    }
-    
-    console.log("Matched episode data:", episodeMatch[1]);
-    
-    const urlMatches = episodeMatch[1].match(/server_url:\s*"([^"]+)"/g);
-    const embeds = [];
-    
-    if (urlMatches) {
-        urlMatches.forEach(match => {
-            const url = match.match(/server_url:\s*"([^"]+)"/)[1];
-            embeds.push(url);
-        });
-    }
-    
-    // console.log("Found embeds:", embeds);
-    return embeds;
 }
