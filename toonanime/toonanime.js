@@ -186,6 +186,11 @@ async function extractStreamUrl(url) {
                 const realId = match2[3];
 
                 const responseText = await soraFetch(`https://cdn2.vidcdn.xyz/azz/${id}?epid=${realId}`);
+
+                if (responseText.status === 500) {
+                    continue;
+                }
+
                 const json = await responseText.json();
 
                 const addToStreams = {
@@ -202,6 +207,10 @@ async function extractStreamUrl(url) {
             } else if (embed.includes("https://sendvid.com/embed")) {
                 const responseText = await soraFetch(embed);
                 const htmlText = await responseText.text();
+
+                if (htmlText.includes('<div class="body notfound">') && htmlText.includes('404 File Not Found')) {
+                    continue;
+                }
 
                 const flexibleRegex = /source src="(https:\/\/[^"]+)\"/;
                 const flexibleMatch = htmlText.match(flexibleRegex);
@@ -265,7 +274,7 @@ async function extractStreamUrl(url) {
 
 // extractEpisodes("https://www.toonanime.biz/anime-vf/solo-leveling-vf");
 
-// extractStreamUrl("https://www.toonanime.biz/anime-vf/solo-leveling-vf|1");
+// extractStreamUrl("https://www.toonanime.biz/anime-vf/solo-leveling|1");
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
