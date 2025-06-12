@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetchv2(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false`);
+        const responseText = await soraFetch(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false`);
         const data = await responseText.json();
 
         const transformedResults = data.results.map(result => {
@@ -26,6 +26,7 @@ async function searchResults(keyword) {
             }
         });
 
+        console.log('Transformed Results:', transformedResults);
         return JSON.stringify(transformedResults);
     } catch (error) {
         console.log('Fetch error in searchResults:', error);
@@ -40,7 +41,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-            const responseText = await fetchv2(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+            const responseText = await soraFetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const data = await responseText.json();
 
             const transformedResults = [{
@@ -55,7 +56,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
-            const responseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+            const responseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const data = await responseText.json();
 
             const transformedResults = [{
@@ -97,28 +98,31 @@ async function extractEpisodes(url) {
             
             const showId = match[1];
             
-            const showResponseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+            const showResponseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const showData = await showResponseText.json();
             
             let allEpisodes = [];
             for (const season of showData.seasons) {
                 const seasonNumber = season.season_number;
-
-                if(seasonNumber === 0) continue;
                 
-                const seasonResponseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+                const seasonResponseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
                 const seasonData = await seasonResponseText.json();
                 
                 if (seasonData.episodes && seasonData.episodes.length) {
-                    const episodes = seasonData.episodes.map(episode => ({
-                        href: `https://net3lix.world/watch/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
-                        number: episode.episode_number,
-                        title: episode.name || ""
-                    }));
+                    const episodes = seasonData.episodes.map((episode, i) => {
+                        const episodeNumber = i + 1;
+
+                        return {
+                            href: `https://net3lix.world/watch/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                            number: episodeNumber,
+                            title: episode.name || ""
+                        };
+                    });
                     allEpisodes = allEpisodes.concat(episodes);
                 }
             }
             
+            console.log('All Episodes:', allEpisodes);
             return JSON.stringify(allEpisodes);
         } else {
             throw new Error("Invalid URL format");
@@ -128,6 +132,11 @@ async function extractEpisodes(url) {
         return JSON.stringify([]);
     }    
 }
+
+// searchResults('One piece');
+// extractDetails('https://net3lix.world/watch/tv/37854/1/1');
+// extractEpisodes('https://net3lix.world/watch/tv/37854/1/1');
+// extractStreamUrl('https://net3lix.world/watch/tv/37854/2/65');
 
 async function extractStreamUrl(url) {
     try {
@@ -142,7 +151,7 @@ async function extractStreamUrl(url) {
             return `https://vidsrc.su/embed/tv/${showId}/${season}/${episode}`;
             })();
 
-        const data = await fetchv2(embedUrl).then(res => res.text());
+        const data = await soraFetch(embedUrl).then(res => res.text());
 
         console.log('Embed URL:', embedUrl);
         console.log('Data:', data);
@@ -191,5 +200,17 @@ async function extractStreamUrl(url) {
     } catch (error) {
         console.error('extractStreamUrl error:', error);
         return null;
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
     }
 }
