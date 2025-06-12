@@ -103,6 +103,8 @@ async function extractEpisodes(url) {
             
             let allEpisodes = [];
             for (const season of showData.seasons) {
+                if (!season.season_number || season.season_number < 1) continue; // Skip invalid seasons
+
                 const seasonNumber = season.season_number;
                 
                 const seasonResponseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
