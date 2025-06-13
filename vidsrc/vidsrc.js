@@ -169,13 +169,35 @@ async function extractStreamUrl(url) {
             const fileUrl = match3[1];
             console.log(fileUrl);
 
+            const responseM3U8 = await soraFetch(fileUrl);
+            const masterM3u8 = await responseM3U8.text();
+            const baseUrl = fileUrl.substring(0, fileUrl.lastIndexOf('/') + 1);
+
+            const regex = /#EXT-X-STREAM-INF:[^\n]*RESOLUTION=(\d+)x(\d+)[^\n]*\n([^\n]+)/g;
+
+            let match4;
+            let best = { width: 0, height: 0, url: '' };
+
+            while ((match4 = regex.exec(masterM3u8)) !== null) {
+                const width = parseInt(match4[1]);
+                const height = parseInt(match4[2]);
+                const url = match4[3];
+
+                if ((width * height) > (best.width * best.height)) {
+                    best = { width, height, url };
+                }
+            }
+
+            const finalUrl = baseUrl + best.url;
+            console.log(finalUrl);
+
             // const result = {
             //     stream,
             //     subtitles
             // }
 
-            console.log('Result: ' + fileUrl);
-            return JSON.stringify(fileUrl);
+            console.log('Result: ' + finalUrl);
+            return JSON.stringify(finalUrl);
         } else if (url.includes('tv')) {
             const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
@@ -209,13 +231,35 @@ async function extractStreamUrl(url) {
             const fileUrl = match3[1];
             console.log(fileUrl);
 
+            const responseM3U8 = await soraFetch(fileUrl);
+            const masterM3u8 = await responseM3U8.text();
+            const baseUrl = fileUrl.substring(0, fileUrl.lastIndexOf('/') + 1);
+
+            const regex = /#EXT-X-STREAM-INF:[^\n]*RESOLUTION=(\d+)x(\d+)[^\n]*\n([^\n]+)/g;
+
+            let match4;
+            let best = { width: 0, height: 0, url: '' };
+
+            while ((match4 = regex.exec(masterM3u8)) !== null) {
+                const width = parseInt(match4[1]);
+                const height = parseInt(match4[2]);
+                const url = match4[3];
+
+                if ((width * height) > (best.width * best.height)) {
+                    best = { width, height, url };
+                }
+            }
+
+            const finalUrl = baseUrl + best.url;
+            console.log(finalUrl);
+
             // const result = {
             //     stream,
             //     subtitles
             // }
 
-            console.log('Result: ' + fileUrl);
-            return JSON.stringify(fileUrl);
+            console.log('Result: ' + finalUrl);
+            return JSON.stringify(finalUrl);
         } else {
             throw new Error("Invalid URL format");
         }
@@ -225,7 +269,7 @@ async function extractStreamUrl(url) {
     }
 }
 
-// extractStreamUrl("tv/1396/1/1");
+extractStreamUrl("tv/1396/1/1");
 // extractStreamUrl("movie/157336");
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
