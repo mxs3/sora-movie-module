@@ -167,21 +167,23 @@ async function extractStreamUrl(url) {
             const match3 = html3.match(/file:\s*['"]([^'"]+)['"]/);
 
             const fileUrl = match3[1];
-            console.log(fileUrl);
+            console.log("File URL: " + fileUrl);
 
             const responseM3U8 = await soraFetch(fileUrl);
             const masterM3u8 = await responseM3U8.text();
-            const baseUrl = fileUrl.substring(0, fileUrl.lastIndexOf('/') + 1);
+
+            const match4 = fileUrl.match(/^(https?:\/\/[^\/]+)/);
+            const baseUrl = match4 ? match4[1] : null;
 
             const regex = /#EXT-X-STREAM-INF:[^\n]*RESOLUTION=(\d+)x(\d+)[^\n]*\n([^\n]+)/g;
 
-            let match4;
+            let match5;
             let best = { width: 0, height: 0, url: '' };
 
-            while ((match4 = regex.exec(masterM3u8)) !== null) {
-                const width = parseInt(match4[1]);
-                const height = parseInt(match4[2]);
-                const url = match4[3];
+            while ((match5 = regex.exec(masterM3u8)) !== null) {
+                const width = parseInt(match5[1]);
+                const height = parseInt(match5[2]);
+                const url = match5[3];
 
                 if ((width * height) > (best.width * best.height)) {
                     best = { width, height, url };
@@ -189,7 +191,6 @@ async function extractStreamUrl(url) {
             }
 
             const finalUrl = baseUrl + best.url;
-            console.log(finalUrl);
 
             // const result = {
             //     stream,
@@ -229,21 +230,23 @@ async function extractStreamUrl(url) {
             const match3 = html3.match(/file:\s*['"]([^'"]+)['"]/);
 
             const fileUrl = match3[1];
-            console.log(fileUrl);
+            console.log("File URL: " + fileUrl);
 
             const responseM3U8 = await soraFetch(fileUrl);
             const masterM3u8 = await responseM3U8.text();
-            const baseUrl = fileUrl.substring(0, fileUrl.lastIndexOf('/') + 1);
+
+            const match4 = fileUrl.match(/^(https?:\/\/[^\/]+)/);
+            const baseUrl = match4 ? match4[1] : null;
 
             const regex = /#EXT-X-STREAM-INF:[^\n]*RESOLUTION=(\d+)x(\d+)[^\n]*\n([^\n]+)/g;
 
-            let match4;
+            let match5;
             let best = { width: 0, height: 0, url: '' };
 
-            while ((match4 = regex.exec(masterM3u8)) !== null) {
-                const width = parseInt(match4[1]);
-                const height = parseInt(match4[2]);
-                const url = match4[3];
+            while ((match5 = regex.exec(masterM3u8)) !== null) {
+                const width = parseInt(match5[1]);
+                const height = parseInt(match5[2]);
+                const url = match5[3];
 
                 if ((width * height) > (best.width * best.height)) {
                     best = { width, height, url };
@@ -251,7 +254,6 @@ async function extractStreamUrl(url) {
             }
 
             const finalUrl = baseUrl + best.url;
-            console.log(finalUrl);
 
             // const result = {
             //     stream,
@@ -269,7 +271,7 @@ async function extractStreamUrl(url) {
     }
 }
 
-extractStreamUrl("tv/1396/1/1");
+// extractStreamUrl("tv/1396/1/1");
 // extractStreamUrl("movie/157336");
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
