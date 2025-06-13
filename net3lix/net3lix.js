@@ -103,7 +103,7 @@ async function extractEpisodes(url) {
             
             let allEpisodes = [];
             for (const season of showData.seasons) {
-                if (!season.season_number || season.season_number < 1) continue; // Skip invalid seasons
+                if (!season.season_number || season.season_number < 1) continue;
 
                 const seasonNumber = season.season_number;
                 
