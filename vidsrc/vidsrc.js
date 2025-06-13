@@ -225,7 +225,7 @@ async function extractStreamUrl(url) {
     }
 }
 
-extractStreamUrl("tv/1396/1/1");
+// extractStreamUrl("tv/1396/1/1");
 // extractStreamUrl("movie/157336");
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
