@@ -1,12 +1,12 @@
 {
     "sourceName": "ArabicToons",
-    "iconUrl": "https://cdn-icons-png.flaticon.com/512/3953/3953226.png",
+    "iconUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/arabictoons/icon.png",
     "author": {
         "name": "ibro",
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
         "url": "https://github.com/xibrox"
     },
-    "version": "1.0.0",
+    "version": "1.0.1",
     "language": "Arabic (DUB)",
     "streamType": "HLS",
     "quality": "720p",
