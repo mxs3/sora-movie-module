@@ -164,8 +164,6 @@ async function extractStreamUrl(url) {
             const response2 = await soraFetch(fullUrl2, { headers: { 'Referer': 'https://vidsrc.xyz/' } });
             const html3 = await response2.text();
 
-            console.log(html3);
-
             const match3 = html3.match(/file:\s*['"]([^'"]+)['"]/);
 
             const fileUrl = match3[1];
@@ -176,7 +174,7 @@ async function extractStreamUrl(url) {
             //     subtitles
             // }
 
-            console.log('Result:', fileUrl);
+            console.log('Result: ' + fileUrl);
             return JSON.stringify(fileUrl);
         } else if (url.includes('tv')) {
             const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
@@ -206,8 +204,6 @@ async function extractStreamUrl(url) {
             const response2 = await soraFetch(fullUrl2, { headers: { 'Referer': 'https://vidsrc.xyz/' } });
             const html3 = await response2.text();
 
-            console.log(html3);
-
             const match3 = html3.match(/file:\s*['"]([^'"]+)['"]/);
 
             const fileUrl = match3[1];
@@ -218,7 +214,7 @@ async function extractStreamUrl(url) {
             //     subtitles
             // }
 
-            console.log('Result:', fileUrl);
+            console.log('Result: ' + fileUrl);
             return JSON.stringify(fileUrl);
         } else {
             throw new Error("Invalid URL format");
