@@ -18,7 +18,7 @@ async function searchResults(keyword) {
 
         results.push({
             title: rawTitle,
-            href: match[1].trim(),
+            href: `https://www.arabic-toons.com/${match[1].trim()}`,
             image: ""
         });
     }
@@ -32,18 +32,23 @@ async function searchResults(keyword) {
 
         results.push({
             title: rawTitle,
-            href: match2[1].trim(),
+            href: `https://www.arabic-toons.com/${match2[1].trim()}`,
             image: ""
         });
     }
 
-    console.log('Search Results: ' + results);
+    console.log(`Search Results: ${JSON.stringify(results)}`);
     return JSON.stringify(results);
 }
 
-searchResults(`ناروتو`)
+// searchResults(`ناروتو`);
+// extractDetails(`https://www.arabic-toons.com/naruto-s1-1405905015-anime-streaming.html`);
+// extractEpisodes(`https://www.arabic-toons.com/naruto-s1-1405905015-anime-streaming.html`);
+extractStreamUrl(`https://www.arabic-toons.com/naruto-s1-1405905015-23354.html#sets`);
 
 async function extractDetails(url) {
+    console.log('Extracting details from: ' + url);
+
     const results = [];
     const response = await soraFetch(url);
     const html = await response.text();
@@ -53,11 +58,11 @@ async function extractDetails(url) {
 
     results.push({
         description: description,
-        aliases: 'N/A',
-        airdate: 'N/A'
+        aliases: '',
+        airdate: ''
     });
 
-    console.log('Details: ' + results);
+    console.log(`Details: ${JSON.stringify(results)}`);
     return JSON.stringify(results);
 }
 
@@ -66,19 +71,20 @@ async function extractEpisodes(url) {
     const response = await soraFetch(url);
     const html = await response.text();
 
-    const regex = /<a[^>]+href="([^"]+)"[^>]*?>[\s\S]*?<div[^>]*class="badge-overd[^>]*>\s*الحلقة\s+(\d+)/g;
-    let match;
+    const regex = /<a[^>]+href="([^"]+\.html#sets)"[^>]*>[\s\S]*?<div[^>]*class="badge-overd[^>]*>\s*الحلقة\s+(\d+)/g;
 
+    let match;
     while ((match = regex.exec(html)) !== null) {
         results.push({
-            href: match[1].trim(),
+            href: `https://www.arabic-toons.com/${match[1].trim()}`,
             number: parseInt(match[2], 10)
         });
     }
 
-    console.log('Episodes: ' + results);
+    console.log(`Episodes: ${JSON.stringify(results)}`);
     return JSON.stringify(results);
 }
+
 
 async function extractStreamUrl(url) {
     const response = await soraFetch(url);
@@ -94,9 +100,12 @@ async function extractStreamUrl(url) {
         const query = match[4];
 
         const fullUrl = `${protocol}://${host}/${path}?${query}`;
+
+        console.log(`Stream URL: ${fullUrl}`);
         return fullUrl;
     }
 
+    console.log('Stream URL not found');
     return "";
 }
 
