@@ -16,6 +16,7 @@ async function searchResults(keyword) {
         const bgImageMatch = section.match(/background-image:\s*url\(['"]([^'"]+)['"]\)/);
         const imgMatch = section.match(/<img[^>]+src=["']([^"']+)["']/);
         arcImage = bgImageMatch ? bgImageMatch[1] : imgMatch ? imgMatch[1] : '';
+        arcImage = arcImage.replace(/&amp;/g, '&');
         
         const episodeBlocks = section.split('<span class="flex-1">');
         
@@ -55,7 +56,7 @@ async function searchResults(keyword) {
                         results.push({
                             title: title,
                             href: link,
-                            image: arcImage
+                            image: `https://onepace.net${arcImage}`
                         });
                     }
                 }
@@ -63,6 +64,7 @@ async function searchResults(keyword) {
         }
     }
 
+    console.log(`Results: ${JSON.stringify(results)}`);
     return JSON.stringify(results);
 }
 
