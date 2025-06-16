@@ -5,12 +5,19 @@ async function searchResults(keyword) {
 
     const arcSections = html.split('<h2');
 
+    results.push({
+        title: "Use «all» or «everything» to get all content.",
+        href: "",
+        image: "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/onepace/onepaceEngInstructions.jpg"
+    });
+
     for (let i = 1; i < arcSections.length; i++) {
         const section = arcSections[i];
         
         const titleMatch = section.match(/>([^<]+)<\/a>/);
         if (!titleMatch) continue;
-        const arcTitle = titleMatch[1].trim();
+        let arcTitle = titleMatch[1].trim();
+        arcTitle = arcTitle.replace(/&#x27;/g, "'");
         
         let arcImage = '';
         const bgImageMatch = section.match(/background-image:\s*url\(['"]([^'"]+)['"]\)/);

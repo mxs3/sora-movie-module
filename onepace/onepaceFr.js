@@ -1,14 +1,14 @@
 async function searchResults(keyword) {
     const results = [];
-    const response = await soraFetch(`https://onepace.net/es/watch`);
+    const response = await soraFetch(`https://onepace.net/fr/watch`);
     const html = await response.text();
 
     const arcSections = html.split('<h2');
 
     results.push({
-        title: "Utilice «todo» o «all» para obtener todo el contenido.",
+        title: "Utilisez «tout» ou «all» pour obtenir tout le contenu.",
         href: "",
-        image: "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/onepace/onepaceEsInstructions.jpg"
+        image: "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/onepace/onepaceFrInstructions.jpg"
     });
 
     for (let i = 1; i < arcSections.length; i++) {
@@ -18,7 +18,7 @@ async function searchResults(keyword) {
         if (!titleMatch) continue;
         let arcTitle = titleMatch[1].trim();
         arcTitle = arcTitle.replace(/&#x27;/g, "'");
-        
+
         let arcImage = '';
         const bgImageMatch = section.match(/background-image:\s*url\(['"]([^'"]+)['"]\)/);
         const imgMatch = section.match(/<img[^>]+src=["']([^"']+)["']/);
@@ -31,14 +31,14 @@ async function searchResults(keyword) {
             const block = episodeBlocks[j];
             
             let versionInfo = '';
-            if (block.includes('Subtitulos en español')) {
-                versionInfo = 'Subtitulos en español';
+            if (block.includes('Sous-titres Français')) {
+                versionInfo = 'Sous-titres Français';
                 const extraInfo = block.match(/<span class="font-normal">,\s*<!--\s*-->([^<]+)/);
                 if (extraInfo) {
                     versionInfo += `, ${extraInfo[1].trim()}`;
                 }
-            } else if (block.includes('Doblaje en español')) {
-                versionInfo = 'Doblaje en español';
+            } else if (block.includes('English Dub')) {
+                versionInfo = 'English Dub';
                 if (block.includes('with Closed Captions')) {
                     versionInfo += ' with Closed Captions';
                 } else {
@@ -59,7 +59,7 @@ async function searchResults(keyword) {
                 if (link && quality && versionInfo) {
                     const title = `${arcTitle} ${versionInfo} ${quality}`.trim();
                     
-                    if (!keyword || title.toLowerCase().includes(keyword.toLowerCase()) || keyword.toLowerCase() === 'all' || keyword.toLowerCase() === 'todo' || keyword.toLowerCase() === 'everything') {
+                    if (!keyword || title.toLowerCase().includes(keyword.toLowerCase()) || keyword.toLowerCase() === 'all' || keyword.toLowerCase() === 'everything' || keyword.toLowerCase() === 'tout') {
                         results.push({
                             title: title,
                             href: link,
@@ -114,7 +114,7 @@ async function extractEpisodes(url) {
     return JSON.stringify(transformedResults);
 }
 
-searchResults("all");
+// searchResults("all");
 // extractDetails("https://pixeldrain.net/l/sT25hhHR");
 // extractEpisodes("https://pixeldrain.net/l/sT25hhHR");
 
