@@ -1,6 +1,6 @@
 async function searchResults(keyword) {
     const results = [];
-    const response = await soraFetch(`https://onepace.net/en/watch`);
+    const response = await soraFetch(`https://onepace.net/es/watch`);
     const html = await response.text();
 
     const arcSections = html.split('<h2');
@@ -24,14 +24,14 @@ async function searchResults(keyword) {
             const block = episodeBlocks[j];
             
             let versionInfo = '';
-            if (block.includes('English Subtitles')) {
-                versionInfo = 'English Subtitles';
+            if (block.includes('Subtitulos en español')) {
+                versionInfo = 'Subtitulos en español';
                 const extraInfo = block.match(/<span class="font-normal">,\s*<!--\s*-->([^<]+)/);
                 if (extraInfo) {
                     versionInfo += `, ${extraInfo[1].trim()}`;
                 }
-            } else if (block.includes('English Dub')) {
-                versionInfo = 'English Dub';
+            } else if (block.includes('Doblaje en español')) {
+                versionInfo = 'Doblaje en español';
                 if (block.includes('with Closed Captions')) {
                     versionInfo += ' with Closed Captions';
                 } else {
@@ -52,7 +52,7 @@ async function searchResults(keyword) {
                 if (link && quality && versionInfo) {
                     const title = `${arcTitle} ${versionInfo} ${quality}`.trim();
                     
-                    if (!keyword || title.toLowerCase().includes(keyword.toLowerCase()) || keyword.toLowerCase() === 'all' || keyword.toLowerCase() === 'everything') {
+                    if (!keyword || title.toLowerCase().includes(keyword.toLowerCase()) || keyword.toLowerCase() === 'all' || keyword.toLowerCase() === 'todo' || keyword.toLowerCase() === 'everything') {
                         results.push({
                             title: title,
                             href: link,
@@ -107,7 +107,7 @@ async function extractEpisodes(url) {
     return JSON.stringify(transformedResults);
 }
 
-// searchResults("all");
+searchResults("all");
 // extractDetails("https://pixeldrain.net/l/sT25hhHR");
 // extractEpisodes("https://pixeldrain.net/l/sT25hhHR");
 
