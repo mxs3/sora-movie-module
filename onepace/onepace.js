@@ -107,7 +107,7 @@ async function extractEpisodes(url) {
     return JSON.stringify(transformedResults);
 }
 
-// searchResults("wano");
+// searchResults("all");
 // extractDetails("https://pixeldrain.net/l/sT25hhHR");
 // extractEpisodes("https://pixeldrain.net/l/sT25hhHR");
 
