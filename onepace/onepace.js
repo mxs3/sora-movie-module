@@ -2,34 +2,67 @@ async function searchResults(keyword) {
     const results = [];
     const response = await soraFetch(`https://onepace.net/en/watch`);
     const html = await response.text();
-    // const regex = /<h2[^>]*>\s*<a[^>]*>([^<]+)<\/a>\s*<\/h2>|"([^"]*0bbcd6da[^"]*)"|(https:\/\/pixeldrain\.net\/l\/[^"]+)/g;
-    const regex = /(https:\/\/pixeldrain\.net\/l\/[^"]+)/g;
-    let match;
-    
-    while ((match = regex.exec(html)) !== null) {
-        if (match[1]) {
-            console.log(`Links: ${match[1]}`);
-            const match2 = match[1].match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
-            if (!match2) throw new Error("Invalid URL format");
 
-            const arcId = match2[1];
-            const response2 = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
-            const data = await response2.json();
+    const arcSections = html.split('<h2');
 
-            const image = data.files[0].thumbnail_href ? `https://pixeldrain.net/api${data.files[0].thumbnail_href}` : "";
-            const title = data.title;
+    for (let i = 1; i < arcSections.length; i++) {
+        const section = arcSections[i];
+        
+        const titleMatch = section.match(/>([^<]+)<\/a>/);
+        if (!titleMatch) continue;
+        const arcTitle = titleMatch[1].trim();
+        
+        let arcImage = '';
+        const bgImageMatch = section.match(/background-image:\s*url\(['"]([^'"]+)['"]\)/);
+        const imgMatch = section.match(/<img[^>]+src=["']([^"']+)["']/);
+        arcImage = bgImageMatch ? bgImageMatch[1] : imgMatch ? imgMatch[1] : '';
+        
+        const episodeBlocks = section.split('<span class="flex-1">');
+        
+        for (let j = 1; j < episodeBlocks.length; j++) {
+            const block = episodeBlocks[j];
+            
+            let versionInfo = '';
+            if (block.includes('English Subtitles')) {
+                versionInfo = 'English Subtitles';
+                const extraInfo = block.match(/<span class="font-normal">,\s*<!--\s*-->([^<]+)/);
+                if (extraInfo) {
+                    versionInfo += `, ${extraInfo[1].trim()}`;
+                }
+            } else if (block.includes('English Dub')) {
+                versionInfo = 'English Dub';
+                if (block.includes('with Closed Captions')) {
+                    versionInfo += ' with Closed Captions';
+                } else {
+                    const extraInfo = block.match(/<span class="font-normal">,\s*<!--\s*-->([^<]+)/);
+                    if (extraInfo) {
+                        versionInfo += `, ${extraInfo[1].trim()}`;
+                    }
+                }
+            }
 
-            if (!keyword || title.toLowerCase().includes(keyword.toLowerCase())) {
-                results.push({
-                    title: title,
-                    image: image,
-                    href: match[1].trim()
-                });
+            const qualityMatches = [...block.matchAll(/>\s*(480p|720p|1080p)\s*<\/span>/g)];
+            const linkMatches = [...block.matchAll(/https:\/\/pixeldrain\.net\/l\/[^"]+/g)];
+            
+            for (let k = 0; k < qualityMatches.length && k < linkMatches.length; k++) {
+                const quality = qualityMatches[k][1];
+                const link = linkMatches[k][0];
+                
+                if (link && quality && versionInfo) {
+                    const title = `${arcTitle} ${versionInfo} ${quality}`.trim();
+                    
+                    if (!keyword || title.toLowerCase().includes(keyword.toLowerCase()) || keyword.toLowerCase() === 'all') {
+                        results.push({
+                            title: title,
+                            href: link,
+                            image: arcImage
+                        });
+                    }
+                }
             }
         }
     }
-    
-    console.log(`Search Results: ${JSON.stringify(results)}`);
+
     return JSON.stringify(results);
 }
 
@@ -72,7 +105,7 @@ async function extractEpisodes(url) {
     return JSON.stringify(transformedResults);
 }
 
-// searchResults("romance");
+// searchResults("wano");
 // extractDetails("https://pixeldrain.net/l/sT25hhHR");
 // extractEpisodes("https://pixeldrain.net/l/sT25hhHR");
 
