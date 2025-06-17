@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetchv2(`https://uaserial.me/search?query=${encodedKeyword}`);
+        const responseText = await soraFetch(`https://uaserial.me/search?query=${encodedKeyword}`);
         const html = await responseText.text();
 
         const regex = /<a\s+href="([^"]+)"\s+title="([^"]+)">[\s\S]*?<img[^>]+src="([^"]+)"[\s\S]*?<\/a>/g;
@@ -27,7 +27,7 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        const response = await fetchv2(url);
+        const response = await soraFetch(url);
         const htmlText = await response.text();
 
         const descriptionMatch = htmlText.match(/<div class="player__description description bordered">[\s\S]*?<div class="text">([\s\S]*?)<\/div>/);
@@ -70,7 +70,7 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        const response = await fetchv2(url);
+        const response = await soraFetch(url);
         const html = await response.text();
 
         const episodeOptions = [...html.matchAll(
@@ -119,7 +119,7 @@ async function extractStreamUrl(url) {
         const seasonNumber = match[2];
         const episodeNumber = match[3];
 
-        const response = await fetchv2(url);
+        const response = await soraFetch(url);
         const htmlText = await response.text();
 
         const episodesMatch = htmlText.match(/episodes\s*:\s*(\[[\s\S]*?\])\s*,?\s*\n/);
@@ -164,7 +164,7 @@ async function extractStreamUrl(url) {
         for (const source of srcArray) {
             if (!source.link.includes("ashdi.vip")) continue;
 
-            const streamRes = await fetchv2(source.link);
+            const streamRes = await soraFetch(source.link);
             const streamHtml = await streamRes.text();
 
             const fileMatch = streamHtml.match(/file\s*:\s*"([^"]+\.m3u8[^"]*)"/);
@@ -206,3 +206,15 @@ async function extractStreamUrl(url) {
 
 // extractStreamUrl('https://uaserial.me/embed/naruto/season-1/episode-2');
 // extractStreamUrl('https://uaserial.me/embed/naruto-legend-of-the-stone-of-gelel/season-1/episode-1');
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
+    }
+}

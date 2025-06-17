@@ -133,9 +133,9 @@ async function extractStreamUrl(url) {
                     const decodedMp4 = decodeURIComponent(mp4Match[1]);
                     if (decodedMp4.startsWith("http")) {
                         streams.push({
-                        title: label,
-                        streamUrl: decodedMp4,
-                        headers: {}
+                            title: label,
+                            streamUrl: decodedMp4,
+                            headers: {}
                         });
                     }
                 }
@@ -153,7 +153,9 @@ async function extractStreamUrl(url) {
                     streams.push({
                         title: label,
                         streamUrl: srcMatch[1],
-                        headers: {}
+                        headers: {
+                            "Referer": "https://4shared.com/"
+                        }
                     });
                 }
                 } catch {
