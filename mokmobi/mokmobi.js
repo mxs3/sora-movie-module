@@ -269,5 +269,3 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
-
-extractStreamUrl("https://rivestream.org/watch?type=movie&id=238")
