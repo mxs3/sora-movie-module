@@ -3,74 +3,113 @@ async function searchResults(keyword) {
     const response = await soraFetch(`https://onepace.net/es/watch`);
     const html = await response.text();
 
+    // First, extract all images in order
+    const allImages = [...html.matchAll(/<img[^>]+src=["']([^"']+)["'][^>]*>/g)].map(m => m[1])
+                      .concat([...html.matchAll(/background-image:\s*url\(['"]([^'"]+)['"]\)/g)].map(m => m[1]));
+    
     const arcSections = html.split('<h2');
-
+    
     results.push({
         title: "Utilice «todo» o «all» para obtener todo el contenido.",
         href: "",
         image: "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/onepace/onepaceEsInstructions.jpg"
     });
 
+    // Process each arc section starting from index 1 (skip the first split result)
     for (let i = 1; i < arcSections.length; i++) {
-        const section = arcSections[i];
+        const currentSection = arcSections[i];
         
-        const titleMatch = section.match(/>([^<]+)<\/a>/);
+        // Extract title from current section
+        const titleMatch = currentSection.match(/>([^<]+)<\/a>/);
         if (!titleMatch) continue;
-        let arcTitle = titleMatch[1].trim();
-        arcTitle = arcTitle.replace(/&#x27;/g, "'");
+        let arcTitle = titleMatch[1].trim()
+            .replace(/&#x27;/g, "'")
+            .replace(/&amp;/g, '&')
+            .replace(/&quot;/g, '"');
         
+        // Get image for this arc - shifted by 1 to align correctly
         let arcImage = '';
-        const bgImageMatch = section.match(/background-image:\s*url\(['"]([^'"]+)['"]\)/);
-        const imgMatch = section.match(/<img[^>]+src=["']([^"']+)["']/);
-        arcImage = bgImageMatch ? bgImageMatch[1] : imgMatch ? imgMatch[1] : '';
-        arcImage = arcImage.replace(/&amp;/g, '&');
+        if (allImages[i]) {  // Using i instead of i-1 to shift image index forward
+            arcImage = allImages[i].replace(/&amp;/g, '&');
+            if (arcImage.startsWith('/_next')) {
+                arcImage = 'https://onepace.net' + arcImage;
+            }
+        }
         
-        const episodeBlocks = section.split('<span class="flex-1">');
-        
+        // For the last arc, use the last image from the array
+        if (i === arcSections.length - 1 && allImages[0]) {
+            arcImage = allImages[0].replace(/&amp;/g, '&');
+            if (arcImage.startsWith('/_next')) {
+                arcImage = 'https://onepace.net' + arcImage;
+            }
+        }
+
+        const episodeBlocks = currentSection.split('<span class="flex-1">');
         for (let j = 1; j < episodeBlocks.length; j++) {
             const block = episodeBlocks[j];
             
-            let versionInfo = '';
+            let type = '';
             if (block.includes('Subtitulos en español')) {
-                versionInfo = 'Subtitulos en español';
-                const extraInfo = block.match(/<span class="font-normal">,\s*<!--\s*-->([^<]+)/);
-                if (extraInfo) {
-                    versionInfo += `, ${extraInfo[1].trim()}`;
+                type = 'Subtitulos en español';
+                if (block.includes('Extended')) {
+                    type += ', Extended';
+                }
+                if (block.includes('Alternate')) {
+                    type += ', Alternate';
+                }
+            } else if (block.includes('Doblaje en español con subtítulos')) {
+                type = 'Doblaje en español con subtítulos';
+                if (block.includes('Extended')) {
+                    type += ', Extended';
+                }
+                if (block.includes('Alternate')) {
+                    type += ', Alternate';
                 }
             } else if (block.includes('Doblaje en español')) {
-                versionInfo = 'Doblaje en español';
-                if (block.includes('with Closed Captions')) {
-                    versionInfo += ' with Closed Captions';
-                } else {
-                    const extraInfo = block.match(/<span class="font-normal">,\s*<!--\s*-->([^<]+)/);
-                    if (extraInfo) {
-                        versionInfo += `, ${extraInfo[1].trim()}`;
-                    }
+                type = 'Doblaje en español';
+                if (block.includes('Extended')) {
+                    type += ', Extended';
                 }
+                if (block.includes('Alternate')) {
+                    type += ', Alternate';
+                }
+            } else {
+                continue;
             }
 
-            const qualityMatches = [...block.matchAll(/>\s*(480p|720p|1080p)\s*<\/span>/g)];
-            const linkMatches = [...block.matchAll(/https:\/\/pixeldrain\.net\/l\/[^"]+/g)];
+            // Get quality-specific links
+            let qualityLinks = new Map();
+            const qualityMatches = [...block.matchAll(/>\s*(480p|720p|1080p)\s*</g)];
+            const linkMatches = [...block.matchAll(/href="(https:\/\/pixeldrain\.net\/l\/[^"]+)"/g)];
             
-            for (let k = 0; k < qualityMatches.length && k < linkMatches.length; k++) {
-                const quality = qualityMatches[k][1];
-                const link = linkMatches[k][0];
-                
-                if (link && quality && versionInfo) {
-                    const title = `${arcTitle} ${versionInfo} ${quality}`.trim();
-                    
-                    if (!keyword || title.toLowerCase().includes(keyword.toLowerCase()) || keyword.toLowerCase() === 'all' || keyword.toLowerCase() === 'todo' || keyword.toLowerCase() === 'everything') {
-                        results.push({
-                            title: title,
-                            href: link,
-                            image: `https://onepace.net${arcImage}`
-                        });
+            // Match links with qualities in order
+            if (qualityMatches.length > 0 && linkMatches.length > 0) {
+                // Make sure we have at most one link per quality
+                const uniqueQualities = [...new Set(qualityMatches.map(m => m[1]))];
+                uniqueQualities.forEach((quality, index) => {
+                    if (index < linkMatches.length) {
+                        qualityLinks.set(quality, linkMatches[index][1]);
                     }
+                });
+            }
+            
+            // Add entries for all found qualities
+            for (const [quality, href] of qualityLinks) {
+                const title = `${arcTitle}, ${type}, ${quality.trim()}`;
+                if (!keyword || title.toLowerCase().includes(keyword.toLowerCase()) || 
+                    keyword.toLowerCase() === 'all' ||
+                    keyword.toLowerCase() === 'todo' || 
+                    keyword.toLowerCase() === 'everything') {
+                    results.push({
+                        title: title,
+                        href: href,
+                        image: arcImage
+                    });
                 }
             }
         }
     }
-
+    
     console.log(`Results: ${JSON.stringify(results)}`);
     return JSON.stringify(results);
 }
@@ -114,7 +153,7 @@ async function extractEpisodes(url) {
     return JSON.stringify(transformedResults);
 }
 
-searchResults("all");
+// searchResults("all");
 // extractDetails("https://pixeldrain.net/l/sT25hhHR");
 // extractEpisodes("https://pixeldrain.net/l/sT25hhHR");
 
