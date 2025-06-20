@@ -1,6 +1,6 @@
 {
     "sourceName": "NovelFire",
-    "iconUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/novels/novelfire/icon.png",
+    "iconUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/novelfire/icon.png",
     "author": {
         "name": "ibro",
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
@@ -12,8 +12,8 @@
     "quality": "N/A",
     "baseUrl": "https://novelfire.net/",
     "searchBaseUrl": "https://novelfire.net/ajax/searchLive?inputContent=%s",
-    "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/novels/novelfire/novelfire.js",
+    "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/novelfire/novelfire.js",
     "type": "novels",
     "asyncJS": true,
-    "novels": true
+    "novel": true
 }

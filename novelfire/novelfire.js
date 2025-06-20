@@ -109,7 +109,7 @@ Genres: ${genres}
     }
 }
 
-async function extractEpisodes(url) {
+async function extractChapters(url) {
     try {
         const response = await soraFetch(url);
         const htmlText = await response.text();
@@ -133,7 +133,7 @@ async function extractEpisodes(url) {
         console.log(chapters);
         return JSON.stringify(chapters);
     } catch (error) {
-        console.log('Fetch error in extractEpisodes:', error);
+        console.log('Fetch error in extractChapters:', error);
         return JSON.stringify([]);
     }
 }
