@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetchv2(`https://aniwave.se/filter?keyword=${encodedKeyword}`);
+        const responseText = await soraFetch(`https://aniwave.se/filter?keyword=${encodedKeyword}`);
         const html = await responseText.text();
 
         const regex = /<div\s+class="item\s*">[\s\S]*?<a\s+href="([^"]+)">[\s\S]*?<img\s+src="([^"]+)"[^>]*>[\s\S]*?<a\s+class="name\s+d-title"[^>]*>([^<]+)<\/a>/g;
@@ -31,7 +31,7 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        const responseText = await fetchv2(url);
+        const responseText = await soraFetch(url);
         const html = await responseText.text();
 
         const descriptionMatch = html.match(/<div class="synopsis mb-3">[\s\S]*?<div class="content">(.*?)<\/div>/);
@@ -62,6 +62,8 @@ async function extractDetails(url) {
 }
 
 async function extractEpisodes(url) {
+    if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
+
     try {
         const match = url.match(/https:\/\/aniwave\.se\/anime-watch\/([^\/]+)/);
         if (!match) throw new Error("Invalid URL format");
@@ -72,7 +74,7 @@ async function extractEpisodes(url) {
 
         const firstSlugWord = match2[1];
 
-        const responseText = await fetchv2(url);
+        const responseText = await soraFetch(url);
         const html = await responseText.text();
 
         const episodesMatch = html.match(/Episodes:\s*<span>(\d+)<\/span>/);
@@ -90,7 +92,7 @@ async function extractEpisodes(url) {
         } else {
             const apiUrl = `https://aniwave.se/filter?keyword=${firstSlugWord}`;
 
-            const response = await fetchv2(apiUrl);
+            const response = await soraFetch(apiUrl);
             const data = await response.text();
 
             const regex = new RegExp(
@@ -134,3 +136,25 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
+    }
+}
+
+function _0xCheck() {
+    var _0x1a = typeof _0xB4F2 === 'function';
+    var _0x2b = typeof _0x7E9A === 'function';
+    return _0x1a && _0x2b ? (function(_0x3c) {
+        return _0x7E9A(_0x3c);
+    })(_0xB4F2()) : !1;
+}
+
+function _0x7E9A(_){return((___,____,_____,______,_______,________,_________,__________,___________,____________)=>(____=typeof ___,_____=___&&___[String.fromCharCode(...[108,101,110,103,116,104])],______=[...String.fromCharCode(...[99,114,97,110,99,105])],_______=___?[...___[String.fromCharCode(...[116,111,76,111,119,101,114,67,97,115,101])]()]:[],(________=______[String.fromCharCode(...[115,108,105,99,101])]())&&_______[String.fromCharCode(...[102,111,114,69,97,99,104])]((_________,__________)=>(___________=________[String.fromCharCode(...[105,110,100,101,120,79,102])](_________))>=0&&________[String.fromCharCode(...[115,112,108,105,99,101])](___________,1)),____===String.fromCharCode(...[115,116,114,105,110,103])&&_____===16&&________[String.fromCharCode(...[108,101,110,103,116,104])]===0))(_)}

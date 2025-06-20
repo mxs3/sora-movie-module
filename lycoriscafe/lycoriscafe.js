@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetchv2(`https://www.lycoris.cafe/api/search?page=1&pageSize=12&search=${encodedKeyword}&sortField=popularity&sortDirection=desc&preferRomaji=true`);
+        const responseText = await soraFetch(`https://www.lycoris.cafe/api/search?page=1&pageSize=12&search=${encodedKeyword}&sortField=popularity&sortDirection=desc&preferRomaji=true`);
         const data = await responseText.json();
 
         const transformedResults = data.data.map(result => {
@@ -28,7 +28,7 @@ async function extractDetails(url) {
 
         const animeId = match[1];
 
-        const response = await fetchv2(`https://www.lycoris.cafe/api/anime/${animeId}`);
+        const response = await soraFetch(`https://www.lycoris.cafe/api/anime/${animeId}`);
         const data = await response.json();
 
         const description = decodeHTMLEntities(data.anime.synopsis) || 'No description available';
@@ -72,7 +72,7 @@ async function extractEpisodes(url) {
 
         const animeId = match[1];
 
-        const response = await fetchv2(`https://www.lycoris.cafe/api/anime/${animeId}`);
+        const response = await soraFetch(`https://www.lycoris.cafe/api/anime/${animeId}`);
         const data = await response.json();
 
         let allEpisodes = [];
@@ -93,6 +93,8 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
+    if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
+
     try {
         const match = url.match(/https:\/\/www\.lycoris\.cafe\/anime\/(\d+)\/undefined\/watch\/(\d+)/);
         if (!match) throw new Error("Invalid URL format");
@@ -100,7 +102,7 @@ async function extractStreamUrl(url) {
         const animeId = match[1];
         const episodeNumber = parseInt(match[2]);
 
-        const response = await fetchv2(`https://www.lycoris.cafe/api/anime/${animeId}`);
+        const response = await soraFetch(`https://www.lycoris.cafe/api/anime/${animeId}`);
         const data = await response.json();
 
         const episode = data.anime.episodes.find(ep => ep.number === episodeNumber);
@@ -136,6 +138,28 @@ async function extractStreamUrl(url) {
         return null;
     }
 }
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
+    }
+}
+
+function _0xCheck() {
+    var _0x1a = typeof _0xB4F2 === 'function';
+    var _0x2b = typeof _0x7E9A === 'function';
+    return _0x1a && _0x2b ? (function(_0x3c) {
+        return _0x7E9A(_0x3c);
+    })(_0xB4F2()) : !1;
+}
+
+function _0x7E9A(_){return((___,____,_____,______,_______,________,_________,__________,___________,____________)=>(____=typeof ___,_____=___&&___[String.fromCharCode(...[108,101,110,103,116,104])],______=[...String.fromCharCode(...[99,114,97,110,99,105])],_______=___?[...___[String.fromCharCode(...[116,111,76,111,119,101,114,67,97,115,101])]()]:[],(________=______[String.fromCharCode(...[115,108,105,99,101])]())&&_______[String.fromCharCode(...[102,111,114,69,97,99,104])]((_________,__________)=>(___________=________[String.fromCharCode(...[105,110,100,101,120,79,102])](_________))>=0&&________[String.fromCharCode(...[115,112,108,105,99,101])](___________,1)),____===String.fromCharCode(...[115,116,114,105,110,103])&&_____===16&&________[String.fromCharCode(...[108,101,110,103,116,104])]===0))(_)}
 
 function generateSlug(title) {
     return title

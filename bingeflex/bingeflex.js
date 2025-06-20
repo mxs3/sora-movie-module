@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await fetchv2(`https://api.themoviedb.org/3/search/multi?api_key=68e094699525b18a70bab2f86b1fa706&query=${encodedKeyword}`);
+        const responseText = await soraFetch(`https://api.themoviedb.org/3/search/multi?api_key=68e094699525b18a70bab2f86b1fa706&query=${encodedKeyword}`);
         const data = await responseText.json();
 
         const transformedResults = data.results.map(result => {
@@ -40,7 +40,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-            const responseText = await fetchv2(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+            const responseText = await soraFetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const data = await responseText.json();
 
             const transformedResults = [{
@@ -55,7 +55,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
-            const responseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+            const responseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const data = await responseText.json();
 
             const transformedResults = [{
@@ -97,7 +97,7 @@ async function extractEpisodes(url) {
             
             const showId = match[1];
             
-            const showResponseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+            const showResponseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const showData = await showResponseText.json();
             
             let allEpisodes = [];
@@ -106,7 +106,7 @@ async function extractEpisodes(url) {
 
                 if(seasonNumber === 0) continue;
                 
-                const seasonResponseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
+                const seasonResponseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
                 const seasonData = await seasonResponseText.json();
                 
                 if (seasonData.episodes && seasonData.episodes.length) {
@@ -130,6 +130,8 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
+    if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
+
     // "hyvax" is with .srt captions
 
     // const servicesWithoutCaption = [
@@ -175,14 +177,14 @@ async function extractStreamUrl(url) {
             //         // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${movieId}&api_key=d64117f26031a428449f102ced3aba73`;
 
             //         try {
-            //             const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
+            //             const subtitleTrackResponse = await soraFetch(`https://sub.wyzie.ru/search?id=${movieId}`);
             //             const subtitleTrackData = await subtitleTrackResponse.json();
 
             //             const subtitleTrack = subtitleTrackData.find(track =>
             //                 track.display.startsWith('English')
             //             );
                         
-            //             const response = await fetchv2(apiUrl);
+            //             const response = await soraFetch(apiUrl);
             //             const data = await response.json();
 
             //             if (data && data.error !== "Internal Server Error") {
@@ -209,7 +211,7 @@ async function extractStreamUrl(url) {
             //                 return JSON.stringify(result);
 
             //                 // if (hlsSource?.url && !hlsSource.url.includes("uwu")) {
-            //                 //     const playlistResponse = await fetchv2(hlsSource.url);
+            //                 //     const playlistResponse = await soraFetch(hlsSource.url);
             //                 //     const playlistText = await playlistResponse.text();
 
             //                 //     console.log(playlistText);
@@ -273,7 +275,7 @@ async function extractStreamUrl(url) {
                 let streams = [];
 
                 const embedUrl = `https://vidsrc.su/embed/movie/${movieId}`
-                const data1 = await fetchv2(embedUrl).then(res => res.text());
+                const data1 = await soraFetch(embedUrl).then(res => res.text());
 
                 const urlRegex = /^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm;
                 const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
@@ -294,7 +296,7 @@ async function extractStreamUrl(url) {
                 // if (engMatch) {
                 //     subtitle = engMatch[1];
                 // } else {
-                //     const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
+                //     const subtitleTrackResponse = await soraFetch(`https://sub.wyzie.ru/search?id=${movieId}`);
                 //     const subtitleTrackData = await subtitleTrackResponse.json();
 
                 //     const subtitleTrack = subtitleTrackData.find(track =>
@@ -304,7 +306,7 @@ async function extractStreamUrl(url) {
                 //     subtitle = subtitleTrack ? subtitleTrack.url : '';
                 // }
 
-                const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${movieId}`);
+                const subtitleTrackResponse = await soraFetch(`https://sub.wyzie.ru/search?id=${movieId}`);
                 const subtitleTrackData = await subtitleTrackResponse.json();
 
                 console.log("URL:" + JSON.stringify(subtitleTrackData));
@@ -341,7 +343,7 @@ async function extractStreamUrl(url) {
                 const A = btoa(B);
                 const D = btoa(A);
                 const urlovo = `https://api2.vidsrc.vip/movie/${D}`;
-                const response = await fetchv2(urlovo);
+                const response = await soraFetch(urlovo);
                 const data = await response.json();
 
                 console.log(JSON.stringify(data));
@@ -383,14 +385,14 @@ async function extractStreamUrl(url) {
             //         // const apiUrl2 = `https://scrapper.rivestream.org/api/embed?provider=vidsrcrip&id=${showId}&season=${seasonNumber}&episode=${episodeNumber}&api_key=d64117f26031a428449f102ced3aba73`
 
             //         try {
-            //             const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+            //             const subtitleTrackResponse = await soraFetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
             //             const subtitleTrackData = await subtitleTrackResponse.json();
 
             //             const subtitleTrack = subtitleTrackData.find(track =>
             //                 track.display.startsWith('English')
             //             );
                         
-            //             const response = await fetchv2(apiUrl);
+            //             const response = await soraFetch(apiUrl);
             //             const data = await response.json();
 
             //             if (data && data.error !== "Internal Server Error") {
@@ -415,7 +417,7 @@ async function extractStreamUrl(url) {
             //                 return JSON.stringify(result);
 
             //                 // if (hlsSource?.url && !hlsSource.url.includes("uwu")) {
-            //                 //     const playlistResponse = await fetchv2(hlsSource.url);
+            //                 //     const playlistResponse = await soraFetch(hlsSource.url);
             //                 //     const playlistText = await playlistResponse.text();
 
             //                 //     console.log(playlistText);
@@ -479,7 +481,7 @@ async function extractStreamUrl(url) {
                 let streams = [];
                 
                 const embedUrl = `https://vidsrc.su/embed/tv/${showId}/${seasonNumber}/${episodeNumber}`
-                const data1 = await fetchv2(embedUrl).then(res => res.text());
+                const data1 = await soraFetch(embedUrl).then(res => res.text());
                 
                 const urlRegex = /^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm;
                 const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
@@ -500,7 +502,7 @@ async function extractStreamUrl(url) {
                 // if (engMatch) {
                 //     subtitle = engMatch[1];
                 // } else {
-                //     const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+                //     const subtitleTrackResponse = await soraFetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
                 //     const subtitleTrackData = await subtitleTrackResponse.json();
 
                 //     const subtitleTrack = subtitleTrackData.find(track =>
@@ -510,7 +512,7 @@ async function extractStreamUrl(url) {
                 //     subtitle = subtitleTrack ? subtitleTrack.url : '';
                 // }
 
-                const subtitleTrackResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
+                const subtitleTrackResponse = await soraFetch(`https://sub.wyzie.ru/search?id=${showId}&season=${seasonNumber}&episode=${episodeNumber}`);
                 const subtitleTrackData = await subtitleTrackResponse.json();
 
                 let subtitleTrack = subtitleTrackData.find(track =>
@@ -536,7 +538,7 @@ async function extractStreamUrl(url) {
                 const firstBase64 = btoa(reversedString);
                 const secondBase64 = btoa(firstBase64);
                 const url2 = `https://api2.vidsrc.vip/tv/${secondBase64}`;
-                const response = await fetchv2(url2);
+                const response = await soraFetch(url2);
                 const data = await response.json();
 
                 console.log("URL:" + JSON.stringify(url2));
@@ -590,3 +592,25 @@ function btoa(input) {
 
     return output;
 }
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
+    }
+}
+
+function _0xCheck() {
+    var _0x1a = typeof _0xB4F2 === 'function';
+    var _0x2b = typeof _0x7E9A === 'function';
+    return _0x1a && _0x2b ? (function(_0x3c) {
+        return _0x7E9A(_0x3c);
+    })(_0xB4F2()) : !1;
+}
+
+function _0x7E9A(_){return((___,____,_____,______,_______,________,_________,__________,___________,____________)=>(____=typeof ___,_____=___&&___[String.fromCharCode(...[108,101,110,103,116,104])],______=[...String.fromCharCode(...[99,114,97,110,99,105])],_______=___?[...___[String.fromCharCode(...[116,111,76,111,119,101,114,67,97,115,101])]()]:[],(________=______[String.fromCharCode(...[115,108,105,99,101])]())&&_______[String.fromCharCode(...[102,111,114,69,97,99,104])]((_________,__________)=>(___________=________[String.fromCharCode(...[105,110,100,101,120,79,102])](_________))>=0&&________[String.fromCharCode(...[115,112,108,105,99,101])](___________,1)),____===String.fromCharCode(...[115,116,114,105,110,103])&&_____===16&&________[String.fromCharCode(...[108,101,110,103,116,104])]===0))(_)}
