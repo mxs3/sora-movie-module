@@ -58,7 +58,7 @@ extractStreamUrl(`EDg7Q9Uu`);
 async function extractStreamUrl(url) {
     if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
 
-    return `https://pixeldrain.net/api/file/${url}`;
+    return `https://pixeldrain.net/api/file/${url}?download`;
 }
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
