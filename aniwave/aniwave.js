@@ -136,7 +136,7 @@ async function extractStreamUrl(url) {
 
         console.log(`API URL: ${apiUrl}`);
 
-        const responseText = await soraFetch(apiUrl, { headers });
+        const responseText = await fetchv2(apiUrl, headers);
         const html = await responseText.text();
 
         const regex = /file"\s*:\s*"([^"]+\.m3u8)"/g;
@@ -153,7 +153,7 @@ async function extractStreamUrl(url) {
 
         console.log(`API URL2: ${apiUrl2}`);
 
-        const responseText2 = await soraFetch(apiUrl2, { headers });
+        const responseText2 = await fetchv2(apiUrl2, headers);
         const html2 = await responseText2.text();
 
         const regex2 = /file"\s*:\s*"([^"]+\.m3u8)"/g;
@@ -168,7 +168,9 @@ async function extractStreamUrl(url) {
 
         let streams = [];
 
+        streams.push("SUB");
         streams.push(subUrls[0]);
+        streams.push("DUB");
         streams.push(dubUrls[0]);
 
         const result = {
