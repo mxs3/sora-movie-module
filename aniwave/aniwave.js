@@ -127,9 +127,7 @@ async function extractStreamUrl(url) {
         const animeSlug = match[1];
         const episodeNumber = match[2];
         const headers = {
-            headers: {
-                'Referer': url,
-            }
+            'Referer': url,
         };
 
         console.log(`Fetching stream URL for anime: ${animeSlug}, episode: ${episodeNumber}`);
@@ -191,7 +189,7 @@ async function extractStreamUrl(url) {
     }
 }
 
-extractStreamUrl(`https://ww.aniwave.se/anime-watch/one-piece/ep-1`);
+// extractStreamUrl(`https://ww.aniwave.se/anime-watch/one-piece/ep-1`);
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
