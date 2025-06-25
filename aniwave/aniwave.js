@@ -127,28 +127,59 @@ async function extractStreamUrl(url) {
         const animeSlug = match[1];
         const episodeNumber = match[2];
         const headers = {
-            'Referer': url,
+            headers: {
+                'Referer': url,
+            }
         };
 
         console.log(`Fetching stream URL for anime: ${animeSlug}, episode: ${episodeNumber}`);
 
-        const apiUrl = `https://ww.aniwave.se/ajax/player/?ep=${animeSlug}-episode-${episodeNumber}&dub=true&sn=${animeSlug}-dub&epn=${episodeNumber}&g=true&autostart=true`;
+        const apiUrl = `https://ww.aniwave.se/ajax/player/?ep=${animeSlug}-episode-${episodeNumber}&dub=false&sn=${animeSlug}&epn=${episodeNumber}&g=true&autostart=true`;
 
         console.log(`API URL: ${apiUrl}`);
 
-        const responseText = await soraFetch(apiUrl, headers);
+        const responseText = await soraFetch(apiUrl, { headers });
         const html = await responseText.text();
 
         const regex = /file"\s*:\s*"([^"]+\.m3u8)"/g;
 
-        const urls = [];
+        const subUrls = [];
         let match2;
         while ((match2 = regex.exec(html)) !== null) {
-            urls.push(match2[1]);
+            subUrls.push(match2[1]);
         }
 
-        console.log(urls);
-        return urls[0];
+        console.log(subUrls[0]);
+
+        const apiUrl2 = `https://ww.aniwave.se/ajax/player/?ep=${animeSlug}-episode-${episodeNumber}&dub=true&sn=${animeSlug}-dub&epn=${episodeNumber}&g=true&autostart=true`;
+
+        console.log(`API URL2: ${apiUrl2}`);
+
+        const responseText2 = await soraFetch(apiUrl2, { headers });
+        const html2 = await responseText2.text();
+
+        const regex2 = /file"\s*:\s*"([^"]+\.m3u8)"/g;
+
+        const dubUrls = [];
+        let match3;
+        while ((match3 = regex2.exec(html2)) !== null) {
+            dubUrls.push(match3[1]);
+        }
+
+        console.log(dubUrls[0]);
+
+        let streams = [];
+
+        streams.push(subUrls[0]);
+        streams.push(dubUrls[0]);
+
+        const result = {
+            streams,
+            subtitles: ""
+        };
+
+        console.log(result);
+        return JSON.stringify(result);
 
         // const hlsSource = `https://hlsx3cdn.echovideo.to/${animeSlug}/${episodeNumber}/master.m3u8`;
         
