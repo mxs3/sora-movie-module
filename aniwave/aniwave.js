@@ -133,14 +133,10 @@ async function extractStreamUrl(url) {
         console.log(`Fetching stream URL for anime: ${animeSlug}, episode: ${episodeNumber}`);
 
         const apiUrl = `https://ww.aniwave.se/ajax/player/?ep=${animeSlug}-episode-${episodeNumber}&dub=false&sn=${animeSlug}&epn=${episodeNumber}&g=true&autostart=true`;
-
-        console.log(`API URL: ${apiUrl}`);
-
-        const responseText = await fetchv2(apiUrl, headers);
+        const responseText = await soraFetch(apiUrl, { headers });
         const html = await responseText.text();
 
         const regex = /file"\s*:\s*"([^"]+\.m3u8)"/g;
-
         const subUrls = [];
         let match2;
         while ((match2 = regex.exec(html)) !== null) {
@@ -150,14 +146,10 @@ async function extractStreamUrl(url) {
         console.log(subUrls[0]);
 
         const apiUrl2 = `https://ww.aniwave.se/ajax/player/?ep=${animeSlug}-episode-${episodeNumber}&dub=true&sn=${animeSlug}-dub&epn=${episodeNumber}&g=true&autostart=true`;
-
-        console.log(`API URL2: ${apiUrl2}`);
-
-        const responseText2 = await fetchv2(apiUrl2, headers);
+        const responseText2 = await soraFetch(apiUrl2, { headers });
         const html2 = await responseText2.text();
 
         const regex2 = /file"\s*:\s*"([^"]+\.m3u8)"/g;
-
         const dubUrls = [];
         let match3;
         while ((match3 = regex2.exec(html2)) !== null) {
@@ -166,12 +158,27 @@ async function extractStreamUrl(url) {
 
         console.log(dubUrls[0]);
 
-        let streams = [];
+        const streams = [];
 
-        streams.push("SUB");
-        streams.push(subUrls[0]);
-        streams.push("DUB");
-        streams.push(dubUrls[0]);
+        if (subUrls[0]) {
+            streams.push({
+                title: "SUB",
+                streamUrl: subUrls[0],
+                headers: {
+                    'Referer': url,
+                }
+            });
+        }
+
+        if (dubUrls[0]) {
+            streams.push({
+                title: "DUB",
+                streamUrl: dubUrls[0],
+                headers: {
+                    'Referer': url,
+                }
+            });
+        }
 
         const result = {
             streams,
@@ -179,7 +186,7 @@ async function extractStreamUrl(url) {
         };
 
         console.log(result);
-        return JSON.stringify(result);
+        return result;
 
         // const hlsSource = `https://hlsx3cdn.echovideo.to/${animeSlug}/${episodeNumber}/master.m3u8`;
         
@@ -191,7 +198,7 @@ async function extractStreamUrl(url) {
     }
 }
 
-// extractStreamUrl(`https://ww.aniwave.se/anime-watch/one-piece/ep-1`);
+extractStreamUrl(`https://ww.aniwave.se/anime-watch/one-piece/ep-1`);
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
