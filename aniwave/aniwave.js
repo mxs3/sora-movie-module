@@ -121,21 +121,46 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const match = url.match(/https:\/\/aniwave\.se\/anime-watch\/([^\/]+)\/ep-([^\/]+)/);
+        const match = url.match(/https:\/\/ww\.aniwave\.se\/anime-watch\/([^\/]+)\/ep-([^\/]+)/);
         if (!match) throw new Error("Invalid URL format");
 
         const animeSlug = match[1];
         const episodeNumber = match[2];
+        const headers = {
+            'Referer': url,
+        };
 
-        const hlsSource = `https://hlsx3cdn.echovideo.to/${animeSlug}/${episodeNumber}/master.m3u8`;
+        console.log(`Fetching stream URL for anime: ${animeSlug}, episode: ${episodeNumber}`);
+
+        const apiUrl = `https://ww.aniwave.se/ajax/player/?ep=${animeSlug}-episode-${episodeNumber}&dub=true&sn=${animeSlug}-dub&epn=${episodeNumber}&g=true&autostart=true`;
+
+        console.log(`API URL: ${apiUrl}`);
+
+        const responseText = await soraFetch(apiUrl, headers);
+        const html = await responseText.text();
+
+        const regex = /file"\s*:\s*"([^"]+\.m3u8)"/g;
+
+        const urls = [];
+        let match2;
+        while ((match2 = regex.exec(html)) !== null) {
+            urls.push(match2[1]);
+        }
+
+        console.log(urls);
+        return urls[0];
+
+        // const hlsSource = `https://hlsx3cdn.echovideo.to/${animeSlug}/${episodeNumber}/master.m3u8`;
         
-        console.log(`HLS Source: ${hlsSource}`);
-        return hlsSource;
+        // console.log(`HLS Source: ${hlsSource}`);
+        // return hlsSource;
     } catch (error) {
         console.log('Fetch error in extractStreamUrl:', error);
         return null;
     }
 }
+
+extractStreamUrl(`https://ww.aniwave.se/anime-watch/one-piece/ep-1`);
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
