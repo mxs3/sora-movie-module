@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await soraFetch(`https://aniwave.se/filter?keyword=${encodedKeyword}`);
+        const responseText = await soraFetch(`https://ww.aniwave.se/filter?keyword=${encodedKeyword}`);
         const html = await responseText.text();
 
         const regex = /<div\s+class="item\s*">[\s\S]*?<a\s+href="([^"]+)">[\s\S]*?<img\s+src="([^"]+)"[^>]*>[\s\S]*?<a\s+class="name\s+d-title"[^>]*>([^<]+)<\/a>/g;
@@ -17,11 +17,10 @@ async function searchResults(keyword) {
             results.push({
                 title: match[3].trim(),
                 image: match[2].trim(),
-                href: `https://aniwave.se${match[1].trim()}`
+                href: `https://ww.aniwave.se${match[1].trim()}`
             });
         }
 
-        console.log(results);
         return JSON.stringify(results);
     } catch (error) {
         console.log('Fetch error in searchResults:', error);
@@ -49,7 +48,6 @@ async function extractDetails(url) {
             airdate
         }];
 
-        console.log(transformedResults);
         return JSON.stringify(transformedResults);
     } catch (error) {
         console.log('Details error:', error);
@@ -62,10 +60,8 @@ async function extractDetails(url) {
 }
 
 async function extractEpisodes(url) {
-    if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
-
     try {
-        const match = url.match(/https:\/\/aniwave\.se\/anime-watch\/([^\/]+)/);
+        const match = url.match(/https:\/\/ww\.aniwave\.se\/anime-watch\/([^\/]+)/);
         if (!match) throw new Error("Invalid URL format");
 
         const animeSlug = match[1];
@@ -90,7 +86,7 @@ async function extractEpisodes(url) {
                 });
             }
         } else {
-            const apiUrl = `https://aniwave.se/filter?keyword=${firstSlugWord}`;
+            const apiUrl = `https://ww.aniwave.se/filter?keyword=${firstSlugWord}`;
 
             const response = await soraFetch(apiUrl);
             const data = await response.text();
@@ -111,7 +107,6 @@ async function extractEpisodes(url) {
             }
         }
 
-        console.log(transformedResults);
         return JSON.stringify(transformedResults);
     } catch (error) {
         console.log('Fetch error in extractEpisodes:', error);
@@ -120,6 +115,8 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
+    if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
+
     try {
         const match = url.match(/https:\/\/ww\.aniwave\.se\/anime-watch\/([^\/]+)\/ep-([^\/]+)/);
         if (!match) throw new Error("Invalid URL format");
@@ -186,7 +183,7 @@ async function extractStreamUrl(url) {
         };
 
         console.log(result);
-        return result;
+        return JSON.stringify(result);
 
         // const hlsSource = `https://hlsx3cdn.echovideo.to/${animeSlug}/${episodeNumber}/master.m3u8`;
         
@@ -198,7 +195,7 @@ async function extractStreamUrl(url) {
     }
 }
 
-extractStreamUrl(`https://ww.aniwave.se/anime-watch/one-piece/ep-1`);
+// extractStreamUrl(`https://ww.aniwave.se/anime-watch/one-piece/ep-1`);
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
