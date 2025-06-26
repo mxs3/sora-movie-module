@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await soraFetch(`https://api.themoviedb.org/3/search/multi?api_key=71fdb081b0133511ac14ac0cc10fd307&query=${encodedKeyword}`);
+        const responseText = await fetchv2(`https://api.themoviedb.org/3/search/multi?api_key=71fdb081b0133511ac14ac0cc10fd307&query=${encodedKeyword}`);
         const data = await responseText.json();
 
         const transformedResults = data.results.map(result => {
@@ -41,7 +41,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-            const responseText = await soraFetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=videos,credits`);
+            const responseText = await fetchv2(`https://api.themoviedb.org/3/movie/${movieId}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=videos,credits`);
             const data = await responseText.json();
 
             const transformedResults = [{
@@ -56,7 +56,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
-            const responseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=seasons`);
+            const responseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}?api_key=71fdb081b0133511ac14ac0cc10fd307&append_to_response=seasons`);
             const data = await responseText.json();
 
             const transformedResults = [{
@@ -93,7 +93,7 @@ async function extractEpisodes(url) {
             if (!match) throw new Error("Invalid URL format");
             const showId = match[1];
             
-            const showResponseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
+            const showResponseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
             const showData = await showResponseText.json();
             
             let allEpisodes = [];
@@ -102,7 +102,7 @@ async function extractEpisodes(url) {
 
                 if(seasonNumber === 0) continue;
                 
-                const seasonResponseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
+                const seasonResponseText = await fetchv2(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=71fdb081b0133511ac14ac0cc10fd307`);
                 const seasonData = await seasonResponseText.json();
                 
                 if (seasonData.episodes && seasonData.episodes.length) {
@@ -136,7 +136,7 @@ async function extractStreamUrl(url) {
             const movieId = match[1];
 
             try {
-                const responseText = await soraFetch(`https://vidapi.xyz/embed/movie/${movieId}`);
+                const responseText = await fetchv2(`https://vidapi.xyz/embed/movie/${movieId}`);
                 const data = await responseText.text();
 
                 const iframeMatch = data.match(/<iframe[^>]+src=["']([^"']+)["']/);
@@ -159,7 +159,7 @@ async function extractStreamUrl(url) {
                 let subtitles = '';
 
                 if (iframeSrc.includes("uqloads.xyz")) {
-                    const iframeResponse = await soraFetch(iframeSrc, headers);
+                    const iframeResponse = await fetchv2(iframeSrc, headers);
                     const iframeHtml = await iframeResponse.text();
 
                     const packedScriptMatch = iframeHtml.match(/(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
@@ -183,7 +183,7 @@ async function extractStreamUrl(url) {
                     subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
                     console.log("Subtitles URL:", subtitles);
                 } else if (iframeSrc.includes("player4u.xyz")) {
-                    const iframeResponse = await soraFetch(iframeSrc, headers);
+                    const iframeResponse = await fetchv2(iframeSrc, headers);
                     const html = await iframeResponse.text();
 
                     const liRegex = /<li class="slide-toggle">([\s\S]*?)<\/li>/g;
@@ -200,7 +200,7 @@ async function extractStreamUrl(url) {
                     for (const entry of entries) {
                         const fullUrl = "https://player4u.xyz" + entry;
                         try {
-                            const resp = await soraFetch(fullUrl, headers);
+                            const resp = await fetchv2(fullUrl, headers);
                             const iframeData = await resp.text();
 
                             const innerIframeMatch = iframeData.match(/<iframe[^>]+src=["']([^"']+)["']/);
@@ -211,7 +211,7 @@ async function extractStreamUrl(url) {
                             }
                             console.log("Iframe src2:", iframeSrc2);
 
-                            const resp2 = await soraFetch(iframeSrc2, headers);
+                            const resp2 = await fetchv2(iframeSrc2, headers);
                             const iframeHtml2 = await resp2.text();
                             console.log("Iframe HTML:", iframeHtml2);
 
@@ -256,7 +256,7 @@ async function extractStreamUrl(url) {
             const episodeNumber = match[3];
 
             try {
-                const responseText = await soraFetch(`https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber}`);
+                const responseText = await fetchv2(`https://vidapi.xyz/embed/tv/${showId}&s=${seasonNumber}&e=${episodeNumber}`);
                 const data = await responseText.text();
 
                 const iframeMatch = data.match(/<iframe[^>]+src=["']([^"']+)["']/);
@@ -278,7 +278,7 @@ async function extractStreamUrl(url) {
                 let subtitles = '';
 
                 if (iframeSrc.includes("uqloads.xyz")) {
-                    const iframeResponse = await soraFetch(iframeSrc, headers);
+                    const iframeResponse = await fetchv2(iframeSrc, headers);
                     const iframeHtml = await iframeResponse.text();
 
                     const packedScriptMatch = iframeHtml.match(/(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/);
@@ -301,7 +301,7 @@ async function extractStreamUrl(url) {
                     subtitles = subtitlesMatch ? subtitlesMatch[1].trim() : '';
                     console.log("Subtitles URL:", subtitles);
                 } else if (iframeSrc.includes("player4u.xyz")) {
-                    const iframeResponse = await soraFetch(iframeSrc, headers);
+                    const iframeResponse = await fetchv2(iframeSrc, headers);
                     const html = await iframeResponse.text();
 
                     const liRegex = /<li class="slide-toggle">([\s\S]*?)<\/li>/g;
@@ -320,7 +320,7 @@ async function extractStreamUrl(url) {
                     for (const entry of entries) {
                         const fullUrl = "https://player4u.xyz" + entry.url;
                         try {
-                            const resp = await soraFetch(fullUrl, headers);
+                            const resp = await fetchv2(fullUrl, headers);
                             const iframeData = await resp.text();
 
                             const innerIframeMatch = iframeData.match(/<iframe[^>]+src=["']([^"']+)["']/);
@@ -331,7 +331,7 @@ async function extractStreamUrl(url) {
                             }
                             console.log("Iframe src2:", iframeSrc2);
 
-                            const resp2 = await soraFetch(iframeSrc2, headers);
+                            const resp2 = await fetchv2(iframeSrc2, headers);
                             const iframeHtml = await resp2.text();
                             console.log("Iframe HTML:", iframeHtml);
 
@@ -373,18 +373,6 @@ async function extractStreamUrl(url) {
     } catch (error) {
         console.log('Fetch error in extractStreamUrl:', error);
         return null;
-    }
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
-        }
     }
 }
 

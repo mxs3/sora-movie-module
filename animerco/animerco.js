@@ -2,7 +2,7 @@ async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
         const searchUrl = `https://web.animerco.org/?s=${encodedKeyword}`;
-        const response = await soraFetch(searchUrl);
+        const response = await fetchv2(searchUrl);
         const responseText = await response.text();
 
         const results = [];
@@ -27,7 +27,7 @@ async function searchResults(keyword) {
     
 async function extractDetails(url) {
     try {
-        const response = await soraFetch(url);
+        const response = await fetchv2(url);
         const responseText = await response.text();
 
         const details = [];
@@ -100,7 +100,7 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        const pageResponse = await soraFetch(url);
+        const pageResponse = await fetchv2(url);
         const html = typeof pageResponse === 'object' ? await pageResponse.text() : await pageResponse;
 
         const episodes = [];
@@ -114,7 +114,7 @@ async function extractEpisodes(url) {
         const seasonUrls = [...html.matchAll(seasonUrlRegex)].map(match => match[1]);
 
         for (const seasonUrl of seasonUrls) {
-            const seasonResponse = await soraFetch(seasonUrl);
+            const seasonResponse = await fetchv2(seasonUrl);
             const seasonHtml = typeof seasonResponse === 'object' ? await seasonResponse.text() : await seasonResponse;
 
             const episodeRegex = /data-number='(\d+)'[\s\S]*?href='([^']+)'/g;
@@ -143,7 +143,7 @@ async function extractStreamUrl(url) {
 
     try {
         console.log("Page URL received:", url);
-        const res = await soraFetch(url);
+        const res = await fetchv2(url);
         const html = await res.text();
         const method = 'POST';
 
@@ -167,7 +167,7 @@ async function extractStreamUrl(url) {
                 };
 
                 try {
-                    const response = await soraFetch("https://web.animerco.org/wp-admin/admin-ajax.php", headers, method, body);
+                    const response = await fetchv2("https://web.animerco.org/wp-admin/admin-ajax.php", headers, method, body);
                     const json = await response.json();
 
                     if (!json?.embed_url) {
@@ -222,18 +222,6 @@ async function extractStreamUrl(url) {
     }
 }
 
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
-        }
-    }
-}
-
 function _0xCheck() {
     var _0x1a = typeof _0xB4F2 === 'function';
     var _0x2b = typeof _0x7E9A === 'function';
@@ -250,7 +238,7 @@ async function uqloadExtractor(embedUrl) {
         "Origin": "https://uqload.net"
     };
 
-    const response = await soraFetch(embedUrl, headers);
+    const response = await fetchv2(embedUrl, headers);
     const htmlText = await response.text();
 
     const match = htmlText.match(/sources:\s*\[\s*"([^"]+\.mp4)"\s*\]/);
@@ -269,7 +257,7 @@ async function streamwishExtractor(embedUrl) {
     };
     
     try {
-        const response = await soraFetch(embedUrl, headers);
+        const response = await fetchv2(embedUrl, headers);
         const html = await response.text();
         
         const obfuscatedScript = html.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d.*?\)[\s\S]*?)<\/script>/);
@@ -305,7 +293,7 @@ async function sibnetExtractor(embedUrl) {
     };
     
     try {
-        const response = await soraFetch(embedUrl, headers);
+        const response = await fetchv2(embedUrl, headers);
         const html = await response.text();
         
         const vidMatch = html.match(/player.src\(\[\{src: \"([^\"]+)/);
@@ -329,7 +317,7 @@ async function sibnetExtractor(embedUrl) {
 
 async function youruploadExtractor(embedUrl) {
     const headers = { "Referer": "https://www.yourupload.com/" };
-    const response = await soraFetch(embedUrl, headers);
+    const response = await fetchv2(embedUrl, headers);
     const html = await response.text();
     const match = html.match(/file:\s*['"]([^'"]+\.mp4)['"]/);
     return {
@@ -340,7 +328,7 @@ async function youruploadExtractor(embedUrl) {
 
 async function mp4Extractor(url) {
     const headers = { "Referer": "https://mp4upload.com" };
-    const response = await soraFetch(url, headers);
+    const response = await fetchv2(url, headers);
     const htmlText = await response.text();
     const streamUrl = extractMp4Script(htmlText);
     return {
