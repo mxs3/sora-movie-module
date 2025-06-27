@@ -132,7 +132,7 @@ async function extractEpisodes(url) {
 			const episodeNum = parseInt(match[2], 10); // episode number inside <strong>
 
 			episodes.push({
-				id: `${url}/${episodeId}`,
+				href: `${url}/${episodeId}`,
 				number: episodeNum,
 			});
 		}
@@ -145,6 +145,8 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
 	try {
+        console.log("Extracting stream URL from: " + url);
+
 		const regex = /\/tv\/([^\/]+)\/(\d+)$/;
 		const match = url.match(regex);
 
@@ -177,18 +179,35 @@ async function extractStreamUrl(url) {
 		let streams = [];
 		let subtitles = "";
 
-		if (ids[0]) {
-			const subSources = await getStreamSource(ids[0], key, true);
-			const subStream = subSources?.sources?.find(function (source) {
-				return source.type === "hls";
-			});
-			if (subStream?.file) {
-				streams.push("SUB", subStream.file);
-			}
-			if (subSources?.subtitles) {
-				subtitles = subSources.subtitles;
-			}
-		}
+		// if (ids[0]) {
+		// 	const subSources = await getStreamSource(ids[0], key, true);
+		// 	const subStream = subSources?.sources?.find(function (source) {
+		// 		return source.type === "hls";
+		// 	});
+		// 	if (subStream?.file) {
+		// 		streams.push(subStream.file);
+		// 	}
+		// 	if (subSources?.subtitles) {
+		// 		subtitles = subSources.subtitles;
+		// 	}
+		// }
+
+        for (const id of ids) {
+            const streamData = await getStreamSource(id, key, true);
+            if (!streamData) continue;
+
+            const hlsStream = streamData.sources?.find(src => src.type === "hls");
+            if (hlsStream?.file) {
+                streams.push(hlsStream.file);
+            }
+
+            if (streamData?.subtitles) {
+                streams.push(streamData.subtitles);
+            }
+
+            // Stop after first valid stream
+            // if (resultStreams.length) break;
+        }
 
 		const final = {
 			streams: streams,
@@ -198,7 +217,7 @@ async function extractStreamUrl(url) {
 		console.log("RETURN: " + JSON.stringify(final));
 		return JSON.stringify(final);
 	} catch (error) {
-		console.log("Error in extractStreamUrl:", error);
+		console.log("Error in extractStreamUrl: " + error);
 		return {
 			streams: [],
 			subtitles: ""
@@ -209,7 +228,7 @@ async function extractStreamUrl(url) {
 // searchResults("One piece");
 // extractDetails(`https://freehdmovies.to/tv/watch-one-piece-full-39514`);
 // extractEpisodes(`https://freehdmovies.to/tv/watch-one-piece-full-39514`);
-extractStreamUrl(`https://freehdmovies.to/tv/watch-one-piece-full-39514/6021`);
+// extractStreamUrl(`https://freehdmovies.to/tv/watch-one-piece-full-39514/6021`);
 
 function decodeHtmlEntities(text) {
     return text
