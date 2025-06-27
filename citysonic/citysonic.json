@@ -1,18 +1,18 @@
 {
-    "sourceName": "Free HD Movies",
-    "iconUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/freehdmovies/icon.png",
+    "sourceName": "City Sonic",
+    "iconUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/citysonic/icon.png",
     "author": {
         "name": "ibro",
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
         "url": "https://github.com/xibrox"
     },
-    "version": "1.0.5",
+    "version": "1.0.0",
     "language": "English",
     "streamType": "HLS",
     "quality": "1080p",
     "baseUrl": "https://videostr.net/",
-    "searchBaseUrl": "https://freehdmovies.to/search/%s",
-    "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/freehdmovies/freehdmovies.js",
+    "searchBaseUrl": "https://citysonic.tv/search/%s",
+    "scriptUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/citysonic/citysonic.js",
     "type": "anime/shows/movies",
     "asyncJS": true,
     "softsub": true

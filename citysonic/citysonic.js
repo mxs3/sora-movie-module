@@ -7,7 +7,7 @@ async function searchResults(keyword) {
         const slug = keyword.trim().replace(/\s+/g, "-");
         console.log("Search slug:", slug);
 
-        const responseText = await soraFetch(`https://freehdmovies.to/search/${slug}`);
+        const responseText = await soraFetch(`https://citysonic.tv/search/${slug}`);
         const html = await responseText.text();
 
         const regex = /<div class="flw-item">[\s\S]*?<img[^>]+data-src="([^"]+)"[\s\S]*?<a\s+href="([^"]+)"[^>]*title="([^"]+)"/g;
@@ -20,7 +20,7 @@ async function searchResults(keyword) {
 
 		while ((match = regex.exec(html)) !== null) {
 			const image = match[1].trim();
-			const href = `https://freehdmovies.to${match[2].trim()}`;
+			const href = `https://citysonic.tv${match[2].trim()}`;
 			const title = match[3].trim();
 
 			const titleLower = title.toLowerCase();
@@ -94,128 +94,189 @@ async function extractDetails(url) {
 }
 
 async function extractEpisodes(url) {
-    const matchUrl = url.match(/(\d+)(?!.*\d)/);
-    const id = matchUrl ? matchUrl[1] : null;
-    console.log(id);
+    if (url.includes("https://citysonic.tv/tv/")) {
+        const matchUrl = url.match(/(\d+)(?!.*\d)/);
+        const id = matchUrl ? matchUrl[1] : null;
+        console.log(id);
 
-    const baseSeasonUrl = "https://freehdmovies.to/ajax/season/episodes/";
-    const results = [];
+        const baseSeasonUrl = "https://citysonic.tv/ajax/season/episodes/";
 
-    // Step 1: Fetch page and get all season IDs
-    const pageRes = await soraFetch(`https://freehdmovies.to/ajax/season/list/${id}`);
-    const pageHtml = await pageRes.text();
+        const pageRes = await soraFetch(`https://citysonic.tv/ajax/season/list/${id}`);
+        const pageHtml = await pageRes.text();
 
-    // More robust regex for season IDs
-    const seasonIdRegex = /<a[^>]*data-id="(\d+)"[^>]*>/g;
-    const seasonIds = [];
-    let match;
+        const seasonIdRegex = /<a[^>]*data-id="(\d+)"[^>]*>/g;
+        const seasonIds = [];
+        let match;
 
-    while ((match = seasonIdRegex.exec(pageHtml)) !== null) {
-        seasonIds.push(match[1]);
+        while ((match = seasonIdRegex.exec(pageHtml)) !== null) {
+            seasonIds.push(match[1]);
+        }
+
+        console.log("Extracted season IDs:", seasonIds);
+
+        let episodes = [];
+
+        for (const seasonId of seasonIds) {
+            const seasonUrl = `${baseSeasonUrl}${seasonId}`;
+            const seasonRes = await soraFetch(seasonUrl);
+            const seasonHtml = await seasonRes.text();
+
+            const episodeRegex = /<a[^>]+data-id="(\d+)"[^>]*>(?:.|\n)*?<strong>Eps\s*(\d+)\s*:<\/strong>/g;
+
+            let match;
+
+            while ((match = episodeRegex.exec(seasonHtml)) !== null) {
+                const episodeId = match[1];
+                const episodeNum = parseInt(match[2], 10);
+
+                episodes.push({
+                    href: `${url}/${episodeId}`,
+                    number: episodeNum,
+                });
+            }
+        }
+
+
+        console.log("Final result:", episodes);
+        return JSON.stringify(episodes);
+    } else if (url.includes("https://citysonic.tv/movie/")) {
+        let episodes = [];
+
+        episodes.push({
+            href: `${url}`,
+            number: 1,
+        });
+
+        console.log("Final result:", episodes);
+        return JSON.stringify(episodes);
     }
-
-    console.log("Extracted season IDs:", seasonIds);
-
-	let episodes = [];
-
-    for (const seasonId of seasonIds) {
-		const seasonUrl = `${baseSeasonUrl}${seasonId}`;
-		const seasonRes = await soraFetch(seasonUrl);
-		const seasonHtml = await seasonRes.text();
-
-		const episodeRegex = /<a[^>]+data-id="(\d+)"[^>]*>(?:.|\n)*?<strong>Eps\s*(\d+)\s*:<\/strong>/g;
-
-		let match;
-
-		while ((match = episodeRegex.exec(seasonHtml)) !== null) {
-			const episodeId = match[1];      // data-id attribute
-			const episodeNum = parseInt(match[2], 10); // episode number inside <strong>
-
-			episodes.push({
-				href: `${url}/${episodeId}`,
-				number: episodeNum,
-			});
-		}
-	}
-
-
-    console.log("Final result:", episodes);
-    return JSON.stringify(episodes);
 }
 
 async function extractStreamUrl(url) {
 	try {
-        console.log("Extracting stream URL from: " + url);
+        if (url.includes("https://citysonic.tv/tv/")) {
+            console.log("Extracting stream URL from: " + url);
 
-		const regex = /\/tv\/([^\/]+)\/(\d+)$/;
-		const match = url.match(regex);
+            const regex = /\/tv\/([^\/]+)\/(\d+)$/;
+            const match = url.match(regex);
 
-		if (!match) {
-			throw new Error("Invalid URL format");
-		}
-	
-		const slug = match[1]; // "watch-one-piece-full-39514"
-		const episodeId = match[2]; // "6021"
-		console.log(slug, episodeId);
+            if (!match) {
+                throw new Error("Invalid URL format");
+            }
+        
+            const slug = match[1];
+            const episodeId = match[2];
+            console.log(slug, episodeId);
 
-		const url2 = 'https://freehdmovies.to/ajax/episode/servers/' + episodeId;
-		const response = await soraFetch(url2);
-		const html = await response.text();
+            const url2 = 'https://citysonic.tv/ajax/episode/servers/' + episodeId;
+            const response = await soraFetch(url2);
+            const html = await response.text();
 
-		const regex2 = /data-id="(\d+)"/g;
-		const ids = [];
-		let match2;
-			while ((match2 = regex2.exec(html)) !== null) {
-			ids.push(match2[1]);
-		}
-
-		console.log(ids);
-
-		if (!ids.length) throw new Error("No ids found");
-
-		const key = await getWorkingKey(ids);
-		if (!key) throw new Error("No working decryption key found");
-
-		let streams = [];
-		let subtitles = "";
-
-		// if (ids[0]) {
-		// 	const subSources = await getStreamSource(ids[0], key, true);
-		// 	const subStream = subSources?.sources?.find(function (source) {
-		// 		return source.type === "hls";
-		// 	});
-		// 	if (subStream?.file) {
-		// 		streams.push(subStream.file);
-		// 	}
-		// 	if (subSources?.subtitles) {
-		// 		subtitles = subSources.subtitles;
-		// 	}
-		// }
-
-        for (const id of ids) {
-            const streamData = await getStreamSource(id, key, true);
-            if (!streamData) continue;
-
-            const hlsStream = streamData.sources?.find(src => src.type === "hls");
-            if (hlsStream?.file) {
-                streams.push(hlsStream.file);
+            const regex2 = /data-id="(\d+)"/g;
+            const ids = [];
+            let match2;
+                while ((match2 = regex2.exec(html)) !== null) {
+                ids.push(match2[1]);
             }
 
-            if (streamData?.subtitles) {
-                streams.push(streamData.subtitles);
+            console.log(ids);
+
+            if (!ids.length) throw new Error("No ids found");
+
+            const key = await getWorkingKey(ids);
+            if (!key) throw new Error("No working decryption key found");
+
+            let streams = [];
+            let subtitles = "";
+
+            for (let i = 1; i < ids.length; i++) {
+                const streamData = await getStreamSource(ids[i], key, true);
+                if (!streamData) continue;
+
+                const hlsStream = streamData.sources?.find(src => src.type === "hls");
+                if (hlsStream?.file) {
+                    if (i == 1) {
+                        streams.push("AKCloud");
+                    } else if (i == 2) {
+                        streams.push("MegaCloud");
+                    }
+
+                    streams.push(hlsStream.file);
+                }
+
+                if (streamData?.subtitles) {
+                    subtitles = streamData.subtitles;
+                }
             }
 
-            // Stop after first valid stream
-            // if (resultStreams.length) break;
+            const final = {
+                streams: streams,
+                subtitles: subtitles
+            };
+
+            console.log("RETURN: " + JSON.stringify(final));
+            return JSON.stringify(final);
+        } else if (url.includes("https://citysonic.tv/movie/")) {
+            console.log("Extracting stream URL from: " + url);
+
+            const match = url.match(/-(\d+)(?:\/)?$/);
+
+            if (!match) {
+                throw new Error("Invalid URL format");
+            }
+        
+            const episodeId = match[1];
+            console.log(episodeId);
+
+            const url2 = 'https://citysonic.tv/ajax/episode/list/' + episodeId;
+            const response = await soraFetch(url2);
+            const html = await response.text();
+
+            const regex2 = /data-linkid="(\d+)"/g;
+            const ids = [];
+            let match2;
+                while ((match2 = regex2.exec(html)) !== null) {
+                ids.push(match2[1]);
+            }
+
+            console.log(ids);
+
+            if (!ids.length) throw new Error("No ids found");
+
+            const key = await getWorkingKey(ids);
+            if (!key) throw new Error("No working decryption key found");
+
+            let streams = [];
+            let subtitles = "";
+
+            for (let i = 1; i < ids.length; i++) {
+                const streamData = await getStreamSource(ids[i], key, true);
+                if (!streamData) continue;
+
+                const hlsStream = streamData.sources?.find(src => src.type === "hls");
+                if (hlsStream?.file) {
+                    if (i == 1) {
+                        streams.push("AKCloud");
+                    } else if (i == 2) {
+                        streams.push("MegaCloud");
+                    }
+
+                    streams.push(hlsStream.file);
+                }
+
+                if (streamData?.subtitles) {
+                    subtitles = streamData.subtitles;
+                }
+            }
+
+            const final = {
+                streams: streams,
+                subtitles: subtitles
+            };
+
+            console.log("RETURN: " + JSON.stringify(final));
+            return JSON.stringify(final);
         }
-
-		const final = {
-			streams: streams,
-			subtitles: subtitles
-		};
-
-		console.log("RETURN: " + JSON.stringify(final));
-		return JSON.stringify(final);
 	} catch (error) {
 		console.log("Error in extractStreamUrl: " + error);
 		return {
@@ -226,9 +287,13 @@ async function extractStreamUrl(url) {
 }
 
 // searchResults("One piece");
+
 // extractDetails(`https://freehdmovies.to/tv/watch-one-piece-full-39514`);
 // extractEpisodes(`https://freehdmovies.to/tv/watch-one-piece-full-39514`);
 // extractStreamUrl(`https://freehdmovies.to/tv/watch-one-piece-full-39514/6021`);
+
+// extractDetails(`https://citysonic.tv/movie/watch-one-piece-stampede-movies-free-online-41520`);
+// extractEpisodes(`https://citysonic.tv/movie/watch-one-piece-stampede-movies-free-online-41520`);
 
 function decodeHtmlEntities(text) {
     return text
@@ -328,7 +393,7 @@ async function getStreamSource(sourceId, key, isSub) {
 	try {
 		console.log("Using key: " + key);
 
-		const res1 = await soraFetch('https://freehdmovies.to/ajax/episode/sources/' + sourceId);
+		const res1 = await soraFetch('https://citysonic.tv/ajax/episode/sources/' + sourceId);
 		const json1 = await res1.json();
 
 		const link = json1.link || "";
