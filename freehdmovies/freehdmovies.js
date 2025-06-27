@@ -209,7 +209,7 @@ async function extractStreamUrl(url) {
 // searchResults("One piece");
 // extractDetails(`https://freehdmovies.to/tv/watch-one-piece-full-39514`);
 // extractEpisodes(`https://freehdmovies.to/tv/watch-one-piece-full-39514`);
-// extractStreamUrl(`https://freehdmovies.to/tv/watch-one-piece-full-39514/6021`);
+extractStreamUrl(`https://freehdmovies.to/tv/watch-one-piece-full-39514/6021`);
 
 function decodeHtmlEntities(text) {
     return text
