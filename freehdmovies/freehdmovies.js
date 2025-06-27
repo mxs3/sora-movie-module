@@ -148,12 +148,10 @@ async function extractStreamUrl(url) {
 		const regex = /\/tv\/([^\/]+)\/(\d+)$/;
 		const match = url.match(regex);
 
-		if (!match) {
-			throw new Error("Invalid URL format");
-		}
-	
-		const slug = match[1]; // "watch-one-piece-full-39514"
-		const episodeId = match[2]; // "6021"
+		if (!match) throw new Error("Invalid URL format");
+
+		const slug = match[1];
+		const episodeId = match[2];
 		console.log(slug, episodeId);
 
 		const url2 = 'https://freehdmovies.to/ajax/episode/servers/' + episodeId;
@@ -163,46 +161,91 @@ async function extractStreamUrl(url) {
 		const regex2 = /data-id="(\d+)"/g;
 		const ids = [];
 		let match2;
-			while ((match2 = regex2.exec(html)) !== null) {
+		while ((match2 = regex2.exec(html)) !== null) {
 			ids.push(match2[1]);
 		}
-
-		console.log(ids);
 
 		if (!ids.length) throw new Error("No ids found");
 
 		const key = await getWorkingKey(ids);
 		if (!key) throw new Error("No working decryption key found");
 
-		let streams = [];
-		let subtitles = "";
-
-		if (ids[0]) {
-			const subSources = await getStreamSource(ids[0], key, true);
-			const subStream = subSources?.sources?.find(function (source) {
-				return source.type === "hls";
-			});
-			if (subStream?.file) {
-				streams.push("SUB", subStream.file);
-			}
-			if (subSources?.subtitles) {
-				subtitles = subSources.subtitles;
-			}
-		}
-
-		const final = {
-			streams: streams,
-			subtitles: subtitles
-		};
-
-		console.log("RETURN: " + JSON.stringify(final));
-		return JSON.stringify(final);
-	} catch (error) {
-		console.log("Error in extractStreamUrl:", error);
-		return {
+		const result = {
 			streams: [],
 			subtitles: ""
 		};
+
+		if (ids[0]) {
+			const subSources = await getStreamSource(ids[0], key, true);
+			const subStream = subSources?.sources?.find(source => source.type === "hls");
+
+			if (subStream?.file) {
+				result.streams.push({
+					title: "Stream 1",
+					streamUrl: subStream.file,
+					headers: {
+						"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:140.0) Gecko/20100101 Firefox/140.0",
+						"Referer": "https://videostr.net/",
+						"Origin": "https://videostr.net"
+					}
+				});
+			}
+
+			if (subSources?.subtitles) {
+				result.subtitles = subSources.subtitles;
+			}
+		}
+
+		if (ids[1]) {
+			const subSources = await getStreamSource(ids[1], key, true);
+			const subStream = subSources?.sources?.find(source => source.type === "hls");
+
+			if (subStream?.file) {
+				result.streams.push({
+					title: "Stream 2",
+					streamUrl: subStream.file,
+					headers: {
+						"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:140.0) Gecko/20100101 Firefox/140.0",
+						"Referer": "https://videostr.net/",
+						"Origin": "https://videostr.net"
+					}
+				});
+			}
+
+			if (subSources?.subtitles) {
+				result.subtitles = subSources.subtitles;
+			}
+		}
+
+		if (ids[2]) {
+			const subSources = await getStreamSource(ids[2], key, true);
+			const subStream = subSources?.sources?.find(source => source.type === "hls");
+
+			if (subStream?.file) {
+				result.streams.push({
+					title: "Stream 3",
+					streamUrl: subStream.file,
+					headers: {
+						"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:140.0) Gecko/20100101 Firefox/140.0",
+						"Referer": "https://videostr.net/",
+						"Origin": "https://videostr.net"
+					}
+				});
+			}
+
+			if (subSources?.subtitles) {
+				result.subtitles = subSources.subtitles;
+			}
+		}
+
+		console.log("RETURN:", JSON.stringify(result));
+		return JSON.stringify(result);
+	} catch (error) {
+		console.log("Error in extractStreamUrl:", error);
+		return JSON.stringify({
+			streams: [],
+			subtitles: ""
+		});
 	}
 }
 
@@ -257,25 +300,36 @@ async function getWorkingKey(testIds) {
 	// 	console.log("Key 2 failed");
 	// }
 
-	// try {
-	// 	const res3 = await soraFetch('https://justarion.github.io/keys/e1-player/src/data/keys.json');
-	// 	const json3 = await res3.json();
-	// 	const key3 = json3.megacloud.anime.key;
-	// 	const test3 = await getStreamSource(testIds[0], key3);
-	// 	console.log("Testing key 3:" + key3);
-	// 	if (test3 && test3.sources) return key3;
-	// } catch (e) {
-	// 	console.log("Key 3 failed");
-	// }
+	try {
+		const res3 = await soraFetch('https://justarion.github.io/keys/e1-player/src/data/keys.json');
+		const json3 = await res3.json();
+		const key3 = json3.vidstr.anime.key;
+		const test1 = await getStreamSource(testIds[0], key3);
+		console.log("Testing key 3:" + key3);
+		if (test1 && test1.sources) return key3;
+		const test2 = await getStreamSource(testIds[1], key3);
+		console.log("Testing key 3:" + key3);
+		if (test2 && test2.sources) return key3;
+		const test3 = await getStreamSource(testIds[2], key3);
+		console.log("Testing key 3:" + key3);
+		if (test3 && test3.sources) return key3;
+	} catch (e) {
+		console.log("Key 3 failed");
+	}
 
 	try {
 		const res4 = await soraFetch('https://raw.githubusercontent.com/yogesh-hacker/MegacloudKeys/refs/heads/main/keys.json');
 		const json4 = await res4.json();
 		const key4 = json4.vidstr;
-		const test4 = await getStreamSource(testIds[2], key4);
-		console.log("Source ID: " + testIds[2]);
-		console.log("Testing key 4: " + key4);
-		if (test4 && test4.sources) return key4;
+		const test1 = await getStreamSource(testIds[0], key4);
+		console.log("Testing key 4:" + key4);
+		if (test1 && test1.sources) return key4;
+		const test2 = await getStreamSource(testIds[1], key4);
+		console.log("Testing key 4:" + key4);
+		if (test2 && test2.sources) return key4;
+		const test3 = await getStreamSource(testIds[2], key4);
+		console.log("Testing key 4:" + key4);
+		if (test3 && test3.sources) return key4;
 	} catch (e) {
 		console.log("Key 4 failed");
 	}
