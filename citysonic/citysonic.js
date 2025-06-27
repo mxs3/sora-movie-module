@@ -153,6 +153,8 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
+	if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
+
 	try {
         if (url.includes("https://citysonic.tv/tv/")) {
             console.log("Extracting stream URL from: " + url);
