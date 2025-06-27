@@ -148,10 +148,12 @@ async function extractStreamUrl(url) {
 		const regex = /\/tv\/([^\/]+)\/(\d+)$/;
 		const match = url.match(regex);
 
-		if (!match) throw new Error("Invalid URL format");
-
-		const slug = match[1];
-		const episodeId = match[2];
+		if (!match) {
+			throw new Error("Invalid URL format");
+		}
+	
+		const slug = match[1]; // "watch-one-piece-full-39514"
+		const episodeId = match[2]; // "6021"
 		console.log(slug, episodeId);
 
 		const url2 = 'https://freehdmovies.to/ajax/episode/servers/' + episodeId;
@@ -161,91 +163,46 @@ async function extractStreamUrl(url) {
 		const regex2 = /data-id="(\d+)"/g;
 		const ids = [];
 		let match2;
-		while ((match2 = regex2.exec(html)) !== null) {
+			while ((match2 = regex2.exec(html)) !== null) {
 			ids.push(match2[1]);
 		}
+
+		console.log(ids);
 
 		if (!ids.length) throw new Error("No ids found");
 
 		const key = await getWorkingKey(ids);
 		if (!key) throw new Error("No working decryption key found");
 
-		const result = {
-			streams: [],
-			subtitles: ""
-		};
+		let streams = [];
+		let subtitles = "";
 
 		if (ids[0]) {
 			const subSources = await getStreamSource(ids[0], key, true);
-			const subStream = subSources?.sources?.find(source => source.type === "hls");
-
+			const subStream = subSources?.sources?.find(function (source) {
+				return source.type === "hls";
+			});
 			if (subStream?.file) {
-				result.streams.push({
-					title: "Stream 1",
-					streamUrl: subStream.file,
-					headers: {
-						"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:140.0) Gecko/20100101 Firefox/140.0",
-						"Referer": "https://videostr.net/",
-						"Origin": "https://videostr.net"
-					}
-				});
+				streams.push("SUB", subStream.file);
 			}
-
 			if (subSources?.subtitles) {
-				result.subtitles = subSources.subtitles;
+				subtitles = subSources.subtitles;
 			}
 		}
 
-		if (ids[1]) {
-			const subSources = await getStreamSource(ids[1], key, true);
-			const subStream = subSources?.sources?.find(source => source.type === "hls");
+		const final = {
+			streams: streams,
+			subtitles: subtitles
+		};
 
-			if (subStream?.file) {
-				result.streams.push({
-					title: "Stream 2",
-					streamUrl: subStream.file,
-					headers: {
-						"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:140.0) Gecko/20100101 Firefox/140.0",
-						"Referer": "https://videostr.net/",
-						"Origin": "https://videostr.net"
-					}
-				});
-			}
-
-			if (subSources?.subtitles) {
-				result.subtitles = subSources.subtitles;
-			}
-		}
-
-		if (ids[2]) {
-			const subSources = await getStreamSource(ids[2], key, true);
-			const subStream = subSources?.sources?.find(source => source.type === "hls");
-
-			if (subStream?.file) {
-				result.streams.push({
-					title: "Stream 3",
-					streamUrl: subStream.file,
-					headers: {
-						"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:140.0) Gecko/20100101 Firefox/140.0",
-						"Referer": "https://videostr.net/",
-						"Origin": "https://videostr.net"
-					}
-				});
-			}
-
-			if (subSources?.subtitles) {
-				result.subtitles = subSources.subtitles;
-			}
-		}
-
-		console.log("RETURN:", JSON.stringify(result));
-		return JSON.stringify(result);
+		console.log("RETURN: " + JSON.stringify(final));
+		return JSON.stringify(final);
 	} catch (error) {
 		console.log("Error in extractStreamUrl:", error);
-		return JSON.stringify({
+		return {
 			streams: [],
 			subtitles: ""
-		});
+		};
 	}
 }
 
