@@ -10,28 +10,28 @@ async function searchResults(keyword) {
         const responseText = await soraFetch(`https://freehdmovies.to/search/${slug}`);
         const html = await responseText.text();
 
-        const regex = /<a\s+href="([^"]+)"\s+title="([^"]+)">[\s\S]*?<img[^>]+src="([^"]+)"[\s\S]*?<\/a>/g;
+        const regex = /<div class="flw-item">[\s\S]*?<img[^>]+data-src="([^"]+)"[\s\S]*?<a\s+href="([^"]+)"[^>]*title="([^"]+)"/g;
+
 
         const results = [];
         let match;
 
         const keywordLower = keyword.trim().toLowerCase();
 
-        while ((match = regex.exec(html)) !== null) {
-            const title = match[2].trim();
-            const titleLower = title.toLowerCase();
+		while ((match = regex.exec(html)) !== null) {
+			const image = match[1].trim();
+			const href = `https://freehdmovies.to${match[2].trim()}`;
+			const title = match[3].trim();
 
-            // Only include items where title includes all words in the keyword
-            const allWordsMatch = keywordLower.split(/\s+/).every(word => titleLower.includes(word));
+			const titleLower = title.toLowerCase();
 
-            if (allWordsMatch) {
-                results.push({
-                    title,
-                    image: match[3].trim(),
-                    href: `https://freehdmovies.to${match[1].trim()}`
-                });
-            }
-        }
+			const allWordsMatch = keywordLower.split(/\s+/).every(word => titleLower.includes(word));
+
+			if (allWordsMatch) {
+				results.push({ title, image, href });
+			}
+		}
+
 
         console.log("Filtered results:", results);
         return JSON.stringify(results);
@@ -195,9 +195,8 @@ async function extractStreamUrl(url) {
 			subtitles: subtitles
 		};
 
-		console.log("RETURN:" + JSON.stringify(final));
+		console.log("RETURN: " + JSON.stringify(final));
 		return JSON.stringify(final);
-
 	} catch (error) {
 		console.log("Error in extractStreamUrl:", error);
 		return {
@@ -210,7 +209,7 @@ async function extractStreamUrl(url) {
 // searchResults("One piece");
 // extractDetails(`https://freehdmovies.to/tv/watch-one-piece-full-39514`);
 // extractEpisodes(`https://freehdmovies.to/tv/watch-one-piece-full-39514`);
-extractStreamUrl(`https://freehdmovies.to/tv/watch-one-piece-full-39514/6021`);
+// extractStreamUrl(`https://freehdmovies.to/tv/watch-one-piece-full-39514/6021`);
 
 function decodeHtmlEntities(text) {
     return text
