@@ -137,7 +137,7 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
-    if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
+    // if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
 
     if (isSeriesOrMovieForStreams(url) === "series") {
         const match = url.match(/xprime\.tv\/watch\/([^?]+)\/(\d+)\/(\d+)/);
@@ -175,7 +175,7 @@ async function extractStreamUrl(url) {
         for (let i = 0; i < servers.length; i++) {
             const server = servers[i];
 
-            if (i === 1) {
+            if (i === 0) {
                 let apiUrl = '';
                 let name =  dataText.title || dataText.name || dataText.original_title || dataText.original_name;
 
@@ -186,32 +186,43 @@ async function extractStreamUrl(url) {
                 }
 
                 const response = await soraFetch(apiUrl);
-                const data = await response.json();
 
-                console.log('Data from server:', data);
-
-                if (data && data.streams && Object.keys(data.streams).length > 0) {
-                    const qualities = data.available_qualities;
-
-                    if (qualities && qualities.length > 0) {
-                        for (const quality of qualities) {
-                            const stream = data.streams[quality];
-                            if (stream) {
-                                streams.push({
-                                    title: server + " - " + quality,
-                                    streamUrl: stream,
-                                    headers: { "Referer": "https://xprime.tv/" }
-                                });
-                            }
-                        }
-                    }
+                if (!response && !response.ok) {
+                    console.log('Error fetching data from server: ' + server);
+                    continue;
                 }
 
-                if (data && data.subtitles && data.subtitles.length > 0) {
-                    const subtitle = data.subtitles.find(sub => sub.label === 'English')?.file;
-                    if (subtitle) {
-                        subtitles = subtitle;
+                let data;
+
+                try {
+                    data = await response.json();
+
+                    // if (data && data.streams && Object.keys(data.streams).length > 0) {
+                    //     const qualities = data.available_qualities;
+
+                    //     if (qualities && qualities.length > 0) {
+                    //         for (const quality of qualities) {
+                    //             const stream = data.streams[quality];
+                    //             if (stream) {
+                    //                 streams.push({
+                    //                     title: server + " - " + quality,
+                    //                     streamUrl: stream,
+                    //                     headers: { "Referer": "https://xprime.tv/" }
+                    //                 });
+                    //             }
+                    //         }
+                    //     }
+                    // }
+
+                    if (data && data.subtitles && data.subtitles.length > 0) {
+                        const subtitle = data.subtitles.find(sub => sub.label === 'English')?.file;
+                        if (subtitle) {
+                            subtitles = subtitle;
+                        }
                     }
+                } catch (error) {
+                    console.log('Error parsing data from server: ' + server);
+                    continue;
                 }
             } else {
                 let apiUrl = '';
@@ -224,16 +235,44 @@ async function extractStreamUrl(url) {
                 }
 
                 const response = await soraFetch(apiUrl);
-                const data = await response.json();
 
-                if (data && data.url) {
-                    const stream = data.url;
-                    if (stream) {
-                        streams.push({
-                            title: server,
-                            streamUrl: stream,
-                            headers: { "Referer": "https://xprime.tv/" }
-                        });
+                if (!response && !response.ok) {
+                    console.log('Error fetching data from server: ' + server);
+                    continue;
+                }
+
+                let data;
+
+                try {
+                    data = await response.json();
+
+                    if (server === 'volkswagen' && data && data.url) {
+                        const stream = data.url;
+                        if (stream) {
+                            streams.push({
+                                title: server + " (German)",
+                                streamUrl: stream,
+                                headers: { "Referer": "https://xprime.tv/" }
+                            });
+                        }
+                    } else if (server === 'fendi' && data && data.url) {
+                        const stream = data.url;
+                        if (stream) {
+                            streams.push({
+                                title: server + " (Italian)",
+                                streamUrl: stream,
+                                headers: { "Referer": "https://xprime.tv/" }
+                            });
+                        }
+                    } else if (data && data.url) {
+                        const stream = data.url;
+                        if (stream) {
+                            streams.push({
+                                title: server,
+                                streamUrl: stream,
+                                headers: { "Referer": "https://xprime.tv/" }
+                            });
+                        }
                     }
 
                     if (server === 'fendi' && data.subtitles) {
@@ -246,6 +285,9 @@ async function extractStreamUrl(url) {
                             subtitles = subtitleUrl;
                         }
                     }
+                } catch (error) {
+                    console.log('Error parsing data from server: ' + server);
+                    continue;
                 }
             }
         }
@@ -305,33 +347,46 @@ async function extractStreamUrl(url) {
 
                 console.log('API URL: ' + apiUrl);
                 const response = await soraFetch(apiUrl);
-                const data = await response.json();
+
+                if (!response && !response.ok) {
+                    console.log('Error fetching data from server: ' + server);
+                    continue;
+                }
                 
                 console.log('Data from server:', data);
 
-                if (data && data.streams && Object.keys(data.streams).length > 0) {
-                    const qualities = data.available_qualities;
+                let data;
 
-                    if (qualities && qualities.length > 0) {
-                        for (const quality of qualities) {
-                            const stream = data.streams[quality];
-                            if (stream) {
-                                streams.push({
-                                    title: server + " - " + quality,
-                                    streamUrl: stream,
-                                    headers: { "Referer": "https://xprime.tv/" }
-                                });
-                            }
+                try {
+                    data = await response.json();
+                    
+                    // if (data && data.streams && Object.keys(data.streams).length > 0) {
+                    //     const qualities = data.available_qualities;
+
+                    //     if (qualities && qualities.length > 0) {
+                    //         for (const quality of qualities) {
+                    //             const stream = data.streams[quality];
+                    //             if (stream) {
+                    //                 streams.push({
+                    //                     title: server + " - " + quality,
+                    //                     streamUrl: stream,
+                    //                     headers: { "Referer": "https://xprime.tv/" }
+                    //                 });
+                    //             }
+                    //         }
+                    //     }
+                    // }
+
+                    if (data && data.subtitles && data.subtitles.length > 0) {
+                        const subtitle = data.subtitles.find(sub => sub.label === 'English')?.file;
+                        console.log('Subtitle found Primebox: ' + subtitle);
+                        if (subtitle) {
+                            subtitles = subtitle;
                         }
                     }
-                }
-
-                if (data && data.subtitles && data.subtitles.length > 0) {
-                    const subtitle = data.subtitles.find(sub => sub.label === 'English')?.file;
-                    console.log('Subtitle found Primebox: ' + subtitle);
-                    if (subtitle) {
-                        subtitles = subtitle;
-                    }
+                } catch (error) {
+                    console.log('Error parsing data from server: ' + server);
+                    continue;
                 }
             } else {
                 let apiUrl = '';
@@ -344,16 +399,44 @@ async function extractStreamUrl(url) {
                 }
                 console.log('API URL: ' + apiUrl);
                 const response = await soraFetch(apiUrl);
-                const data = await response.json();
 
-                if (data && data.url) {
-                    const stream = data.url;
-                    if (stream) {
-                        streams.push({
-                            title: server,
-                            streamUrl: stream,
-                            headers: { "Referer": "https://xprime.tv/" }
-                        });
+                if (!response && !response.ok) {
+                    console.log('Error fetching data from server: ' + server);
+                    continue;
+                }
+
+                let data;
+
+                try {
+                    data = await response.json();
+
+                    if (server === 'volkswagen' && data && data.url) {
+                        const stream = data.url;
+                        if (stream) {
+                            streams.push({
+                                title: server + " (German)",
+                                streamUrl: stream,
+                                headers: { "Referer": "https://xprime.tv/" }
+                            });
+                        }
+                    } else if (server === 'fendi' && data && data.url) {
+                        const stream = data.url;
+                        if (stream) {
+                            streams.push({
+                                title: server + " (Italian)",
+                                streamUrl: stream,
+                                headers: { "Referer": "https://xprime.tv/" }
+                            });
+                        }
+                    } else if (data && data.url) {
+                        const stream = data.url;
+                        if (stream) {
+                            streams.push({
+                                title: server,
+                                streamUrl: stream,
+                                headers: { "Referer": "https://xprime.tv/" }
+                            });
+                        }
                     }
 
                     if (server === 'fendi' && data.subtitles) {
@@ -367,6 +450,9 @@ async function extractStreamUrl(url) {
                             subtitles = subtitleUrl;
                         }
                     }
+                } catch (error) {
+                    console.log('Error parsing data from server: ' + server);
+                    continue;
                 }
             }
         }
