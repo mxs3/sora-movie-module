@@ -457,6 +457,12 @@ async function extractStreamUrl(url) {
             }
         }
 
+        // streams.push({
+        //     title: "BONUS (4K only external players)",
+        //     streamUrl: `https://kendrickl-3amar.site/${id}/master.m3u8`,
+        //     headers: { "Referer": "https://xprime.tv/" }
+        // });
+
         const result = {
             streams,
             subtitles
