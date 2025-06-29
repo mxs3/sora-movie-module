@@ -197,22 +197,27 @@ async function extractStreamUrl(url) {
                 try {
                     data = await response.json();
 
-                    // if (data && data.streams && Object.keys(data.streams).length > 0) {
-                    //     const qualities = data.available_qualities;
+                    if (data && data.streams && Object.keys(data.streams).length > 0) {
+                        const qualities = data.available_qualities;
 
-                    //     if (qualities && qualities.length > 0) {
-                    //         for (const quality of qualities) {
-                    //             const stream = data.streams[quality];
-                    //             if (stream) {
-                    //                 streams.push({
-                    //                     title: server + " - " + quality,
-                    //                     streamUrl: stream,
-                    //                     headers: { "Referer": "https://xprime.tv/" }
-                    //                 });
-                    //             }
-                    //         }
-                    //     }
-                    // }
+                        if (qualities && qualities.length > 0) {
+                            for (const quality of qualities) {
+                                const stream = data.streams[quality];
+                                if (stream) {
+                                    streams.push({
+                                        title: server + " - " + quality,
+                                        streamUrl: stream,
+                                        headers: { 
+                                            "Referer": "https://xprime.tv/", 
+                                            "Origin": "https://xprime.tv", 
+                                            "X-Requested-With": "XMLHttpRequest",
+                                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/237.84.2.178 Safari/537.36"
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
 
                     if (data && data.subtitles && data.subtitles.length > 0) {
                         const subtitle = data.subtitles.find(sub => sub.label === 'English')?.file;
@@ -332,7 +337,7 @@ async function extractStreamUrl(url) {
         let streams = [];
         let subtitles = "";
 
-        for (let i = 1; i < servers.length; i++) {
+        for (let i = 0; i < servers.length; i++) {
             const server = servers[i];
 
             if (i === 0) {
@@ -352,30 +357,33 @@ async function extractStreamUrl(url) {
                     console.log('Error fetching data from server: ' + server);
                     continue;
                 }
-                
-                console.log('Data from server:', data);
 
                 let data;
 
                 try {
                     data = await response.json();
                     
-                    // if (data && data.streams && Object.keys(data.streams).length > 0) {
-                    //     const qualities = data.available_qualities;
+                    if (data && data.streams && Object.keys(data.streams).length > 0) {
+                        const qualities = data.available_qualities;
 
-                    //     if (qualities && qualities.length > 0) {
-                    //         for (const quality of qualities) {
-                    //             const stream = data.streams[quality];
-                    //             if (stream) {
-                    //                 streams.push({
-                    //                     title: server + " - " + quality,
-                    //                     streamUrl: stream,
-                    //                     headers: { "Referer": "https://xprime.tv/" }
-                    //                 });
-                    //             }
-                    //         }
-                    //     }
-                    // }
+                        if (qualities && qualities.length > 0) {
+                            for (const quality of qualities) {
+                                const stream = data.streams[quality];
+                                if (stream) {
+                                    streams.push({
+                                        title: server + " - " + quality,
+                                        streamUrl: stream,
+                                        headers: { 
+                                            "Referer": "https://xprime.tv/", 
+                                            "Origin": "https://xprime.tv", 
+                                            "X-Requested-With": "XMLHttpRequest",
+                                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/237.84.2.178 Safari/537.36"
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
 
                     if (data && data.subtitles && data.subtitles.length > 0) {
                         const subtitle = data.subtitles.find(sub => sub.label === 'English')?.file;
