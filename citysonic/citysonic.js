@@ -95,7 +95,7 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     if (url.includes("https://citysonic.tv/tv/")) {
-        const matchUrl = url.match(/(\d+)(?!.*\d)/);
+        const matchUrl = url.match(/-(\d+)(?:\/|$)/);
         const id = matchUrl ? matchUrl[1] : null;
         console.log(id);
 
@@ -104,7 +104,7 @@ async function extractEpisodes(url) {
         const pageRes = await soraFetch(`https://citysonic.tv/ajax/season/list/${id}`);
         const pageHtml = await pageRes.text();
 
-        const seasonIdRegex = /<a[^>]*data-id="(\d+)"[^>]*>/g;
+        const seasonIdRegex = /<a[^>]+data-id=['"](\d+)['"]/g;
         const seasonIds = [];
         let match;
 
@@ -121,7 +121,7 @@ async function extractEpisodes(url) {
             const seasonRes = await soraFetch(seasonUrl);
             const seasonHtml = await seasonRes.text();
 
-            const episodeRegex = /<a[^>]+data-id="(\d+)"[^>]*>(?:.|\n)*?<strong>Eps\s*(\d+)\s*:<\/strong>/g;
+            const episodeRegex = /<a[^>]+data-id=['"](\d+)['"][^>]*>[\s\S]*?<strong[^>]*>.*?(?:Eps|Episode)[^\d]*(\d+)[^<]*<\/strong>/gi;
 
             let match;
 
@@ -290,12 +290,12 @@ async function extractStreamUrl(url) {
 
 // searchResults("One piece");
 
-// extractDetails(`https://freehdmovies.to/tv/watch-one-piece-full-39514`);
-// extractEpisodes(`https://freehdmovies.to/tv/watch-one-piece-full-39514`);
-// extractStreamUrl(`https://freehdmovies.to/tv/watch-one-piece-full-39514/6021`);
-
 // extractDetails(`https://citysonic.tv/movie/watch-one-piece-stampede-movies-free-online-41520`);
 // extractEpisodes(`https://citysonic.tv/movie/watch-one-piece-stampede-movies-free-online-41520`);
+
+// searchResults("Naruto");
+
+// extractEpisodes("https://citysonic.tv/tv/watch-naruto-shippuden-movies-free-online-39540");
 
 function decodeHtmlEntities(text) {
     return text
