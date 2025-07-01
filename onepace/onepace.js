@@ -157,7 +157,7 @@ async function extractEpisodes(url) {
 // extractEpisodes("https://pixeldrain.net/l/sT25hhHR");
 
 async function extractStreamUrl(url) {
-    // if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
+    if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
 
     return `https://pixeldrain.net/api/file/${url}?download`;
 }
