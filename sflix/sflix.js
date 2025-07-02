@@ -351,8 +351,10 @@ async function getWorkingKey(testIds) {
 	try {
 		const res3 = await soraFetch('https://justarion.github.io/keys/e1-player/src/data/keys.json');
 		const json3 = await res3.json();
+		
 		const key3 = json3.streameeeeee.anime.key;
 		const key33 = json3.streameeeeee.movie.key;
+
 		const test1 = await getStreamSource(testIds[0], key3);
 		console.log("Testing key 3: " + key3);
 		if (test1 && test1.sources) return key3;
@@ -362,6 +364,7 @@ async function getWorkingKey(testIds) {
 		const test3 = await getStreamSource(testIds[2], key3);
 		console.log("Testing key 3: " + key3);
 		if (test3 && test3.sources) return key3;
+
 		const test4 = await getStreamSource(testIds[0], key33);
 		console.log("Testing key 3: " + key33);
 		if (test4 && test4.sources) return key33;
