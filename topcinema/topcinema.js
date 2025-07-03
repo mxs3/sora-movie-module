@@ -65,6 +65,9 @@ async function searchResults(keyword) {
 // extractEpisodes("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
 // extractStreamUrl("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/");
 
+// extractEpisodes("https://web6.topcinema.cam/%d8%a7%d9%86%d9%85%d9%8a-naruto-shippuuden-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-500-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
+// extractStreamUrl("https://web6.topcinema.cam/%d8%a7%d9%86%d9%85%d9%8a-naruto-shippuuden-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-500-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
+
 async function extractDetails(url) {
     const results = [];
     const response = await soraFetch(url);
@@ -104,18 +107,49 @@ async function extractDetails(url) {
 }
 
 async function extractEpisodes(url) {
-    const results = [];
+    let results = [];
+
+    const decodedUrl = decodeURIComponent(url);
+
+    const seriesKeywords = ["مسلسل", "الموسم", "الحلقة"];
+
+    const isSeries = seriesKeywords.some(keyword => decodedUrl.includes(keyword));
 
     const response = await soraFetch(url);
     const html = await response.text();
 
-    const watchMatch = html.match(/<a class="watch" href="([^"]+)"/);
-	if (watchMatch) {
-		results.push({
-			href: watchMatch[1].trim(),
-			number: 1
-		});
-	}
+    if (isSeries) {
+        const episodeRegex = /<a href="([^"]+?)"[^>]*?>\s*<div class="image">.*?<div class="epnum">\s*<span>الحلقة<\/span>\s*(\d+)/gs;
+        let match;
+
+        while ((match = episodeRegex.exec(html)) !== null) {
+            const episodeUrl = match[1].trim();
+            const episodeNumber = parseInt(match[2], 10);
+
+            // const episodeResponse = await soraFetch(episodeUrl);
+            // const episodeHtml = await episodeResponse.text();
+
+            // const watchMatch = episodeHtml.match(/<a class="watch" href="([^"]+)"/);
+            // const watchUrl = watchMatch ? watchMatch[1].trim() : null;
+
+            if (episodeUrl) {
+                results.push({
+                    href: episodeUrl,
+                    number: episodeNumber
+                });
+            }
+        }
+    } else {
+        const watchMatch = html.match(/<a class="watch" href="([^"]+)"/);
+        if (watchMatch) {
+            results.push({
+                href: watchMatch[1].trim(),
+                number: 1
+            });
+        }
+    }
+
+    results.reverse();
 
     console.log(`Episodes: ${JSON.stringify(results)}`);
     return JSON.stringify(results);
@@ -124,7 +158,11 @@ async function extractEpisodes(url) {
 async function extractStreamUrl(url) {
     if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
 
-    const response = await soraFetch(url);
+    const responseText = await soraFetch(url);
+    const htmlText = await responseText.text();
+    const urlMatch = htmlText.match(/<a class="watch" href="([^"]+)"/);
+
+    const response = await soraFetch(urlMatch[1]);
     const html = await response.text();
 
     const regex = /<li[^>]+data-id="([^"]+)"[^>]+data-server="([^"]+)"/g;
