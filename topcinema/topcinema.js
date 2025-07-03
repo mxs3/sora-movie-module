@@ -1,42 +1,7 @@
 async function searchResults(keyword) {
-    const results = [];
+    const uniqueResults = new Map();
 
-	// const url = "https://web6.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Searching.php";
-
-    // const headers = {
-    //     "Host": "web6.topcinema.cam",
-    //     "Origin": "https://web6.topcinema.cam",
-    //     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0",
-    //     "Referer": "https://web6.topcinema.cam/",
-    //     "X-Requested-With": "XMLHttpRequest",
-    //     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-    // };
-
-	// const responseText = await soraFetch(url, { method: "POST", headers, body: `search=${keyword}&type=all` });
-	// const html = await responseText.text();
-
-    // const regex = /<a href="([^"]+)"[^>]*?title="([^"]+?)"[^>]*?>[\s\S]*?<img[^>]+data-src="([^"]+)"[\s\S]*?<ul class="liList">[\s\S]*?<li>.*?<\/li>\s*<li>([^<]+)<\/li>/g;
-
-
-
-	
-    // const url = `https://web6.topcinema.cam/search/?query=${keyword}&type=all`;
-    // const response = await soraFetch(url);
-    // const html = await response.text();
-
-    // const regex = /<a[^>]+class="page-numbers"[^>]*>(\d+)<\/a>/g;
-
-    // let match;
-    // let maxPage = 1;
-
-    // while ((match = regex.exec(html)) !== null) {
-    //     const pageNum = parseInt(match[1]);
-    //     if (pageNum > maxPage) {
-    //         maxPage = pageNum;
-    //     }
-    // }
-
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 15; i++) {
         const url = `https://web6.topcinema.cam/search/?query=${keyword}&type=all&offset=${i}`;
         const response2 = await soraFetch(url);
         const html2 = await response2.text();
@@ -45,16 +10,31 @@ async function searchResults(keyword) {
 
         let match2;
         while ((match2 = regex2.exec(html2)) !== null) {
-            results.push({
-                title: match2[2].trim() + ' (' + match2[4].trim() + ')',
-                href: match2[1].trim(),
-                image: match2[3].trim()
-            });
+            const rawTitle = match2[2].trim();
+
+            // Normalize title: remove episode numbers, "والاخيرة", and extra spaces
+            const cleanedTitle = rawTitle
+                .replace(/الحلقة\s*\d+(\.\d+)?(-\d+)?/gi, '')
+                .replace(/الحلقة\s*\d+/gi, '')
+                .replace(/والاخيرة/gi, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            const finalTitle = `${cleanedTitle} (${match2[4].trim()})`;
+
+            if (!uniqueResults.has(cleanedTitle)) {
+                uniqueResults.set(cleanedTitle, {
+                    title: finalTitle,
+                    href: match2[1].trim(),
+                    image: match2[3].trim()
+                });
+            }
         }
     }
 
-    console.log(results);
-    return JSON.stringify(results);
+    const deduplicated = Array.from(uniqueResults.values());
+    console.log(deduplicated);
+    return JSON.stringify(deduplicated);
 }
 
 // searchResults("Interstellar");
@@ -67,6 +47,9 @@ async function searchResults(keyword) {
 
 // extractEpisodes("https://web6.topcinema.cam/%d8%a7%d9%86%d9%85%d9%8a-naruto-shippuuden-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-500-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
 // extractStreamUrl("https://web6.topcinema.cam/%d8%a7%d9%86%d9%85%d9%8a-naruto-shippuuden-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-500-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
+
+// searchResults("One piece");
+// extractEpisodes("https://web6.topcinema.cam/series/%d8%a7%d9%86%d9%85%d9%8a-one-piece-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ad%d8%a7%d8%af%d9%8a-%d9%88%d8%a7%d9%84%d8%b9%d8%b4%d8%b1%d9%88%d9%86-%d9%85%d8%aa%d8%b1%d8%ac%d9%85/");
 
 async function extractDetails(url) {
     const results = [];
@@ -119,24 +102,36 @@ async function extractEpisodes(url) {
     const html = await response.text();
 
     if (isSeries) {
-        const episodeRegex = /<a href="([^"]+?)"[^>]*?>\s*<div class="image">.*?<div class="epnum">\s*<span>الحلقة<\/span>\s*(\d+)/gs;
-        let match;
+        const seasonRegex = /<div class="Small--Box Season">\s*<a href="(?<href>[^"]+)"[^>]*>.*?<div class="epnum"><span>الموسم<\/span>(?<number>\d+)<\/div>.*?data-src="(?<image>[^"]+)"[^>]*>.*?<h3 class="title">(?<title>[^<]+)<\/h3>/gs;
+        const matches = [...html.matchAll(seasonRegex)];
 
-        while ((match = episodeRegex.exec(html)) !== null) {
-            const episodeUrl = match[1].trim();
-            const episodeNumber = parseInt(match[2], 10);
+        let seasonHrefs = [];
 
-            // const episodeResponse = await soraFetch(episodeUrl);
-            // const episodeHtml = await episodeResponse.text();
+        for (let i = 0; i < matches.length; i++) {
+            const match = matches[i];
+            const seasonHref = match.groups.href;
+            if (seasonHref) {
+                seasonHrefs.push(seasonHref);
+            }
+        }
 
-            // const watchMatch = episodeHtml.match(/<a class="watch" href="([^"]+)"/);
-            // const watchUrl = watchMatch ? watchMatch[1].trim() : null;
+        for (let i = 0; i < seasonHrefs.length; i++) {
+            const seasonRes = await soraFetch(seasonHrefs[i]);
+            const seasonHtml = await seasonRes.text();
 
-            if (episodeUrl) {
-                results.push({
-                    href: episodeUrl,
-                    number: episodeNumber
-                });
+            const episodeRegex = /<a href="([^"]+?)"[^>]*?>\s*<div class="image">.*?<div class="epnum">\s*<span>الحلقة<\/span>\s*(\d+)/gs;
+            let match;
+
+            while ((match = episodeRegex.exec(seasonHtml)) !== null) {
+                const episodeUrl = match[1].trim();
+                const episodeNumber = parseInt(match[2], 10);
+
+                if (episodeUrl) {
+                    results.push({
+                        href: episodeUrl,
+                        number: episodeNumber
+                    });
+                }
             }
         }
     } else {
