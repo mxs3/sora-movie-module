@@ -42,7 +42,9 @@ async function searchResults(keyword) {
 
 // searchResults("Squid");
 // extractEpisodes("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
-extractStreamUrl("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/");
+// extractStreamUrl("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/");
+
+extractStreamUrl("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ab%d8%a7%d9%86%d9%8a-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9-1/watch/");
 
 async function extractDetails(url) {
     const results = [];
@@ -101,7 +103,7 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
-    if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
+    // if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
 
     const response = await soraFetch(url);
     const html = await response.text();
@@ -293,6 +295,7 @@ async function extractStreamUrl(url) {
             const html3 = await response3.text();
             const regex = /iframe src="([^"]+)"/;
             const match = html3.match(regex);
+            if (!match) continue;
             const iframeEmbed = match[1];
 
             const response4 = await soraFetch(iframeEmbed, { 
