@@ -62,8 +62,6 @@ async function searchResults(keyword) {
 // extractEpisodes("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
 // extractStreamUrl("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/");
 
-// extractStreamUrl("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ab%d8%a7%d9%86%d9%8a-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9-1/watch/");
-
 async function extractDetails(url) {
     const results = [];
     const response = await soraFetch(url);
@@ -342,7 +340,32 @@ async function extractStreamUrl(url) {
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/244.178.44.111 Safari/537.36"
                 }
             });
-        } 
+        } else if (streamEmbed.includes("sendvid")) {
+            const response3 = await soraFetch(streamEmbed, { 
+                headers: { 
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/244.178.44.111 Safari/537.36",
+                    "Referer": "https://web6.topcinema.cam/",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+                } 
+            });
+
+            const html3 = await response3.text();
+            
+            const regex = /var\s+video_source\s*=\s*"([^"]+)"/;
+            const match = html3.match(regex);
+
+            const stream = match ? match[1] : null;
+
+            console.log("Stream URL:", stream);
+
+            streams.push({
+                title: "SendVid",
+                streamUrl: stream,
+                headers: {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/244.178.44.111 Safari/537.36"
+                }
+            });
+        }
         // else if (streamEmbed.includes("mixdrop")) {
 		// 	const response3 = await soraFetch(streamEmbed, { 
         //         headers: { 
