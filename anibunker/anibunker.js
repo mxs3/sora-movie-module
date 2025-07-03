@@ -113,7 +113,7 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const responseText = await fetchv2(url);
+        const responseText = await soraFetch(url);
         const html = await responseText.text();
 
         const match = html.match(/<video[^>]+src="([^"]+)"/);
@@ -141,7 +141,7 @@ async function extractStreamUrl(url) {
         //     'Referer': url,
         // };
 
-        const url = "https://sora-passthrough.vercel.app/form";
+        const url2 = "https://sora-passthrough.vercel.app/form";
         const data = {
             "url": "https://anibunker.com/php/loader.php",
             "form": {
@@ -152,11 +152,11 @@ async function extractStreamUrl(url) {
                 "Host": "anibunker.com",
                 "Origin": "https://anibunker.com",
                 "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0",
-                "Referer": url,
+                "Referer": url2,
             }
         };
 
-        const response = await soraFetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+        const response = await soraFetch(url2, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
         const json = await response.json();
 
         // const response = await fetchv2(url, "POST", { "Content-Type": "application/json" }, JSON.stringify(data));
@@ -176,7 +176,7 @@ async function extractStreamUrl(url) {
     }
 }
 
-// extractStreamUrl("https://anibunker.com/anime/hibi-wa-sugiredo-meshi-umashi-episodio-1-legendado");
+extractStreamUrl("https://anibunker.com/anime/hibi-wa-sugiredo-meshi-umashi-episodio-1-legendado");
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
