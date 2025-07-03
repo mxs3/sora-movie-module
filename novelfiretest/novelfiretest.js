@@ -111,23 +111,13 @@ Genres: ${genres}
 
 async function extractChapters(url) {
     try {
-        const response = await soraFetch(url);
-        const htmlText = await response.text();
-
-        const chaptersMatch = htmlText.match(/<i class="icon-book-open"><\/i>\s*(\d+)\s*<\/strong><small>Chapters<\/small>/);
-        const chaptersNumber = chaptersMatch ? chaptersMatch[1] : 'Unknown';
-
-        let chapters = [];
-
-        const chapter = {
+        const chapters = [{
             href: `https://novelfire.net/book/mushoku-tensei/chapter-1`,
             number: 1,
             title: `Chapter 1`
-        };
+        }];
 
-        chapters.push(chapter);
-
-        console.log(chapters);
+        console.log(JSON.stringify(chapters));
         return JSON.stringify(chapters);
     } catch (error) {
         console.log('Fetch error in extractChapters:', error);
