@@ -21,15 +21,33 @@ async function searchResults(keyword) {
     const response = await soraFetch(url);
     const html = await response.text();
 
-    const regex = /<a href="([^"]+)"[^>]*?title="([^"]+?)"[^>]*?>[\s\S]*?<img[^>]+data-src="([^"]+)"[\s\S]*?<ul class="liList">[\s\S]*?<li>.*?<\/li>\s*<li>([^<]+)<\/li>/g;
+    const regex = /<a[^>]+class="page-numbers"[^>]*>(\d+)<\/a>/g;
 
     let match;
+    let maxPage = 1;
+
     while ((match = regex.exec(html)) !== null) {
-        results.push({
-            title: match[2].trim() + ' (' + match[4].trim() + ')',
-            href: match[1].trim(),
-            image: match[3].trim()
-        });
+        const pageNum = parseInt(match[1]);
+        if (pageNum > maxPage) {
+            maxPage = pageNum;
+        }
+    }
+
+    for (let i = 1; i <= maxPage; i++) {
+        const url = `https://web6.topcinema.cam/search/?query=${keyword}&type=all&offset=${i}`;
+        const response2 = await soraFetch(url);
+        const html2 = await response2.text();
+
+        const regex2 = /<a href="([^"]+)"[^>]*?title="([^"]+?)"[^>]*?>[\s\S]*?<img[^>]+data-src="([^"]+)"[\s\S]*?<ul class="liList">[\s\S]*?<li>.*?<\/li>\s*<li>([^<]+)<\/li>/g;
+
+        let match2;
+        while ((match2 = regex2.exec(html2)) !== null) {
+            results.push({
+                title: match2[2].trim() + ' (' + match2[4].trim() + ')',
+                href: match2[1].trim(),
+                image: match2[3].trim()
+            });
+        }
     }
 
     console.log(results);
@@ -44,7 +62,7 @@ async function searchResults(keyword) {
 // extractEpisodes("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
 // extractStreamUrl("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/");
 
-extractStreamUrl("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ab%d8%a7%d9%86%d9%8a-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9-1/watch/");
+// extractStreamUrl("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ab%d8%a7%d9%86%d9%8a-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9-1/watch/");
 
 async function extractDetails(url) {
     const results = [];
@@ -103,7 +121,7 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
-    // if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
+    if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
 
     const response = await soraFetch(url);
     const html = await response.text();
