@@ -17,23 +17,26 @@ async function searchResults(keyword) {
 
     // const regex = /<a href="([^"]+)"[^>]*?title="([^"]+?)"[^>]*?>[\s\S]*?<img[^>]+data-src="([^"]+)"[\s\S]*?<ul class="liList">[\s\S]*?<li>.*?<\/li>\s*<li>([^<]+)<\/li>/g;
 
-    const url = `https://web6.topcinema.cam/search/?query=${keyword}&type=all`;
-    const response = await soraFetch(url);
-    const html = await response.text();
 
-    const regex = /<a[^>]+class="page-numbers"[^>]*>(\d+)<\/a>/g;
 
-    let match;
-    let maxPage = 1;
+	
+    // const url = `https://web6.topcinema.cam/search/?query=${keyword}&type=all`;
+    // const response = await soraFetch(url);
+    // const html = await response.text();
 
-    while ((match = regex.exec(html)) !== null) {
-        const pageNum = parseInt(match[1]);
-        if (pageNum > maxPage) {
-            maxPage = pageNum;
-        }
-    }
+    // const regex = /<a[^>]+class="page-numbers"[^>]*>(\d+)<\/a>/g;
 
-    for (let i = 1; i <= maxPage; i++) {
+    // let match;
+    // let maxPage = 1;
+
+    // while ((match = regex.exec(html)) !== null) {
+    //     const pageNum = parseInt(match[1]);
+    //     if (pageNum > maxPage) {
+    //         maxPage = pageNum;
+    //     }
+    // }
+
+    for (let i = 1; i <= 5; i++) {
         const url = `https://web6.topcinema.cam/search/?query=${keyword}&type=all&offset=${i}`;
         const response2 = await soraFetch(url);
         const html2 = await response2.text();
