@@ -1,12 +1,12 @@
 {
-    "sourceName": "Novel Dot",
+    "sourceName": "NovelDot",
     "iconUrl": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/noveldot/icon.png",
     "author": {
         "name": "ibro",
         "icon": "https://raw.githubusercontent.com/xibrox/sora-movie-module/refs/heads/main/profile.jpg",
         "url": "https://github.com/xibrox"
     },
-    "version": "1.0.1",
+    "version": "1.0.2",
     "language": "English",
     "streamType": "novels",
     "quality": "N/A",

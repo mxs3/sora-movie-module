@@ -141,8 +141,9 @@ async function extractChapters(url) {
             let match;
             while ((match = regex.exec(htmlText2)) !== null) {
                 chapters.push({
+                    href: match[2],
                     number: parseInt(match[1]),
-                    href: match[2]
+                    title: `Chapter ${match[1]}`
                 });
             }
         }
@@ -154,7 +155,6 @@ async function extractChapters(url) {
         return JSON.stringify([]);
     }
 }
-
 
 async function extractText(url) {
     try {
@@ -192,7 +192,7 @@ async function extractText(url) {
 
 // searchResults("classroom of the elite");
 // extractDetails("https://www.noveldot.com/book-16808/Classroom-of-the-Elite-(LN)");
-// extractChapters("https://www.noveldot.com/book-16808/Classroom-of-the-Elite-(LN)");
+extractChapters("https://www.noveldot.com/book-16808/Classroom-of-the-Elite-(LN)");
 // extractText("https://www.noveldot.com/novel-16808-227546/Classroom-of-the-Elite-(LN)/chapter-1");
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {

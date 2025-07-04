@@ -164,7 +164,7 @@ async function extractText(url) {
 
 // searchResults('mushoku');
 // extractDetails('https://novelfire.net/book/mushoku-tensei');
-// extractEpisodes('https://novelfire.net/book/mushoku-tensei');
+// extractChapters('https://novelfire.net/book/mushoku-tensei');
 // extractText('https://novelfire.net/book/mushoku-tensei/chapter-1');
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
