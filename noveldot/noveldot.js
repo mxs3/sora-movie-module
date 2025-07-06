@@ -190,9 +190,9 @@ async function extractText(url) {
     }
 }
 
-// searchResults("classroom of the elite");
+searchResults("classroom of the elite");
 // extractDetails("https://www.noveldot.com/book-16808/Classroom-of-the-Elite-(LN)");
-extractChapters("https://www.noveldot.com/book-16808/Classroom-of-the-Elite-(LN)");
+// extractChapters("https://www.noveldot.com/book-16808/Classroom-of-the-Elite-(LN)");
 // extractText("https://www.noveldot.com/novel-16808-227546/Classroom-of-the-Elite-(LN)/chapter-1");
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {

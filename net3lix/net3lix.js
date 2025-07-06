@@ -148,26 +148,58 @@ async function extractStreamUrl(url) {
         if (!match) throw new Error('Invalid URL format');
         const [, type, path] = match;
 
-        const embedUrl = type === 'movie'
+        const url2 = type === 'movie'
+        ? `https://cdn.moviesapi.club/embed/movie/${path}`
+        : (() => {
+            const [showId, season, episode] = path.split('/');
+            return `https://cdn.moviesapi.club/embed/tv/${showId}/${season}/${episode}`;
+            })();
+
+        const html = await soraFetch(url2).then(res => res.text());
+
+        const embedRegex = /<iframe[^>]*src="([^"]+)"[^>]*>/g;
+        const embedUrl = Array.from(html.matchAll(embedRegex), m => m[1].trim()).find(Boolean);
+        const completedUrl = `https:${embedUrl}`;
+
+        console.log('Embed URL: ' + completedUrl);
+
+        const html2 = await soraFetch(completedUrl).then(res => res.text());
+
+        const match2 = html2.match(/src:\s*['"]([^'"]+)['"]/);
+        const src = `https://cloudnestra.com${match2[1]}`;
+
+        console.log(src);
+
+        const html3 = await soraFetch(src).then(res => res.text());
+
+        const match3 = html3.match(/file:\s*['"]([^'"]+)['"]/);
+
+        console.log(match3[1]);
+
+        const embedUrl2 = type === 'movie'
         ? `https://vidsrc.su/embed/movie/${path}`
         : (() => {
             const [showId, season, episode] = path.split('/');
             return `https://vidsrc.su/embed/tv/${showId}/${season}/${episode}`;
             })();
 
-        const data = await soraFetch(embedUrl).then(res => res.text());
+        const data2 = await soraFetch(embedUrl2).then(res => res.text());
 
-        console.log('Embed URL:', embedUrl);
-        console.log('Data:', data);
+        console.log('Embed URL:', embedUrl2);
+        console.log('Data:', data2);
 
         const urlRegex = /^(?!\s*\/\/).*url:\s*(['"])(.*?)\1/gm;
         const subtitleRegex = /"url"\s*:\s*"([^"]+)"[^}]*"format"\s*:\s*"([^"]+)"[^}]*"encoding"\s*:\s*"([^"]+)"[^}]*"display"\s*:\s*"([^"]+)"[^}]*"language"\s*:\s*"([^"]+)"/g;
 
-        const streams = Array.from(data.matchAll(urlRegex), m => m[2].trim()).filter(Boolean);
+        let streams = [];
+
+        streams.push("CloudStream Pro", match3[1]);
+
+        streams.push(...Array.from(data2.matchAll(urlRegex), m => m[2]).filter(Boolean));
 
         const subtitleMatches = [];
         let subtitleMatch;
-        while ((subtitleMatch = subtitleRegex.exec(data)) !== null) {
+        while ((subtitleMatch = subtitleRegex.exec(data2)) !== null) {
             subtitleMatches.push({
                 url: subtitleMatch[1],
                 format: subtitleMatch[2],
