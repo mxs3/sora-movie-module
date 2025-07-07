@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     const uniqueResults = new Map();
 
-    for (let i = 1; i <= 15; i++) {
+    for (let i = 1; i <= 5; i++) {
         const url = `https://web6.topcinema.cam/search/?query=${keyword}&type=all&offset=${i}`;
         const response2 = await soraFetch(url);
         const html2 = await response2.text();
