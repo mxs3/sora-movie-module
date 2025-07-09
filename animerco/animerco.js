@@ -142,82 +142,71 @@ async function extractStreamUrl(url) {
     };
 
     try {
-        console.log("Page URL received:", url);
         const res = await fetchv2(url);
         const html = await res.text();
-        const method = 'POST';
 
-        const servers = ['mp4upload', 'yourupload', 'streamwish', 'sfastwish', 'sibnet', 'uqload'];
-        
-        for (const server of servers) {
-            const regex = new RegExp(
-                `<a[^>]+class=['"][^'"]*option[^'"]*['"][^>]+data-type=['"]([^'"]+)['"][^>]+data-post=['"]([^'"]+)['"][^>]+data-nume=['"]([^'"]+)['"][^>]*>(?:(?!<span[^>]*class=['"]server['"]>).)*<span[^>]*class=['"]server['"]>\\s*${server}\\s*<\\/span>`,
-                "gi"
-            );
+        const serverRegex = /<a[^>]+class=['"][^'"]*option[^'"]*['"][^>]+data-type=['"]([^'"]+)['"][^>]+data-post=['"]([^'"]+)['"][^>]+data-nume=['"]([^'"]+)['"][^>]*>[^<]*<span[^>]*class=['"]server['"]>\s*([^<\s]+)\s*<\/span>/gi;
+        const matches = [...html.matchAll(serverRegex)];
 
-            const matches = [...html.matchAll(regex)];
-            
-            for (const match of matches) {
-                const [_, type, post, nume] = match;
-                const body = `action=player_ajax&post=${post}&nume=${nume}&type=${type}`;
-                const headers = {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
-                    'Origin': 'https://web.animerco.org',
-                    'Referer': url,
-                };
+        const serversPriority = ['mp4upload', 'yourupload', 'streamwish', 'sfastwish', 'sibnet', 'uqload', 'mega', '4shared'];
 
+        for (const match of matches) {
+            const [_, type, post, nume, server] = match;
+            const serverName = server.trim().toLowerCase();
+
+            if (!serversPriority.includes(serverName)) continue;
+
+            const body = `action=player_ajax&post=${post}&nume=${nume}&type=${type}`;
+            const headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+                'Origin': 'https://web.animerco.org',
+                'Referer': url,
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            };
+
+            try {
+                const response = await fetchv2("https://web.animerco.org/wp-admin/admin-ajax.php", headers, 'POST', body);
+                const json = await response.json();
+
+                if (!json?.embed_url) continue;
+
+                let streamData;
                 try {
-                    const response = await fetchv2("https://web.animerco.org/wp-admin/admin-ajax.php", headers, method, body);
-                    const json = await response.json();
-
-                    if (!json?.embed_url) {
-                        console.log(`No embed URL found for ${server}`);
-                        continue;
+                    if (serverName === 'mp4upload') {
+                        streamData = await mp4Extractor(json.embed_url);
+                    } else if (serverName === 'yourupload') {
+                        streamData = await youruploadExtractor(json.embed_url);
+                    } else if (serverName === 'streamwish' || serverName === 'sfastwish') {
+                        streamData = await streamwishExtractor(json.embed_url);
+                    } else if (serverName === 'sibnet') {
+                        streamData = await sibnetExtractor(json.embed_url);
+                    } else if (serverName === 'uqload') {
+                        streamData = await uqloadExtractor(json.embed_url);
+                    } else if (serverName === 'mega') {
+                        streamData = await megaExtractor(json.embed_url);
+                    } else if (serverName === '4shared') {
+                        streamData = await fourSharedExtractor(json.embed_url);
                     }
 
-                    let streamData;
-                    try {
-                        if (server === 'mp4upload') {
-                            streamData = await mp4Extractor(json.embed_url);
-                        } else if (server === 'yourupload') {
-                            streamData = await youruploadExtractor(json.embed_url);
-                        } else if (server === 'streamwish' || server === 'sfastwish') {
-                            streamData = await streamwishExtractor(json.embed_url);
-                        } else if (server === 'sibnet') {
-                            streamData = await sibnetExtractor(json.embed_url);
-                        } else if (server === 'uqload') {
-                            streamData = await uqloadExtractor(json.embed_url);
-                        }
-
-                        if (streamData?.url) {
-                            multiStreams.streams.push({
-                                title: server,
-                                streamUrl: streamData.url,
-                                headers: streamData.headers,
-                                subtitles: null
-                            });
-                            console.log(`Successfully extracted ${server} stream: ${streamData.url}`);
-                        } else {
-                            console.log(`No stream URL found for ${server}`);
-                        }
-                    } catch (extractorError) {
-                        console.error(`Extractor error for ${server}:`, extractorError);
+                    if (streamData?.url) {
+                        multiStreams.streams.push({
+                            title: serverName,
+                            streamUrl: streamData.url,
+                            headers: streamData.headers || {},
+                            subtitles: null
+                        });
                     }
-                } catch (error) {
-                    console.error(`Error processing ${server}:`, error);
+                } catch (extractorError) {
+                    console.error(`Error extracting ${serverName}:`, extractorError);
                 }
+            } catch (e) {
+                console.error(`Request failed for ${serverName}:`, e);
             }
         }
 
-        if (multiStreams.streams.length === 0) {
-            console.error("No valid streams were extracted from any provider");
-            return JSON.stringify({ streams: [], subtitles: null });
-        }
-
-        console.log(`Extracted ${multiStreams.streams.length} streams`);
         return JSON.stringify(multiStreams);
     } catch (error) {
-        console.error("Error in extractStreamUrl:", error);
+        console.error("Main extraction error:", error);
         return JSON.stringify({ streams: [], subtitles: null });
     }
 }
