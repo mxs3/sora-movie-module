@@ -23,34 +23,20 @@ function searchResults(html) {
     return results;
 }
 
-function extractDetails(html) {
-    const details = [];
-
-    const descriptionMatch = html.match(/<p[^>]*>(.*?)<\/p>/s);
-    let description = descriptionMatch 
-        ? decodeHTMLEntities(descriptionMatch[1].trim()) 
-        : 'N/A';
-
-    const aliasMatch = html.match(/<li>\s*<div class="icon">\s*<i class="far fa-clock"><\/i>\s*<\/div>\s*<span>\s*مدة العرض\s*:\s*<\/span>\s*<a[^>]*>\s*(\d+)\s*<\/a>/);
-    let alias = aliasMatch ? aliasMatch[1].trim() : 'N/A';
-
-    const airdateMatch = html.match(/<li>\s*<div class="icon">\s*<i class="far fa-calendar"><\/i>\s*<\/div>\s*<span>\s*تاريخ الاصدار\s*:\s*<\/span>\s*<a[^>]*?>\s*(\d{4})\s*<\/a>/);
-    let airdate = airdateMatch ? airdateMatch[1].trim() : 'N/A';
-
-    details.push({
-        description: description,
-        alias: alias,
-        airdate: airdate
-    });
-
-    console.log(details);
-    return details;
+function decodeHTMLEntities(text) {
+    return text
+        .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&')
+        .replace(/&apos;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
 }
 
 function extractEpisodes(html) {
     const episodes = [];
 
-    const episodeRegex = /<a href="([^"]+)">\s*الحلقة\s*<em>(\d+)<\/em>\s*<\/a>/g;
+    const episodeRegex = /<a[^>]+href="([^"]+)">[^<]*الحلقة\s*<em>(\d+)<\/em>/g;
     let match;
 
     while ((match = episodeRegex.exec(html)) !== null) {
@@ -67,8 +53,86 @@ function extractEpisodes(html) {
         episodes.reverse();
     }
 
-    console.log(episodes);
     return episodes;
+}
+
+async function extractDetails(html, url) {
+    const details = {
+        description: '',
+        airdate: '',
+        alias: '',
+        episodes: []
+    };
+
+    // ✅ الوصف
+    const descriptionMatch = html.match(/<p[^>]*>(.*?)<\/p>/s);
+    details.description = descriptionMatch 
+        ? decodeHTMLEntities(descriptionMatch[1].trim()) 
+        : 'N/A';
+
+    // ✅ مدة العرض
+    const aliasMatch = html.match(/<i class="far fa-clock"><\/i>[^<]*<\/div>\s*<span>[^<]*<\/span>\s*<a[^>]*>([^<]+)<\/a>/);
+    details.alias = aliasMatch ? aliasMatch[1].trim() : 'N/A';
+
+    // ✅ سنة الإصدار
+    const airdateMatch = html.match(/<i class="far fa-calendar"><\/i>[^<]*<\/div>\s*<span>[^<]*<\/span>\s*<a[^>]*>(\d{4})<\/a>/);
+    details.airdate = airdateMatch ? airdateMatch[1].trim() : 'N/A';
+
+    // ✅ استخراج المواسم
+    const seasonRegex = /<a[^>]+data-season="(\d+)"[^>]*>([^<]+)<\/a>/g;
+    const seasons = [];
+    let seasonMatch;
+    while ((seasonMatch = seasonRegex.exec(html)) !== null) {
+        seasons.push({
+            id: seasonMatch[1].trim(),
+            title: decodeHTMLEntities(seasonMatch[2].trim())
+        });
+    }
+
+    // ✅ fallback لو مفيش مواسم
+    if (seasons.length === 0) {
+        seasons.push({
+            id: null,
+            title: "Main"
+        });
+    }
+
+    // ✅ تحميل الحلقات لكل موسم
+    for (const season of seasons) {
+        let seasonHtml = html;
+
+        if (season.id) {
+            const form = new URLSearchParams();
+            form.append("action", "season_data");
+            form.append("season_id", season.id);
+
+            try {
+                const res = await soraFetch("https://ristoanime.net/wp-admin/admin-ajax.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "Referer": url,
+                        "User-Agent": "Mozilla/5.0"
+                    },
+                    body: form.toString()
+                });
+
+                seasonHtml = await res.text();
+            } catch (e) {
+                console.warn(`Error loading season ${season.id}`, e);
+                continue;
+            }
+        }
+
+        const eps = extractEpisodes(seasonHtml);
+        details.episodes.push({
+            seasonId: season.id,
+            seasonTitle: season.title,
+            episodes: eps
+        });
+    }
+
+    return details;
 }
 
 async function extractStreamUrl(html) {
